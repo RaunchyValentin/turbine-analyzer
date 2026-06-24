@@ -188,16 +188,19 @@ function CurvePanel({ turbines, label }) {
   const yTitle = axisInfo.y_unit ? `${axisInfo.y_label} [${axisInfo.y_unit}]` : axisInfo.y_label
 
   const plotLayout = {
+    uirevision: curveId,   // reset zoom/pan when curve changes
     margin: { l: 72, r: 12, t: 12, b: 58 },
     paper_bgcolor: '#1e1e2e',
     plot_bgcolor:  '#16162a',
     font:  { color: '#a0a0c0', size: 11 },
     xaxis: {
       gridcolor: '#2a2a45', zerolinecolor: '#444', color: '#777',
+      autorange: true,
       title: { text: xTitle, font: { size: 11, color: '#8888aa' }, standoff: 8 },
     },
     yaxis: {
       gridcolor: '#2a2a45', zerolinecolor: '#444', color: '#777',
+      autorange: true,
       title: { text: yTitle, font: { size: 11, color: '#8888aa' }, standoff: 8 },
     },
     showlegend: false,
@@ -262,26 +265,28 @@ function CurvePanel({ turbines, label }) {
         )}
       </div>
 
-      {/* chart */}
-      <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
-        {points.length === 0 && curveId && (
-          <div style={EMPTY_HINT}>No points</div>
-        )}
-        {!curveId && (
-          <div style={EMPTY_HINT}>Select a curve</div>
-        )}
-        <Plot
-          data={plotData}
-          layout={plotLayout}
-          config={plotConfig}
-          onInitialized={(_, gd) => { gdRef.current = gd; setGdReady(true) }}
-          style={{ width: '100%', height: '100%' }}
-          useResizeHandler
-        />
+      {/* chart: outer clips canvas, inner absolute fills it so Plotly labels stay inside SVG */}
+      <div style={{ flex: '1 1 180px', minHeight: 0, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', inset: 0 }}>
+          {points.length === 0 && curveId && (
+            <div style={EMPTY_HINT}>No points</div>
+          )}
+          {!curveId && (
+            <div style={EMPTY_HINT}>Select a curve</div>
+          )}
+          <Plot
+            data={plotData}
+            layout={plotLayout}
+            config={plotConfig}
+            onInitialized={(_, gd) => { gdRef.current = gd; setGdReady(true) }}
+            style={{ width: '100%', height: '100%' }}
+            useResizeHandler
+          />
+        </div>
       </div>
 
       {/* point table */}
-      <div style={{ flex: '0 0 auto', maxHeight: 200, overflowY: 'auto', borderRadius: 4, border: '1px solid #252535' }}>
+      <div style={{ flex: '0 0 auto', maxHeight: 160, overflowY: 'auto', borderRadius: 4, border: '1px solid #1e1e30', isolation: 'isolate' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
           <thead>
             <tr style={{ background: '#14142a', position: 'sticky', top: 0, zIndex: 1 }}>
@@ -305,9 +310,9 @@ function CurvePanel({ turbines, label }) {
                   key={i}
                   onClick={() => setSelIdx(i)}
                   style={{
-                    background: active ? '#1c2a40' : i % 2 ? '#131320' : 'transparent',
+                    background: active ? '#1e2d3d' : 'transparent',
                     cursor: 'pointer',
-                    borderLeft: active ? '2px solid #ff9800' : '2px solid transparent',
+                    borderLeft: active ? '2px solid #e08030' : '2px solid transparent',
                   }}
                 >
                   <td style={TD_N}>{i + 1}</td>
@@ -406,27 +411,25 @@ const SEL = {
 }
 
 const TH_BASE = {
-  padding: '0.35rem 0.5rem', textAlign: 'left',
-  color: '#7a7a9a', fontWeight: 600, fontSize: '0.72rem',
-  borderBottom: '1px solid #252535', whiteSpace: 'nowrap',
+  padding: '0.25rem 0.45rem', textAlign: 'left',
+  color: '#5a5a7a', fontWeight: 600, fontSize: '0.7rem',
+  borderBottom: '1px solid #1e1e30', whiteSpace: 'nowrap',
   overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0,
 }
-const TH_N = { ...TH_BASE, width: 28, maxWidth: 'none', textAlign: 'center' }
+const TH_N = { ...TH_BASE, width: 24, maxWidth: 'none', textAlign: 'center' }
 const TH_X = { ...TH_BASE, width: '45%' }
 
 const TD_N = {
-  padding: '0.2rem 0.4rem', color: '#4a4a6a',
-  fontSize: '0.72rem', textAlign: 'center', width: 28,
-  borderBottom: '1px solid #1a1a2a',
+  padding: '0.05rem 0.4rem', color: '#3e3e58',
+  fontSize: '0.7rem', textAlign: 'center', width: 24,
 }
 const TD_V = {
-  padding: '0.1rem 0.4rem',
-  borderBottom: '1px solid #1a1a2a',
+  padding: '0 0.4rem',
 }
 
 const NUM_IN = {
   width: '100%', background: 'transparent', border: 'none',
-  color: '#c8c8e8', fontSize: '0.8rem', padding: '0.15rem 0',
+  color: '#a8a8c8', fontSize: '0.77rem', padding: '0.08rem 0',
   outline: 'none', fontFamily: 'monospace',
 }
 
