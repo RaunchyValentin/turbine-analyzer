@@ -17,6 +17,36 @@ def _match_key(p: dict) -> str:
     return k if k else (p.get("name") or "")
 
 
+def _is_jar(turbine: "Turbine") -> bool:
+    return (turbine.source_file or "").lower().endswith(".jar")
+
+
+def _srel_keys(params: list[dict]) -> set[str]:
+    """Return the set of match keys from SREL parameters (have a real kks)."""
+    return {_match_key(p) for p in params if (p.get("kks") or "").strip()}
+
+
+def _compare(params_a: list[dict], params_b: list[dict],
+             jar_a: bool, jar_b: bool) -> list[dict]:
+    """
+    Build comparison rows.
+
+    JAR vs SREL (mixed): restrict to keys present in the SREL side.
+    SREL vs SREL or JAR vs JAR: full union of keys.
+    """
+    idx_a = {_match_key(p): p for p in params_a if _match_key(p)}
+    idx_b = {_match_key(p): p for p in params_b if _match_key(p)}
+
+    if jar_a != jar_b:
+        # Mixed: use SREL side as the key universe
+        anchor_keys = _srel_keys(params_b if jar_a else params_a)
+        all_keys = sorted(anchor_keys)
+    else:
+        all_keys = sorted(idx_a.keys() | idx_b.keys())
+
+    return [_build_row(k, idx_a.get(k), idx_b.get(k)) for k in all_keys]
+
+
 def _raw(p: dict) -> dict:
     rd = p.get("raw_data")
     if isinstance(rd, str):
@@ -79,20 +109,18 @@ async def compare(turbine_a: int, turbine_b: int, db: AsyncSession = Depends(get
     params_a = await _load_params(db, turbine_a)
     params_b = await _load_params(db, turbine_b)
 
-    idx_a = {_match_key(p): p for p in params_a if _match_key(p)}
-    idx_b = {_match_key(p): p for p in params_b if _match_key(p)}
-    all_keys = sorted(idx_a.keys() | idx_b.keys())
-
-    rows = [_build_row(k, idx_a.get(k), idx_b.get(k)) for k in all_keys]
+    rows = _compare(params_a, params_b, _is_jar(ta), _is_jar(tb))
 
     stats = {"matching": 0, "changed": 0, "only_a": 0, "only_b": 0}
     for r in rows:
         stats[r["status"]] += 1
 
+    mixed = _is_jar(ta) != _is_jar(tb)
     return {
         "turbine_a": {"id": ta.id, "name": ta.name, "file_date": ta.file_date, "source_file": ta.source_file},
         "turbine_b": {"id": tb.id, "name": tb.name, "file_date": tb.file_date, "source_file": tb.source_file},
         "stats": stats,
+        "mixed": mixed,
         "rows": [r for r in rows if r["status"] != "matching"],
     }
 
@@ -107,10 +135,7 @@ async def export_comparison(turbine_a: int, turbine_b: int, db: AsyncSession = D
     params_a = await _load_params(db, turbine_a)
     params_b = await _load_params(db, turbine_b)
 
-    idx_a = {_match_key(p): p for p in params_a if _match_key(p)}
-    idx_b = {_match_key(p): p for p in params_b if _match_key(p)}
-    all_keys = sorted(idx_a.keys() | idx_b.keys())
-    rows = [_build_row(k, idx_a.get(k), idx_b.get(k)) for k in all_keys]
+    rows = _compare(params_a, params_b, _is_jar(ta), _is_jar(tb))
     non_matching = [r for r in rows if r["status"] != "matching"]
 
     name_a = f"{ta.name} ({ta.file_date or ta.imported_at})"

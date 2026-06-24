@@ -260,7 +260,7 @@ export default function Turbines() {
                     <td style={s.td}>
                       <span style={sourceStyle(t.source_file)}>{sourceLabel(t.source_file)}</span>
                     </td>
-                    <td style={s.td}>{t.file_date || t.imported_at || '—'}</td>
+                    <td style={{ ...s.td, color: '#c0c0d0' }}>{t.file_date || t.imported_at || '—'}</td>
                     <td style={{ ...s.td, textAlign: 'right' }}>
                       <span style={s.paramCount}>{t.param_count}</span>
                     </td>

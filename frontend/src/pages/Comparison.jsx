@@ -108,6 +108,13 @@ export default function Comparison() {
 
       {error && <div style={{ color: 'red' }}>{error}</div>}
 
+      {/* Mixed mode notice */}
+      {result?.mixed && (
+        <div style={{ fontSize: '0.8rem', color: '#ff9800', background: '#1a1200', border: '1px solid #3a2800', borderRadius: 4, padding: '0.4rem 0.75rem' }}>
+          Mixed comparison (JAR vs SREL) — showing only parameters present in the SREL file
+        </div>
+      )}
+
       {/* Stats */}
       {result && (
         <>
