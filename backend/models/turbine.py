@@ -25,6 +25,7 @@ class Turbine(Base):
     type: Mapped[str | None] = mapped_column(String)
     site: Mapped[str | None] = mapped_column(String)
     source_file: Mapped[str | None] = mapped_column(String)
+    file_date: Mapped[str | None] = mapped_column(String)   # date extracted from filename
     imported_at: Mapped[date | None] = mapped_column(Date)
 
     project: Mapped[Project] = relationship(back_populates="turbines")

@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
 from database import init_db
-from api import routes_turbines, routes_parameters, routes_curves, routes_import, routes_export, routes_settings
+from api import routes_turbines, routes_parameters, routes_curves, routes_import, routes_export, routes_settings, routes_comparison
 
 
 @asynccontextmanager
@@ -27,6 +27,7 @@ app.include_router(routes_curves.router, prefix="/api")
 app.include_router(routes_import.router, prefix="/api")
 app.include_router(routes_export.router, prefix="/api")
 app.include_router(routes_settings.router, prefix="/api")
+app.include_router(routes_comparison.router, prefix="/api")
 
 
 if __name__ == "__main__":

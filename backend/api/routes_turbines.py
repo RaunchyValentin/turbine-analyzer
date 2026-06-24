@@ -94,6 +94,7 @@ async def list_turbines_with_stats(db: AsyncSession = Depends(get_db)):
             "type": r.Turbine.type,
             "site": r.Turbine.site,
             "source_file": r.Turbine.source_file,
+            "file_date": r.Turbine.file_date,
             "imported_at": str(r.Turbine.imported_at) if r.Turbine.imported_at else None,
             "project_id": r.Turbine.project_id,
             "project_name": r.project_name or "—",

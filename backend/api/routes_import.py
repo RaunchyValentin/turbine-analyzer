@@ -1,4 +1,5 @@
 import json
+import re
 from fastapi import APIRouter, Depends, File, UploadFile, Form, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert
@@ -12,6 +13,20 @@ from parsers import (
 )
 
 router = APIRouter(tags=["import"])
+
+_DATE_PATTERNS = [
+    (re.compile(r'(\d{2})\.(\d{2})\.(\d{4})'), lambda m: f"{m.group(3)}-{m.group(2)}-{m.group(1)}"),  # DD.MM.YYYY
+    (re.compile(r'(\d{4})[-_](\d{2})[-_](\d{2})'), lambda m: f"{m.group(1)}-{m.group(2)}-{m.group(3)}"),  # YYYY-MM-DD
+    (re.compile(r'(\d{2})-(\d{2})-(\d{4})'), lambda m: f"{m.group(3)}-{m.group(2)}-{m.group(1)}"),  # DD-MM-YYYY
+]
+
+
+def _extract_file_date(filename: str) -> str | None:
+    for pattern, formatter in _DATE_PATTERNS:
+        m = pattern.search(filename)
+        if m:
+            return formatter(m)
+    return None
 
 _SCALAR_FIELDS = {"kks", "name", "value", "unit", "data_type", "group", "description"}
 _BATCH_SIZE = 2000
@@ -97,6 +112,7 @@ async def save_import(
             db.add(CurvePoint(curve_id=curve.id, x=pt["x"], y=pt["y"], order=i))
 
     turbine.source_file = filename
+    turbine.file_date = _extract_file_date(filename)
     turbine.imported_at = date.today()
     await db.commit()
     return {
@@ -150,6 +166,7 @@ async def create_and_import(
         project_id=project.id,
         name=turbine_name,
         source_file=filename,
+        file_date=_extract_file_date(filename),
         imported_at=date.today(),
     )
     db.add(turbine)
