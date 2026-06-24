@@ -84,11 +84,32 @@ def _parse_zip(file_bytes: bytes, outer_filename: str) -> dict[str, Any]:
 
         # Fallback: T3000 project JAR — parse icdiagram.xml blocks
         if not all_params and not all_curves:
+            # Build folder → designation map from ALL node.xml files in the archive
+            desig_map: dict[str, str] = {}
+            for n in names:
+                if n.lower().endswith("node.xml"):
+                    folder_key = (n.rsplit("/", 1)[0] if "/" in n else "").lower()
+                    try:
+                        desig = _extract_node_designation(zf.read(n))
+                        if desig:
+                            desig_map[folder_key] = desig
+                    except Exception:
+                        pass
+
             ic_names = [n for n in names if n.lower().endswith("icdiagram.xml")]
             for inner in ic_names:
                 content = zf.read(inner)
+                # Walk up the folder tree to find the nearest §Designation
+                folder = inner.rsplit("/", 1)[0] if "/" in inner else ""
+                page_desc = ""
+                parts = folder.split("/")
+                for depth in range(len(parts), 0, -1):
+                    candidate = "/".join(parts[:depth]).lower()
+                    if candidate in desig_map:
+                        page_desc = desig_map[candidate]
+                        break
                 try:
-                    r = _parse_icdiagram(content, inner)
+                    r = _parse_icdiagram(content, inner, page_desc)
                     all_params.extend(r.get("parameters", []))
                     all_curves.extend(r.get("curves", []))
                 except Exception:
@@ -224,7 +245,46 @@ _SREL_RE    = re.compile(r"SREL:\s*(.+)", re.IGNORECASE)
 _PLI_TYPES  = {"PLI10", "PLI20", "PLI05", "PLI", "POLY"}
 
 
-def _parse_icdiagram(content: bytes, filepath: str = "") -> dict[str, Any]:
+def _extract_node_designation(content: bytes) -> str:
+    """
+    Read node.xml and return the §Designation property value (e.g. 'POSN VLV D/STR GAS DR').
+
+    Actual node.xml structure (T3000):
+      <ImportNode>
+        <context>
+          <key>Â§Designation</key><value>POSN VLV D/STR GAS DR</value>
+          ...
+        </context>
+      </ImportNode>
+
+    Keys and values are sibling elements inside <context>.
+    The § sign may appear as Â§ due to double-UTF-8 encoding in the source file.
+    """
+    # Strip DOCTYPE declaration to avoid external DTD resolution
+    clean = re.sub(rb'<!DOCTYPE[^>]*>', b'', content)
+    try:
+        root = ET.fromstring(clean)
+    except ET.ParseError:
+        return ""
+
+    # Find <context> anywhere in the tree
+    ctx = root.find(".//context")
+    if ctx is None:
+        return ""
+
+    children = list(ctx)
+    for i, el in enumerate(children):
+        if el.tag != "key":
+            continue
+        key_text = (el.text or "").strip()
+        # Match §Designation regardless of § encoding variant
+        if key_text.endswith("Designation") and i + 1 < len(children) and children[i + 1].tag == "value":
+            return (children[i + 1].text or "").strip()
+
+    return ""
+
+
+def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str = "") -> dict[str, Any]:
     """
     Parse a T3000 icdiagram.xml file and extract settable parameters.
 
@@ -251,7 +311,7 @@ def _parse_icdiagram(content: bytes, filepath: str = "") -> dict[str, Any]:
     curves_acc: dict[str, dict] = {}
 
     for afi in root.iter("afi"):
-        afi_designation = afi.get("designation", "") or diagram_name
+        afi_designation = afi.get("designation", "") or page_description or diagram_name
         name_el = afi.find("name")
         if name_el is None:
             continue
@@ -288,21 +348,12 @@ def _parse_icdiagram(content: bytes, filepath: str = "") -> dict[str, Any]:
             ctx_key  = f"@{port_id}"
             raw_srel = ctx.get(ctx_key, "")
 
-            # Skip internal/layout ports with no context key and no numeric value
-            is_numeric = bool(_NUMERIC_RE.match(param_val))
-            if not raw_srel and not is_numeric:
-                continue
-
             # Skip pure display/text context entries
             if raw_srel.strip().lower() in ("text:", "text"):
                 continue
 
             m = _SREL_RE.search(raw_srel)
             srel_key = m.group(1).strip() if m else raw_srel.strip()
-
-            # For boolean ports (parameter="true") without a context key — skip
-            if param_val.lower() == "true" and not srel_key:
-                continue
 
             var_el  = port.find("variation")
             eu      = var_el.get("engUnit", "") if var_el is not None else ""
@@ -327,8 +378,9 @@ def _parse_icdiagram(content: bytes, filepath: str = "") -> dict[str, Any]:
                 "Diagram-Name":    diagram_name,
             }
 
+            kks = srel_key if srel_key else (f"{tag_name}|{item_name}" if item_name else tag_name)
             parameters.append({
-                "kks":         srel_key,
+                "kks":         kks,
                 "name":        f"{tag_name}|{item_name}" if item_name else tag_name,
                 "value":       param_val,
                 "unit":        eu,
