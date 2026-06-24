@@ -1,0 +1,8 @@
+{
+  "id": "SO141",
+  "title": "Emulsion Operation",
+  "fuel": "FO",
+  "pattern": "F",
+  "note": "Reference worksheet for FO emulsion (water injection) operation. Emulsion ratios and injection flow parameters for NOx reduction during fuel oil operation.",
+  "links": ["SO122", "SO124"]
+}

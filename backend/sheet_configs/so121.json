@@ -1,0 +1,49 @@
+{
+  "id": "SO121",
+  "title": "2.1 Base Load OTC Basis Level — Fuel Oil",
+  "fuel": "FO",
+  "pattern": "D",
+  "sections": [
+    {
+      "header": "BL-OTC Reference Temperatures",
+      "type": "scalar",
+      "rows": [
+        {"srel": "TT.ATK.HOEGL",  "unit": "°C", "desc": "BL-OTC basis level FO (hot ambient)",       "editable": true},
+        {"srel": "TT.ATK.HOEGLK", "unit": "°C", "desc": "BL-OTC basis level FO (cold ambient)",      "editable": true},
+        {"srel": "TT.ATK.D73",    "unit": "°C",  "desc": "BL-OTC correction reference temperature",   "editable": true}
+      ]
+    },
+    {
+      "header": "CAC Base Load — Correction vs Inlet Temperature",
+      "type": "poly",
+      "block_name": "MBY10DT010C|CACHO",
+      "description": "Cold ambient correction for BL-OTC (FO) vs inlet temperature",
+      "x_label": "T_inlet, °C",
+      "y_label": "CAC correction, K",
+      "points": [
+        {"x_srel": "T.VI.18", "x_label": "T1", "y_srel": "TT.ATK.D24", "y_label": "ΔOTC1"},
+        {"x_srel": "T.VI.19", "x_label": "T2", "y_srel": "TT.ATK.D25", "y_label": "ΔOTC2"},
+        {"x_srel": "T.VI.20", "x_label": "T3", "y_srel": "TT.ATK.D26", "y_label": "ΔOTC3"},
+        {"x_srel": "T.VI.21", "x_label": "T4", "y_srel": "TT.ATK.D27", "y_label": "ΔOTC4"},
+        {"x_srel": "T.VI.22", "x_label": "T5", "y_srel": "TT.ATK.D28", "y_label": "ΔOTC5"},
+        {"x_srel": "T.VI.23", "x_label": "T6", "y_srel": "TT.ATK.D29", "y_label": "ΔOTC6"}
+      ]
+    },
+    {
+      "header": "CAC Part Load (DVLHO) — Correction vs Inlet Temperature",
+      "type": "poly",
+      "block_name": "MBY10DT040C|DVLHO",
+      "description": "Cold ambient correction for PL-OTC (FO) vs inlet temperature",
+      "x_label": "T_inlet, °C",
+      "y_label": "DVLHO correction, K",
+      "points": [
+        {"x_srel": "T.VI.18", "x_label": "T1", "y_srel": "TT.ATK.D38", "y_label": "ΔOTC1"},
+        {"x_srel": "T.VI.19", "x_label": "T2", "y_srel": "TT.ATK.D39", "y_label": "ΔOTC2"},
+        {"x_srel": "T.VI.20", "x_label": "T3", "y_srel": "TT.ATK.D40", "y_label": "ΔOTC3"},
+        {"x_srel": "T.VI.21", "x_label": "T4", "y_srel": "TT.ATK.D41", "y_label": "ΔOTC4"},
+        {"x_srel": "T.VI.22", "x_label": "T5", "y_srel": "TT.ATK.D42", "y_label": "ΔOTC5"},
+        {"x_srel": "T.VI.23", "x_label": "T6", "y_srel": "TT.ATK.D43", "y_label": "ΔOTC6"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "SO133",
+  "title": "NG→FO Changeover — Scalar Parameters",
+  "fuel": "FO",
+  "pattern": "A",
+  "sections": [
+    {
+      "header": "Natural Gas → Fuel Oil Changeover Thresholds",
+      "rows": [
+        {"srel": "K.NGFO.01", "unit": "°C",   "desc": "OTC setpoint during NG→FO changeover",    "editable": true},
+        {"srel": "K.NGFO.02", "unit": "s",    "desc": "NG→FO transfer delay timer",              "editable": true},
+        {"srel": "K.NGFO.03", "unit": "kg/s", "desc": "FO start amount when NG→FO",              "editable": true},
+        {"srel": "K.NGFO.04", "unit": "kg/s", "desc": "NG minimum during FO ramp-up",            "editable": true},
+        {"srel": "K.NGFO.05", "unit": "s",    "desc": "NG purge timer after switchover",         "editable": true}
+      ]
+    }
+  ]
+}

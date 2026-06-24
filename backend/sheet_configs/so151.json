@@ -1,0 +1,19 @@
+{
+  "id": "SO151",
+  "title": "Protection Parameters — Fuel Oil",
+  "fuel": "FO",
+  "pattern": "A",
+  "sections": [
+    {
+      "header": "FO Operation Protection Limits",
+      "rows": [
+        {"srel": "T.PROT.FO.01", "unit": "°C",   "desc": "Maximum FO diffusion OTC limit",          "editable": true},
+        {"srel": "T.PROT.FO.02", "unit": "°C",   "desc": "Maximum FO premix OTC limit",             "editable": true},
+        {"srel": "F.PROT.FO.01", "unit": "kg/s", "desc": "Maximum FO diffusion flow protection",    "editable": true},
+        {"srel": "F.PROT.FO.02", "unit": "kg/s", "desc": "Minimum FO diffusion flow protection",    "editable": true},
+        {"srel": "P.PROT.FO.01", "unit": "bar",  "desc": "FO supply pressure minimum",              "editable": true},
+        {"srel": "P.PROT.FO.02", "unit": "bar",  "desc": "FO return pressure maximum",              "editable": true}
+      ]
+    }
+  ]
+}

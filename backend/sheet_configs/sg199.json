@@ -1,0 +1,20 @@
+{
+  "id": "SG199",
+  "title": "Fleet: UAOV",
+  "fuel": "FG",
+  "pattern": "F",
+  "message": "Unified Auxiliary Offset Values (UAOV) — fleet-level correction factors for emission optimization. Determined per turbine during emissions measurement.",
+  "sections": [
+    {
+      "header": "UAOV Base Parameters",
+      "rows": [
+        {"label": "UAOV base offset",         "srel": "UAOV.01", "unit": "-", "desc": "Base UAOV offset value"},
+        {"label": "UAOV at idle load",         "srel": "UAOV.02", "unit": "-", "desc": "Correction at idle operating point"},
+        {"label": "UAOV at part load",         "srel": "UAOV.03", "unit": "-", "desc": "Correction at part load"},
+        {"label": "UAOV at base load",         "srel": "UAOV.04", "unit": "-", "desc": "Correction at base load"},
+        {"label": "UAOV correction gain",      "srel": "UAOV.05", "unit": "-", "desc": "Proportional gain for UAOV controller"}
+      ],
+      "note": "UAOV values are set by commissioning engineer after emission measurement. See SG199b for correction maps."
+    }
+  ]
+}

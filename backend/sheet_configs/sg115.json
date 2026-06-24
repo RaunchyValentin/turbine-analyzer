@@ -1,0 +1,50 @@
+{
+  "id": "SG115",
+  "title": "2.3 Premix Gas as Function of Speed",
+  "fuel": "FG",
+  "pattern": "C",
+  "mode_toggle": {
+    "standard": "Standard (VBNTM)",
+    "split": "Split Control (VBFRA)"
+  },
+  "blocks": [
+    {
+      "name": "MIG.VBNTM",
+      "description": "Premix gas mass flow vs speed — Standard mode",
+      "x_label": "n, Hz",
+      "y_label": "Premix Gas Amount, kg/s",
+      "points": [
+        {"x_srel": "VBNTM.A1",  "x_label": "n1",  "y_srel": "VBNTM.B1",  "y_label": "mVB1"},
+        {"x_srel": "VBNTM.A2",  "x_label": "n2",  "y_srel": "VBNTM.B2",  "y_label": "mVB2"},
+        {"x_srel": "VBNTM.A3",  "x_label": "n3",  "y_srel": "VBNTM.B3",  "y_label": "mVB3"},
+        {"x_srel": "VBNTM.A4",  "x_label": "n4",  "y_srel": "VBNTM.B4",  "y_label": "mVB4"},
+        {"x_srel": "VBNTM.A5",  "x_label": "n5",  "y_srel": "VBNTM.B5",  "y_label": "mVB5"},
+        {"x_srel": "VBNTM.A6",  "x_label": "n6",  "y_srel": "VBNTM.B6",  "y_label": "mVB6"},
+        {"x_srel": "VBNTM.A7",  "x_label": "n7",  "y_srel": "VBNTM.B7",  "y_label": "mVB7"},
+        {"x_srel": "VBNTM.A8",  "x_label": "n8",  "y_srel": "VBNTM.B8",  "y_label": "mVB8"},
+        {"x_srel": "VBNTM.A9",  "x_label": "n9",  "y_srel": "VBNTM.B9",  "y_label": "mVB9"},
+        {"x_srel": "VBNTM.A10", "x_label": "n10", "y_srel": "VBNTM.B10", "y_label": "mVB10"}
+      ]
+    }
+  ],
+  "blocks_split": [
+    {
+      "name": "MIG.VBFRA",
+      "description": "Premix gas split ratio vs speed — Split Control mode",
+      "x_label": "n, Hz",
+      "y_label": "Premix Gas Split, %",
+      "points": [
+        {"x_srel": "VBFRA.A1",  "x_label": "n1",  "y_srel": "VBFRA.B1",  "y_label": "split1"},
+        {"x_srel": "VBFRA.A2",  "x_label": "n2",  "y_srel": "VBFRA.B2",  "y_label": "split2"},
+        {"x_srel": "VBFRA.A3",  "x_label": "n3",  "y_srel": "VBFRA.B3",  "y_label": "split3"},
+        {"x_srel": "VBFRA.A4",  "x_label": "n4",  "y_srel": "VBFRA.B4",  "y_label": "split4"},
+        {"x_srel": "VBFRA.A5",  "x_label": "n5",  "y_srel": "VBFRA.B5",  "y_label": "split5"},
+        {"x_srel": "VBFRA.A6",  "x_label": "n6",  "y_srel": "VBFRA.B6",  "y_label": "split6"},
+        {"x_srel": "VBFRA.A7",  "x_label": "n7",  "y_srel": "VBFRA.B7",  "y_label": "split7"},
+        {"x_srel": "VBFRA.A8",  "x_label": "n8",  "y_srel": "VBFRA.B8",  "y_label": "split8"},
+        {"x_srel": "VBFRA.A9",  "x_label": "n9",  "y_srel": "VBFRA.B9",  "y_label": "split9"},
+        {"x_srel": "VBFRA.A10", "x_label": "n10", "y_srel": "VBFRA.B10", "y_label": "split10"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "id": "SO130",
+  "title": "FO Change Over — Notes",
+  "fuel": "FO",
+  "pattern": "F",
+  "note": "Reference notes for FO↔NG fuel changeover procedure. See SO131a/SO131b for scalar and polynomial settings.",
+  "links": ["SO131a", "SO131b", "SO132a", "SO133"]
+}

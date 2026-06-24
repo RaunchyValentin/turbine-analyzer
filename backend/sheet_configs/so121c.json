@@ -1,0 +1,36 @@
+{
+  "id": "SO121c",
+  "title": "2.2 Part Load OTC in Fuel Oil Operation",
+  "fuel": "FO",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MBY10DT050C|DVLHO",
+      "description": "PL-OTC deviation (DVLHO) vs inlet temperature — low load range",
+      "x_label": "T_inlet, °C",
+      "y_label": "DVLHO, K",
+      "points": [
+        {"x_srel": "T.VI.18", "x_label": "T1", "y_srel": "TT.ATK.D44", "y_label": "dOTC1"},
+        {"x_srel": "T.VI.19", "x_label": "T2", "y_srel": "TT.ATK.D45", "y_label": "dOTC2"},
+        {"x_srel": "T.VI.20", "x_label": "T3", "y_srel": "TT.ATK.D46", "y_label": "dOTC3"},
+        {"x_srel": "T.VI.21", "x_label": "T4", "y_srel": "TT.ATK.D47", "y_label": "dOTC4"},
+        {"x_srel": "T.VI.22", "x_label": "T5", "y_srel": "TT.ATK.D48", "y_label": "dOTC5"},
+        {"x_srel": "T.VI.23", "x_label": "T6", "y_srel": "TT.ATK.D49", "y_label": "dOTC6"}
+      ]
+    },
+    {
+      "name": "MBY10DT060C|DVLHO",
+      "description": "PL-OTC deviation (DVLHO) vs inlet temperature — high load range",
+      "x_label": "T_inlet, °C",
+      "y_label": "DVLHO high, K",
+      "points": [
+        {"x_srel": "T.VI.18", "x_label": "T1", "y_srel": "TT.ATK.D50", "y_label": "dOTC1"},
+        {"x_srel": "T.VI.19", "x_label": "T2", "y_srel": "TT.ATK.D51", "y_label": "dOTC2"},
+        {"x_srel": "T.VI.20", "x_label": "T3", "y_srel": "TT.ATK.D52", "y_label": "dOTC3"},
+        {"x_srel": "T.VI.21", "x_label": "T4", "y_srel": "TT.ATK.D53", "y_label": "dOTC4"},
+        {"x_srel": "T.VI.22", "x_label": "T5", "y_srel": "TT.ATK.D60", "y_label": "dOTC5"},
+        {"x_srel": "T.VI.23", "x_label": "T6", "y_srel": "TT.ATK.D61", "y_label": "dOTC6"}
+      ]
+    }
+  ]
+}

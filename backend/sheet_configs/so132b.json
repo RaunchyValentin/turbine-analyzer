@@ -1,0 +1,22 @@
+{
+  "id": "SO132b",
+  "title": "FO→NG Changeover — Polynomial",
+  "fuel": "FO",
+  "pattern": "B",
+  "blocks": [
+    {
+      "name": "FONG.CURVE",
+      "description": "FO→NG transition ramp vs load",
+      "x_label": "Load, MW",
+      "y_label": "FO→NG ramp, kg/s/s",
+      "points": [
+        {"x_srel": "FONG.A1", "x_label": "L1", "y_srel": "FONG.B1", "y_label": "R1"},
+        {"x_srel": "FONG.A2", "x_label": "L2", "y_srel": "FONG.B2", "y_label": "R2"},
+        {"x_srel": "FONG.A3", "x_label": "L3", "y_srel": "FONG.B3", "y_label": "R3"},
+        {"x_srel": "FONG.A4", "x_label": "L4", "y_srel": "FONG.B4", "y_label": "R4"},
+        {"x_srel": "FONG.A5", "x_label": "L5", "y_srel": "FONG.B5", "y_label": "R5"},
+        {"x_srel": "FONG.A6", "x_label": "L6", "y_srel": "FONG.B6", "y_label": "R6"}
+      ]
+    }
+  ]
+}

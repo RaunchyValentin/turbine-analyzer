@@ -1,0 +1,25 @@
+{
+  "id": "SG101b",
+  "title": "1. General (new logic)",
+  "fuel": "FG",
+  "pattern": "E",
+  "sections": [
+    {
+      "header": "Startup Sequence — New Control Logic",
+      "rows": [
+        {"is_section": true, "label": "— Phase 1: Start & Ignition —"},
+        {"srel": "S.TURB.09",   "srel_speed": "S.TURB.09",   "speed": "", "otc": "", "igv": "", "desc": "Ignition speed"},
+        {"srel": "GATKFL.X",    "speed": "", "otc": "", "igv": "", "desc": "Flame recognition threshold (K above baseline)"},
+        {"srel": "K.IGNITE.04", "speed": "", "otc": "", "igv": "", "desc": "End of ignition — acceleration phase begins"},
+        {"is_section": true, "label": "— Phase 2: Acceleration —"},
+        {"srel": "S.TURB.50",   "srel_speed": "S.TURB.50",   "speed": "", "otc": "", "igv": "", "desc": "IGV open setpoint (new logic)"},
+        {"srel": "S.TURB.55",   "srel_speed": "S.TURB.55",   "speed": "", "otc": "", "igv": "", "desc": "Premix transfer point (new logic)"},
+        {"srel": "S.TURB.60",   "srel_speed": "S.TURB.60",   "speed": "", "otc": "", "igv": "", "desc": "Rated speed synchronisation"},
+        {"is_section": true, "label": "— Phase 3: Load —"},
+        {"srel": "S.TURB.65",   "srel_speed": "S.TURB.65",   "speed": "", "otc": "", "igv": "", "desc": "Minimum sustainable load"},
+        {"srel": "S.TURB.70",   "srel_speed": "S.TURB.70",   "speed": "", "otc": "", "igv": "", "desc": "IGV fully open"},
+        {"srel": "S.TURB.75",   "srel_speed": "S.TURB.75",   "speed": "", "otc": "", "igv": "", "desc": "Base load / TOTC active"}
+      ]
+    }
+  ]
+}

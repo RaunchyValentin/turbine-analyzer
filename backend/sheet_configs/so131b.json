@@ -1,0 +1,22 @@
+{
+  "id": "SO131b",
+  "title": "FO↔NG General — Polynomial",
+  "fuel": "FO",
+  "pattern": "B",
+  "blocks": [
+    {
+      "name": "WECHSEL.CURVE",
+      "description": "Fuel changeover ramp curve vs load",
+      "x_label": "Load, MW",
+      "y_label": "Ramp rate, MW/min",
+      "points": [
+        {"x_srel": "WECHSEL.A1", "x_label": "L1", "y_srel": "WECHSEL.B1", "y_label": "R1"},
+        {"x_srel": "WECHSEL.A2", "x_label": "L2", "y_srel": "WECHSEL.B2", "y_label": "R2"},
+        {"x_srel": "WECHSEL.A3", "x_label": "L3", "y_srel": "WECHSEL.B3", "y_label": "R3"},
+        {"x_srel": "WECHSEL.A4", "x_label": "L4", "y_srel": "WECHSEL.B4", "y_label": "R4"},
+        {"x_srel": "WECHSEL.A5", "x_label": "L5", "y_srel": "WECHSEL.B5", "y_label": "R5"},
+        {"x_srel": "WECHSEL.A6", "x_label": "L6", "y_srel": "WECHSEL.B6", "y_label": "R6"}
+      ]
+    }
+  ]
+}

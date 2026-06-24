@@ -1,0 +1,17 @@
+{
+  "id": "SO131a",
+  "title": "FO↔NG General — Scalar Parameters",
+  "fuel": "FO",
+  "pattern": "A",
+  "sections": [
+    {
+      "header": "Fuel Changeover General Settings",
+      "rows": [
+        {"srel": "K.WECHSEL.01", "unit": "s",    "desc": "FO↔NG changeover timer 1",        "editable": true},
+        {"srel": "K.WECHSEL.02", "unit": "s",    "desc": "FO↔NG changeover timer 2",        "editable": true},
+        {"srel": "K.WECHSEL.03", "unit": "MW",   "desc": "Max load during changeover",      "editable": true},
+        {"srel": "K.WECHSEL.04", "unit": "MW",   "desc": "Min load for changeover enable",  "editable": true}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "SG183",
+  "title": "Fleet: BL-OTC",
+  "fuel": "FG",
+  "pattern": "F",
+  "message": "Fleet comparison — base load turbine outlet temperature control parameters.",
+  "sections": [
+    {
+      "header": "Base Load OTC Parameters",
+      "rows": [
+        {"label": "BL OTC setpoint",         "srel": "T.OTC.BL",  "unit": "°C", "desc": "Base load turbine outlet temperature setpoint"},
+        {"label": "BL OTC minimum",          "srel": "T.OTC.BLM", "unit": "°C", "desc": "Base load OTC lower limit (alarm)"},
+        {"label": "BL OTC maximum (trip)",   "srel": "T.OTC.BLP", "unit": "°C", "desc": "Base load OTC upper limit (trip)"},
+        {"label": "IGV OTC limit",           "srel": "T.OTC.IGV", "unit": "°C", "desc": "OTC limit at IGV operating line"},
+        {"label": "Delta OTC load protect",  "srel": "T.OTC.DLP", "unit": "K",  "desc": "Differential OTC for load protection"}
+      ],
+      "note": "Full TOTC polynomial is on SG131/SG132."
+    }
+  ]
+}

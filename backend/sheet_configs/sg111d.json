@@ -1,0 +1,64 @@
+{
+  "id": "SG111d",
+  "title": "2.3 Run Up Trim Controller OTC",
+  "fuel": "FG",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MBY10DU040C|F4",
+      "description": "Upper OTC Level — run-up trim (F4 block)",
+      "x_label": "n, Hz",
+      "y_label": "OTC upper, °C",
+      "points": [
+        {"x_srel": "S.TURB.362", "x_label": "n1",  "y_srel": "TT.ATK.336", "y_label": "OTC1"},
+        {"x_srel": "S.TURB.363", "x_label": "n2",  "y_srel": "TT.ATK.337", "y_label": "OTC2"},
+        {"x_srel": "S.TURB.364", "x_label": "n3",  "y_srel": "TT.ATK.338", "y_label": "OTC3"},
+        {"x_srel": "S.TURB.365", "x_label": "n4",  "y_srel": "TT.ATK.339", "y_label": "OTC4"},
+        {"x_srel": "S.TURB.366", "x_label": "n5",  "y_srel": "TT.ATK.340", "y_label": "OTC5"},
+        {"x_srel": "S.TURB.367", "x_label": "n6",  "y_srel": "TT.ATK.341", "y_label": "OTC6"},
+        {"x_srel": "S.TURB.368", "x_label": "n7",  "y_srel": "TT.ATK.342", "y_label": "OTC7"},
+        {"x_srel": "S.TURB.369", "x_label": "n8",  "y_srel": "TT.ATK.343", "y_label": "OTC8"},
+        {"x_srel": "S.TURB.370", "x_label": "n9",  "y_srel": "TT.ATK.344", "y_label": "OTC9"},
+        {"x_srel": "S.TURB.371", "x_label": "n10", "y_srel": "TT.ATK.345", "y_label": "OTC10"},
+        {"x_srel": "S.TURB.372", "x_label": "n11", "y_srel": "TT.ATK.346", "y_label": "OTC11"},
+        {"x_srel": "S.TURB.373", "x_label": "n12", "y_srel": "TT.ATK.347", "y_label": "OTC12"},
+        {"x_srel": "S.TURB.374", "x_label": "n13", "y_srel": "TT.ATK.348", "y_label": "OTC13"},
+        {"x_srel": "S.TURB.375", "x_label": "n14", "y_srel": "TT.ATK.349", "y_label": "OTC14"},
+        {"x_srel": "S.TURB.376", "x_label": "n15", "y_srel": "TT.ATK.350", "y_label": "OTC15"},
+        {"x_srel": "S.TURB.377", "x_label": "n16", "y_srel": "TT.ATK.351", "y_label": "OTC16"},
+        {"x_srel": "S.TURB.378", "x_label": "n17", "y_srel": "TT.ATK.352", "y_label": "OTC17"},
+        {"x_srel": "S.TURB.379", "x_label": "n18", "y_srel": "TT.ATK.353", "y_label": "OTC18"},
+        {"x_srel": "S.TURB.380", "x_label": "n19", "y_srel": "TT.ATK.354", "y_label": "OTC19"},
+        {"x_srel": "S.TURB.381", "x_label": "n20", "y_srel": "TT.ATK.355", "y_label": "OTC20"}
+      ]
+    },
+    {
+      "name": "MBY10DU040C|F6",
+      "description": "Lower OTC Level — run-up trim (F6 block)",
+      "x_label": "n, Hz",
+      "y_label": "OTC lower, °C",
+      "points": [
+        {"x_srel": "S.TURB.342", "x_label": "n1",  "y_srel": "TT.ATK.316", "y_label": "OTC1"},
+        {"x_srel": "S.TURB.343", "x_label": "n2",  "y_srel": "TT.ATK.317", "y_label": "OTC2"},
+        {"x_srel": "S.TURB.344", "x_label": "n3",  "y_srel": "TT.ATK.318", "y_label": "OTC3"},
+        {"x_srel": "S.TURB.345", "x_label": "n4",  "y_srel": "TT.ATK.319", "y_label": "OTC4"},
+        {"x_srel": "S.TURB.346", "x_label": "n5",  "y_srel": "TT.ATK.320", "y_label": "OTC5"},
+        {"x_srel": "S.TURB.347", "x_label": "n6",  "y_srel": "TT.ATK.321", "y_label": "OTC6"},
+        {"x_srel": "S.TURB.348", "x_label": "n7",  "y_srel": "TT.ATK.322", "y_label": "OTC7"},
+        {"x_srel": "S.TURB.349", "x_label": "n8",  "y_srel": "TT.ATK.323", "y_label": "OTC8"},
+        {"x_srel": "S.TURB.350", "x_label": "n9",  "y_srel": "TT.ATK.324", "y_label": "OTC9"},
+        {"x_srel": "S.TURB.351", "x_label": "n10", "y_srel": "TT.ATK.325", "y_label": "OTC10"},
+        {"x_srel": "S.TURB.352", "x_label": "n11", "y_srel": "TT.ATK.326", "y_label": "OTC11"},
+        {"x_srel": "S.TURB.353", "x_label": "n12", "y_srel": "TT.ATK.327", "y_label": "OTC12"},
+        {"x_srel": "S.TURB.354", "x_label": "n13", "y_srel": "TT.ATK.328", "y_label": "OTC13"},
+        {"x_srel": "S.TURB.355", "x_label": "n14", "y_srel": "TT.ATK.329", "y_label": "OTC14"},
+        {"x_srel": "S.TURB.356", "x_label": "n15", "y_srel": "TT.ATK.330", "y_label": "OTC15"},
+        {"x_srel": "S.TURB.357", "x_label": "n16", "y_srel": "TT.ATK.331", "y_label": "OTC16"},
+        {"x_srel": "S.TURB.358", "x_label": "n17", "y_srel": "TT.ATK.332", "y_label": "OTC17"},
+        {"x_srel": "S.TURB.359", "x_label": "n18", "y_srel": "TT.ATK.333", "y_label": "OTC18"},
+        {"x_srel": "S.TURB.360", "x_label": "n19", "y_srel": "TT.ATK.334", "y_label": "OTC19"},
+        {"x_srel": "S.TURB.361", "x_label": "n20", "y_srel": "TT.ATK.335", "y_label": "OTC20"}
+      ]
+    }
+  ]
+}

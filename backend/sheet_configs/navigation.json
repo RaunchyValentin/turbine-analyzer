@@ -1,0 +1,149 @@
+{
+  "tracks": [
+    {
+      "id": "FO",
+      "label": "Fuel Oil",
+      "groups": [
+        {
+          "id": "SO10x",
+          "label": "General",
+          "sheets": []
+        },
+        {
+          "id": "SO11x",
+          "label": "Fuel Oil Start",
+          "sheets": [
+            {"id": "SO111",  "label": "Ignition and Start",                          "pattern": "A", "priority": 2},
+            {"id": "SO111b", "label": "Ignition and Start Up",  "tag": "new logic",  "pattern": "A", "priority": 1},
+            {"id": "SO111c", "label": "Run Up Controller",      "tag": "new logic",  "pattern": "B", "priority": 1},
+            {"id": "SO111d", "label": "Run Up Trim Controller OTC",   "tag": "new logic", "pattern": "C", "priority": 1},
+            {"id": "SO111e", "label": "Run Up Trim Controller Speed", "tag": "new logic", "pattern": "D", "priority": 1}
+          ]
+        },
+        {
+          "id": "SO12x",
+          "label": "Fuel Oil Dry",
+          "sheets": [
+            {"id": "SO121",  "label": "Base and Part Load OTC",                                         "pattern": "D", "priority": 2},
+            {"id": "SO121b", "label": "Variable Base Load OTC and IGV (\"Buster\")", "tag": "new logic","pattern": "C", "priority": 2},
+            {"id": "SO121c", "label": "Part Load OTC in Fuel Oil Operation",                            "pattern": "C", "priority": 2},
+            {"id": "SO122",  "label": "Fuel Oil Diffusion Feed Amount",                                 "pattern": "B", "priority": 2},
+            {"id": "SO122b", "label": "Fuel Oil Diffusion Feed Flow for Premix Operation", "tag": "new logic", "pattern": "C", "priority": 2},
+            {"id": "SO123",  "label": "Fuel Oil Diffusion Operation",                                   "pattern": "A", "priority": 2},
+            {"id": "SO124",  "label": "Suggestion for Pilot Oil-Sheet",                                 "pattern": "D", "priority": 2},
+            {"id": "SO124b", "label": "Variable Premix Oil Proportion",              "tag": "new logic","pattern": "C", "priority": 2},
+            {"id": "SO124x", "label": "Pilot Oil Dry Worksheet",                                        "pattern": "F", "priority": 2}
+          ]
+        },
+        {
+          "id": "SO13x",
+          "label": "Fuel Oil Change Over",
+          "sheets": [
+            {"id": "SO130",  "label": "Notes",              "pattern": "F", "priority": 3},
+            {"id": "SO131a", "label": "General",            "pattern": "A", "priority": 3},
+            {"id": "SO131b", "label": "General",            "pattern": "B", "priority": 3},
+            {"id": "SO132a", "label": "FO>>NG",             "pattern": "A", "priority": 3},
+            {"id": "SO132b", "label": "FO>>NG",             "pattern": "B", "priority": 3},
+            {"id": "SO133",  "label": "NG>>FO",             "pattern": "A", "priority": 3},
+            {"id": "SO134",  "label": "FO-Adding-Sequence", "pattern": "F", "priority": 3}
+          ]
+        },
+        {
+          "id": "SO14x",
+          "label": "Fuel Oil Emulsion Operation",
+          "sheets": [
+            {"id": "SO141", "label": "EMU", "pattern": "F", "priority": 3}
+          ]
+        },
+        {
+          "id": "SO15x",
+          "label": "Protection (FO)",
+          "sheets": [
+            {"id": "SO151", "label": "Protection Parameters", "pattern": "A", "priority": 3}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "FG",
+      "label": "Fuel Gas",
+      "groups": [
+        {
+          "id": "SG10x",
+          "label": "General",
+          "sheets": [
+            {"id": "SG101",  "label": "1. General — Service GTs",      "pattern": "E", "priority": 2},
+            {"id": "SG101b", "label": "1. General (new logic)",         "pattern": "E", "priority": 2}
+          ]
+        },
+        {
+          "id": "SG11x",
+          "label": "Ignition & Start Up",
+          "sheets": [
+            {"id": "SG111",  "label": "2. Ignition and Start Up (OLD)", "pattern": "A", "priority": 3},
+            {"id": "SG111b", "label": "2. Ignition and Start Up",       "pattern": "D", "priority": 1},
+            {"id": "SG111c", "label": "2.2 Run Up Controller",          "pattern": "C", "priority": 1},
+            {"id": "SG111d", "label": "2.3 Run Up Trim Controller OTC", "pattern": "C", "priority": 1},
+            {"id": "SG111e", "label": "2.4 Run Up Trim Controller Speed","pattern": "D", "priority": 1},
+            {"id": "SG115",  "label": "2.3 Premix Gas as Function of Speed", "pattern": "C", "priority": 2},
+            {"id": "SG116",  "label": "2.4 Burnout Correction",         "pattern": "B", "priority": 2}
+          ]
+        },
+        {
+          "id": "SG12x",
+          "label": "Pilot Gas Flow",
+          "sheets": [
+            {"id": "SG121",  "label": "3. Pilot Gas Flow (cold gas)",            "pattern": "C", "priority": 1},
+            {"id": "SG121b", "label": "3. Pilot Gas Flow (hot gas)",             "pattern": "C", "priority": 1},
+            {"id": "SG122",  "label": "3.3 Pilot Gas vs Inlet Temperature",      "pattern": "B", "priority": 1},
+            {"id": "SG123",  "label": "3. Pilot Gas Flow (Split Controller)",     "pattern": "C", "priority": 3},
+            {"id": "SG124",  "label": "3.3 Advanced SMCP",                        "pattern": "F", "priority": 3},
+            {"id": "SG125",  "label": "3. Pilot Gas with LHV Correction",         "pattern": "C", "priority": 3},
+            {"id": "SG125b", "label": "3. Pilot Gas with LHV Correction (hot)",   "pattern": "C", "priority": 3},
+            {"id": "SG126",  "label": "3.3a Pilot Gas vs Inlet Temperature (10pt)","pattern": "B", "priority": 3}
+          ]
+        },
+        {
+          "id": "SG13x",
+          "label": "TOTC",
+          "sheets": [
+            {"id": "SG131", "label": "4. TOTC Polynoms",               "pattern": "F", "priority": 1},
+            {"id": "SG132", "label": "4. TOTC Polynoms (continuation)", "pattern": "D", "priority": 1}
+          ]
+        },
+        {
+          "id": "SG14x",
+          "label": "Load Operations",
+          "sheets": [
+            {"id": "SG141", "label": "5. Load Rejection", "pattern": "C", "priority": 2}
+          ]
+        },
+        {
+          "id": "SG15x",
+          "label": "Protection (FG)",
+          "sheets": [
+            {"id": "SG151", "label": "6. Protection", "pattern": "A", "priority": 2}
+          ]
+        },
+        {
+          "id": "SG16x",
+          "label": "SMC",
+          "sheets": [
+            {"id": "SG161",  "label": "7. SMC",               "pattern": "F", "priority": 3},
+            {"id": "SG161b", "label": "7. SMC (continuation)", "pattern": "F", "priority": 3}
+          ]
+        },
+        {
+          "id": "SG18x",
+          "label": "Fleet Analysis",
+          "sheets": [
+            {"id": "SG182",  "label": "Fleet: Pilot Gas Settings", "pattern": "F", "priority": 4},
+            {"id": "SG183",  "label": "Fleet: BL-OTC",             "pattern": "F", "priority": 4},
+            {"id": "SG199",  "label": "Fleet: UAOV",               "pattern": "F", "priority": 4},
+            {"id": "SG199b", "label": "Fleet: UAOV (continuation)","pattern": "F", "priority": 4}
+          ]
+        }
+      ]
+    }
+  ]
+}

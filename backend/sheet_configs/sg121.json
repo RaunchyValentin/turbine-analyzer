@@ -1,0 +1,44 @@
+{
+  "id": "SG121",
+  "title": "3. Pilot Gas Flow vs OTC (cold gas)",
+  "fuel": "FG",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MSPG.F6L",
+      "description": "Pilot gas — cold gas loading curve (OTC-based)",
+      "x_label": "OTC, °C",
+      "y_label": "m PG, kg/s",
+      "points": [
+        {"x_srel": "F6L.A1",  "x_label": "OTC1",  "y_srel": "F6L.B1",  "y_label": "mPG1"},
+        {"x_srel": "F6L.A2",  "x_label": "OTC2",  "y_srel": "F6L.B2",  "y_label": "mPG2"},
+        {"x_srel": "F6L.A3",  "x_label": "OTC3",  "y_srel": "F6L.B3",  "y_label": "mPG3"},
+        {"x_srel": "F6L.A4",  "x_label": "OTC4",  "y_srel": "F6L.B4",  "y_label": "mPG4"},
+        {"x_srel": "F6L.A5",  "x_label": "OTC5",  "y_srel": "F6L.B5",  "y_label": "mPG5"},
+        {"x_srel": "F6L.A6",  "x_label": "OTC6",  "y_srel": "F6L.B6",  "y_label": "mPG6"},
+        {"x_srel": "F6L.A7",  "x_label": "OTC7",  "y_srel": "F6L.B7",  "y_label": "mPG7"},
+        {"x_srel": "F6L.A8",  "x_label": "OTC8",  "y_srel": "F6L.B8",  "y_label": "mPG8"},
+        {"x_srel": "F6L.A9",  "x_label": "OTC9",  "y_srel": "F6L.B9",  "y_label": "mPG9"},
+        {"x_srel": "F6L.A10", "x_label": "OTC10", "y_srel": "F6L.B10", "y_label": "mPG10"}
+      ]
+    },
+    {
+      "name": "MSPG.F6LE",
+      "description": "Pilot gas — cold gas unloading curve (OTC-based)",
+      "x_label": "OTC, °C",
+      "y_label": "m PG, kg/s",
+      "points": [
+        {"x_srel": "F6LE.A1",  "x_label": "OTC1",  "y_srel": "F6LE.B1",  "y_label": "mPG1"},
+        {"x_srel": "F6LE.A2",  "x_label": "OTC2",  "y_srel": "F6LE.B2",  "y_label": "mPG2"},
+        {"x_srel": "F6LE.A3",  "x_label": "OTC3",  "y_srel": "F6LE.B3",  "y_label": "mPG3"},
+        {"x_srel": "F6LE.A4",  "x_label": "OTC4",  "y_srel": "F6LE.B4",  "y_label": "mPG4"},
+        {"x_srel": "F6LE.A5",  "x_label": "OTC5",  "y_srel": "F6LE.B5",  "y_label": "mPG5"},
+        {"x_srel": "F6LE.A6",  "x_label": "OTC6",  "y_srel": "F6LE.B6",  "y_label": "mPG6"},
+        {"x_srel": "F6LE.A7",  "x_label": "OTC7",  "y_srel": "F6LE.B7",  "y_label": "mPG7"},
+        {"x_srel": "F6LE.A8",  "x_label": "OTC8",  "y_srel": "F6LE.B8",  "y_label": "mPG8"},
+        {"x_srel": "F6LE.A9",  "x_label": "OTC9",  "y_srel": "F6LE.B9",  "y_label": "mPG9"},
+        {"x_srel": "F6LE.A10", "x_label": "OTC10", "y_srel": "F6LE.B10", "y_label": "mPG10"}
+      ]
+    }
+  ]
+}

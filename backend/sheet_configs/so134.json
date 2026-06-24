@@ -1,0 +1,8 @@
+{
+  "id": "SO134",
+  "title": "FO Adding Sequence",
+  "fuel": "FO",
+  "pattern": "F",
+  "note": "Reference sequence diagram for FO fuel addition during NG operation. Defines timing and quantity ramps for adding FO diffusion and premix flows while maintaining NG operation.",
+  "links": ["SO132a", "SO133", "SO124"]
+}

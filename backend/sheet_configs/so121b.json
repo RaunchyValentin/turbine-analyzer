@@ -1,0 +1,36 @@
+{
+  "id": "SO121b",
+  "title": "2.1 Variable Base Load OTC and IGV (Buster)",
+  "fuel": "FO",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MBY10DT020C|CACHO",
+      "description": "BL-OTC hot ambient correction vs inlet temperature",
+      "x_label": "T_inlet, °C",
+      "y_label": "ΔOTC hot, K",
+      "points": [
+        {"x_srel": "T.VI.24", "x_label": "T1", "y_srel": "TT.ATK.D54", "y_label": "ΔOTC1"},
+        {"x_srel": "T.VI.25", "x_label": "T2", "y_srel": "TT.ATK.D55", "y_label": "ΔOTC2"},
+        {"x_srel": "T.VI.26", "x_label": "T3", "y_srel": "TT.ATK.D56", "y_label": "ΔOTC3"},
+        {"x_srel": "T.VI.27", "x_label": "T4", "y_srel": "TT.ATK.D57", "y_label": "ΔOTC4"},
+        {"x_srel": "T.VI.28", "x_label": "T5", "y_srel": "TT.ATK.D58", "y_label": "ΔOTC5"},
+        {"x_srel": "T.VI.29", "x_label": "T6", "y_srel": "TT.ATK.D59", "y_label": "ΔOTC6"}
+      ]
+    },
+    {
+      "name": "MBY10DT030C|CACHO",
+      "description": "BL-OTC hot ambient correction (alternate) vs inlet temperature",
+      "x_label": "T_inlet, °C",
+      "y_label": "ΔOTC hot alt, K",
+      "points": [
+        {"x_srel": "T.VI.24", "x_label": "T1", "y_srel": "TT.ATK.D64", "y_label": "ΔOTC1"},
+        {"x_srel": "T.VI.25", "x_label": "T2", "y_srel": "TT.ATK.D65", "y_label": "ΔOTC2"},
+        {"x_srel": "T.VI.26", "x_label": "T3", "y_srel": "TT.ATK.D66", "y_label": "ΔOTC3"},
+        {"x_srel": "T.VI.27", "x_label": "T4", "y_srel": "TT.ATK.D67", "y_label": "ΔOTC4"},
+        {"x_srel": "T.VI.28", "x_label": "T5", "y_srel": "TT.ATK.D68", "y_label": "ΔOTC5"},
+        {"x_srel": "T.VI.29", "x_label": "T6", "y_srel": "TT.ATK.D69", "y_label": "ΔOTC6"}
+      ]
+    }
+  ]
+}

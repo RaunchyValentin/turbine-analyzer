@@ -1,0 +1,34 @@
+{
+  "id": "SG161b",
+  "title": "7. SMC (continuation)",
+  "fuel": "FG",
+  "pattern": "F",
+  "message": "SMC continuation — advanced gain parameters and polynomial correction coefficients.",
+  "sections": [
+    {
+      "header": "SMC Gain Parameters",
+      "rows": [
+        {"label": "SMC.G01", "srel": "SMC.G01", "unit": "-", "desc": "Controller gain — idle to step 1"},
+        {"label": "SMC.G02", "srel": "SMC.G02", "unit": "-", "desc": "Controller gain — step 1 to 2"},
+        {"label": "SMC.G03", "srel": "SMC.G03", "unit": "-", "desc": "Controller gain — step 2 to 3"},
+        {"label": "SMC.G04", "srel": "SMC.G04", "unit": "-", "desc": "Controller gain — step 3 to 4"},
+        {"label": "SMC.G05", "srel": "SMC.G05", "unit": "-", "desc": "Integration gain"},
+        {"label": "SMC.G06", "srel": "SMC.G06", "unit": "-", "desc": "Derivative gain"}
+      ]
+    },
+    {
+      "header": "SMC Polynomial Correction Coefficients",
+      "rows": [
+        {"label": "SMC.C01", "srel": "SMC.C01", "unit": "-", "desc": "Polynomial coefficient 1"},
+        {"label": "SMC.C02", "srel": "SMC.C02", "unit": "-", "desc": "Polynomial coefficient 2"},
+        {"label": "SMC.C03", "srel": "SMC.C03", "unit": "-", "desc": "Polynomial coefficient 3"},
+        {"label": "SMC.C04", "srel": "SMC.C04", "unit": "-", "desc": "Polynomial coefficient 4"},
+        {"label": "SMC.C05", "srel": "SMC.C05", "unit": "-", "desc": "Polynomial coefficient 5"},
+        {"label": "SMC.C06", "srel": "SMC.C06", "unit": "-", "desc": "Polynomial coefficient 6"},
+        {"label": "SMC.C07", "srel": "SMC.C07", "unit": "-", "desc": "Polynomial coefficient 7"},
+        {"label": "SMC.C08", "srel": "SMC.C08", "unit": "-", "desc": "Polynomial coefficient 8"}
+      ],
+      "note": "Polynomial coefficients define the SMC correction curve as a function of normalized load."
+    }
+  ]
+}

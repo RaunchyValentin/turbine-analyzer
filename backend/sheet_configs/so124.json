@@ -1,0 +1,36 @@
+{
+  "id": "SO124",
+  "title": "5. Diffusion Oil Amount (Pilot Oil)",
+  "fuel": "FO",
+  "pattern": "D",
+  "sections": [
+    {
+      "header": "Pilot Oil Limits",
+      "type": "scalar",
+      "rows": [
+        {"srel": "F.HOEDB.04", "unit": "kg/s", "desc": "Minimum FO diffusion (pilot oil) amount",    "editable": true},
+        {"srel": "F.HOEVB.03", "unit": "kg/s", "desc": "Minimum FO premix amount",                   "editable": true}
+      ]
+    },
+    {
+      "header": "FO Dry Running Curve (DRY polynomial)",
+      "type": "poly",
+      "block_name": "MBN04DU003C|DRY",
+      "description": "FO dry operation — diffusion proportion as function of load",
+      "x_label": "Load, %",
+      "y_label": "Diffusion proportion, %",
+      "points": [
+        {"x_srel": "DRY.A1",  "x_label": "L1",  "y_srel": "DRY.B1",  "y_label": "D1"},
+        {"x_srel": "DRY.A2",  "x_label": "L2",  "y_srel": "DRY.B2",  "y_label": "D2"},
+        {"x_srel": "DRY.A3",  "x_label": "L3",  "y_srel": "DRY.B3",  "y_label": "D3"},
+        {"x_srel": "DRY.A4",  "x_label": "L4",  "y_srel": "DRY.B4",  "y_label": "D4"},
+        {"x_srel": "DRY.A5",  "x_label": "L5",  "y_srel": "DRY.B5",  "y_label": "D5"},
+        {"x_srel": "DRY.A6",  "x_label": "L6",  "y_srel": "DRY.B6",  "y_label": "D6"},
+        {"x_srel": "DRY.A7",  "x_label": "L7",  "y_srel": "DRY.B7",  "y_label": "D7"},
+        {"x_srel": "DRY.A8",  "x_label": "L8",  "y_srel": "DRY.B8",  "y_label": "D8"},
+        {"x_srel": "DRY.A9",  "x_label": "L9",  "y_srel": "DRY.B9",  "y_label": "D9"},
+        {"x_srel": "DRY.A10", "x_label": "L10", "y_srel": "DRY.B10", "y_label": "D10"}
+      ]
+    }
+  ]
+}

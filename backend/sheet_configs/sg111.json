@@ -1,0 +1,20 @@
+{
+  "id": "SG111",
+  "title": "2. Ignition and Start Up (OLD)",
+  "fuel": "FG",
+  "pattern": "A",
+  "sections": [
+    {
+      "header": "Ignition Sequence Parameters",
+      "rows": [
+        {"srel": "S.TURB.09",    "unit": "Hz", "desc": "Ignition speed",                 "editable": true},
+        {"srel": "GATKFL.X",     "unit": "K",  "desc": "Flame recognition threshold",    "editable": true},
+        {"srel": "K.IGNITE.01",  "unit": "s",  "desc": "Delay time igniter on",          "editable": true},
+        {"srel": "K.IGNITE.02",  "unit": "s",  "desc": "Delay ESV opening",              "editable": true},
+        {"srel": "K.IGNITE.03",  "unit": "s",  "desc": "Ignition recognition time",      "editable": true},
+        {"srel": "K.IGNITE.04",  "unit": "Hz", "desc": "Speed at end of ignition phase", "editable": true},
+        {"srel": "K.IGNITE.05",  "unit": "-",  "desc": "Ignition gas pressure factor",   "editable": true}
+      ]
+    }
+  ]
+}

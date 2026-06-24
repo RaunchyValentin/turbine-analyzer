@@ -1,0 +1,52 @@
+{
+  "id": "SO111",
+  "title": "1. Ignition and Start Up — Fuel Oil",
+  "fuel": "FO",
+  "pattern": "A",
+  "sections": [
+    {
+      "header": "Fuel Oil Start with LPG Support",
+      "rows": [
+        {"srel": "F.HOE.80",  "unit": "kg/s",  "desc": "FO diffusion feed flow for speed < S.TURB.70", "editable": true},
+        {"srel": "FMFDUM.X", "unit": "kg/s²", "desc": "Gradient for changing FO DO feed flow",         "editable": true}
+      ]
+    },
+    {
+      "header": "Ignition Gas Setting (Pilot Gas Line)",
+      "rows": [
+        {"srel": "S.TURB.31", "unit": "Hz", "desc": "Ignition speed — ignition gas ESV opens",  "editable": true},
+        {"srel": "S.TURB.32", "unit": "Hz", "desc": "Switch off igniters",                       "editable": true},
+        {"srel": "S.TURB.88", "unit": "Hz", "desc": "Switch off ignition gas",                   "editable": true}
+      ]
+    },
+    {
+      "header": "FO Ignition",
+      "rows": [
+        {"srel": "F.HOEDB.01",  "unit": "kg/s",  "desc": "FO ignition start amount",         "editable": true},
+        {"srel": "S.TURB.30",   "unit": "Hz",    "desc": "FO ignition speed",                 "editable": true},
+        {"srel": "JK.HOEDB.01", "unit": "%/min", "desc": "1st gradient (loading rate)",       "editable": true},
+        {"srel": "S.TURB.55",   "unit": "Hz",    "desc": "Start of 1st gradient",             "editable": true},
+        {"srel": "JK.HOEDB.02", "unit": "%/min", "desc": "2nd gradient",                      "editable": true},
+        {"srel": "S.TURB.56",   "unit": "Hz",    "desc": "Start of 2nd gradient",             "editable": true},
+        {"srel": "JK.HOEDB.05", "unit": "%/min", "desc": "3rd gradient",                      "editable": true},
+        {"srel": "S.TURB.105",  "unit": "Hz",    "desc": "Start of 3rd gradient",             "editable": true}
+      ]
+    },
+    {
+      "header": "Blow Off Valves",
+      "rows": [
+        {"srel": "S.TURB.70", "unit": "Hz", "desc": "Speed limit for blow off sequence", "editable": true},
+        {"srel": "K.ABBL.02", "unit": "s",  "desc": "Waiting time after speed reached",  "editable": true}
+      ]
+    },
+    {
+      "header": "Load Gradients",
+      "rows": [
+        {"srel": "EK.LEIST.01", "unit": "MW/min", "desc": "Normal load gradient",           "editable": true},
+        {"srel": "EK.LEIST.02", "unit": "MW/min", "desc": "Fast load gradient",             "editable": true},
+        {"srel": "EK.LEIST.03", "unit": "MW/min", "desc": "Slow loading gradient",          "editable": true},
+        {"srel": "EK.LEIST.08", "unit": "MW/min", "desc": "Fast gradient for warm GT",      "editable": true}
+      ]
+    }
+  ]
+}

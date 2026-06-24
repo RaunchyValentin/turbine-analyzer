@@ -1,0 +1,36 @@
+{
+  "id": "SO124b",
+  "title": "5. Variable Premix Oil Proportion",
+  "fuel": "FO",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MBN04DU003C|PMVL",
+      "description": "Variable premix oil proportion — loading",
+      "x_label": "Load, %",
+      "y_label": "Premix proportion, %",
+      "points": [
+        {"x_srel": "PMVL.A1", "x_label": "L1", "y_srel": "PMVL.B1", "y_label": "P1"},
+        {"x_srel": "PMVL.A2", "x_label": "L2", "y_srel": "PMVL.B2", "y_label": "P2"},
+        {"x_srel": "PMVL.A3", "x_label": "L3", "y_srel": "PMVL.B3", "y_label": "P3"},
+        {"x_srel": "PMVL.A4", "x_label": "L4", "y_srel": "PMVL.B4", "y_label": "P4"},
+        {"x_srel": "PMVL.A5", "x_label": "L5", "y_srel": "PMVL.B5", "y_label": "P5"},
+        {"x_srel": "PMVL.A6", "x_label": "L6", "y_srel": "PMVL.B6", "y_label": "P6"}
+      ]
+    },
+    {
+      "name": "MBN04DU003C|PMVLE",
+      "description": "Variable premix oil proportion — unloading",
+      "x_label": "Load, %",
+      "y_label": "Premix proportion, %",
+      "points": [
+        {"x_srel": "PMVLE.A1", "x_label": "L1", "y_srel": "PMVLE.B1", "y_label": "P1"},
+        {"x_srel": "PMVLE.A2", "x_label": "L2", "y_srel": "PMVLE.B2", "y_label": "P2"},
+        {"x_srel": "PMVLE.A3", "x_label": "L3", "y_srel": "PMVLE.B3", "y_label": "P3"},
+        {"x_srel": "PMVLE.A4", "x_label": "L4", "y_srel": "PMVLE.B4", "y_label": "P4"},
+        {"x_srel": "PMVLE.A5", "x_label": "L5", "y_srel": "PMVLE.B5", "y_label": "P5"},
+        {"x_srel": "PMVLE.A6", "x_label": "L6", "y_srel": "PMVLE.B6", "y_label": "P6"}
+      ]
+    }
+  ]
+}

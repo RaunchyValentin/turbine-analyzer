@@ -1,0 +1,37 @@
+{
+  "id": "SO111c",
+  "title": "1.2 Run Up Controller",
+  "fuel": "FO",
+  "pattern": "B",
+  "blocks": [
+    {
+      "name": "MBY10DU040C|F3",
+      "description": "Fuel oil diffusion mass flow as function of speed",
+      "x_label": "n, Hz",
+      "y_label": "FODI, kg/s",
+      "notes": ["First 2 points: Ignition FO"],
+      "points": [
+        {"x_srel": "S.TURB.322", "y_srel": "F.FO.05"},
+        {"x_srel": "S.TURB.323", "y_srel": "F.FO.06"},
+        {"x_srel": "S.TURB.324", "y_srel": "F.FO.07"},
+        {"x_srel": "S.TURB.325", "y_srel": "F.FO.08"},
+        {"x_srel": "S.TURB.326", "y_srel": "F.FO.09"},
+        {"x_srel": "S.TURB.327", "y_srel": "F.FO.10"},
+        {"x_srel": "S.TURB.328", "y_srel": "F.FO.11"},
+        {"x_srel": "S.TURB.329", "y_srel": "F.FO.12"},
+        {"x_srel": "S.TURB.330", "y_srel": "F.FO.13"},
+        {"x_srel": "S.TURB.331", "y_srel": "F.FO.14"},
+        {"x_srel": "S.TURB.332", "y_srel": "F.FO.15"},
+        {"x_srel": "S.TURB.333", "y_srel": "F.FO.16"},
+        {"x_srel": "S.TURB.334", "y_srel": "F.FO.17"},
+        {"x_srel": "S.TURB.335", "y_srel": "F.FO.18"},
+        {"x_srel": "S.TURB.336", "y_srel": "F.FO.19"},
+        {"x_srel": "S.TURB.337", "y_srel": "F.FO.20"},
+        {"x_srel": "S.TURB.338", "y_srel": "F.FO.21"},
+        {"x_srel": "S.TURB.339", "y_srel": "F.FO.22"},
+        {"x_srel": "S.TURB.340", "y_srel": "F.FO.23"},
+        {"x_srel": "S.TURB.341", "y_srel": "F.FO.24"}
+      ]
+    }
+  ]
+}

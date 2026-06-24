@@ -1,0 +1,28 @@
+{
+  "id": "SG199b",
+  "title": "Fleet: UAOV (continuation)",
+  "fuel": "FG",
+  "pattern": "F",
+  "message": "UAOV continuation — temperature and load correction maps.",
+  "sections": [
+    {
+      "header": "UAOV Temperature Corrections",
+      "rows": [
+        {"label": "UAOV.T01", "srel": "UAOV.T01", "unit": "-", "desc": "Temperature correction at T_inlet point 1"},
+        {"label": "UAOV.T02", "srel": "UAOV.T02", "unit": "-", "desc": "Temperature correction at T_inlet point 2"},
+        {"label": "UAOV.T03", "srel": "UAOV.T03", "unit": "-", "desc": "Temperature correction at T_inlet point 3"},
+        {"label": "UAOV.T04", "srel": "UAOV.T04", "unit": "-", "desc": "Temperature correction at T_inlet point 4"}
+      ]
+    },
+    {
+      "header": "UAOV Load Corrections",
+      "rows": [
+        {"label": "UAOV.L01", "srel": "UAOV.L01", "unit": "-", "desc": "Load correction — step 1"},
+        {"label": "UAOV.L02", "srel": "UAOV.L02", "unit": "-", "desc": "Load correction — step 2"},
+        {"label": "UAOV.L03", "srel": "UAOV.L03", "unit": "-", "desc": "Load correction — step 3"},
+        {"label": "UAOV.L04", "srel": "UAOV.L04", "unit": "-", "desc": "Load correction — step 4"}
+      ],
+      "note": "Correction maps are interpolated linearly between defined operating points."
+    }
+  ]
+}

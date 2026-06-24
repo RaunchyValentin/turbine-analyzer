@@ -1,0 +1,20 @@
+{
+  "id": "SG182",
+  "title": "Fleet: Pilot Gas Settings",
+  "fuel": "FG",
+  "pattern": "F",
+  "message": "Fleet comparison — pilot gas setpoints across commissioned turbines. Values reflect the imported SREL database for the selected turbine.",
+  "sections": [
+    {
+      "header": "Pilot Gas Key Setpoints",
+      "rows": [
+        {"label": "Pilot gas at idle",         "srel": "G.VLE0.01", "unit": "kg/s", "desc": "Pilot gas mass flow at idle load"},
+        {"label": "Pilot gas at part load",     "srel": "G.VLE0.05", "unit": "kg/s", "desc": "Pilot gas mass flow at part load"},
+        {"label": "Pilot gas at base load",     "srel": "G.VLE0.10", "unit": "kg/s", "desc": "Pilot gas mass flow at base load"},
+        {"label": "Pilot/total ratio — idle",   "srel": "G.VLE0.22", "unit": "-",    "desc": "Pilot to total gas ratio at idle"},
+        {"label": "Pilot/total ratio — BL",     "srel": "G.VLE0.23", "unit": "-",    "desc": "Pilot to total gas ratio at base load"}
+      ],
+      "note": "Use SG121 / SG121b to edit the full pilot gas polynomial."
+    }
+  ]
+}

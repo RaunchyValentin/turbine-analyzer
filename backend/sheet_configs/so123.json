@@ -1,0 +1,37 @@
+{
+  "id": "SO123",
+  "title": "4. Fuel Oil Premix Operation — Switchover",
+  "fuel": "FO",
+  "pattern": "A",
+  "sections": [
+    {
+      "header": "Switchover FO Diffusion → FO Premix",
+      "rows": [
+        {"srel": "TT.ATK.02",   "unit": "°C",  "desc": "Switchover temperature (inlet)",              "editable": true},
+        {"srel": "G.VLE0.53",   "unit": "%",   "desc": "IGV position at switchover",                  "editable": true},
+        {"srel": "F.HOEVB.01",  "unit": "kg/s","desc": "FO premix start feed amount",                 "editable": true}
+      ]
+    },
+    {
+      "header": "Adding FO Premix Burner",
+      "rows": [
+        {"srel": "K.ANTEIL.17", "unit": "ms",  "desc": "Delay time before premix burner on",          "editable": true},
+        {"srel": "K.ANTEIL.09", "unit": "ms",  "desc": "Delay time after premix burner on",           "editable": true}
+      ]
+    },
+    {
+      "header": "FO Premix Operation",
+      "rows": [
+        {"srel": "F.HOEDB.35",  "unit": "kg/s","desc": "Minimum FO diffusion amount in premix mode",  "editable": true}
+      ]
+    },
+    {
+      "header": "Switch Back FO Premix → FO Diffusion",
+      "rows": [
+        {"srel": "TT.ATK.05",   "unit": "°C",  "desc": "Temperature threshold for switch-back",       "editable": true},
+        {"srel": "F.HOEVB.03",  "unit": "kg/s","desc": "FO premix minimum before switch-back",        "editable": true},
+        {"srel": "K.ANTEIL.10", "unit": "ms",  "desc": "Delay time for switch-back",                  "editable": true}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "SG131",
+  "title": "4. TOTC Polynoms",
+  "fuel": "FG",
+  "pattern": "F",
+  "message": "Turbine Outlet Temperature Control (TOTC) — polynomial coefficients used to compute the temperature setpoint. These values are calculated and not directly editable.",
+  "sections": [
+    {
+      "header": "Base Load OTC",
+      "rows": [
+        {"label": "T.OTC.BL",  "srel": "T.OTC.BL",  "unit": "°C", "desc": "Base load OTC setpoint"},
+        {"label": "T.OTC.BLM", "srel": "T.OTC.BLM", "unit": "°C", "desc": "Base load OTC minimum limit"},
+        {"label": "T.OTC.BLP", "srel": "T.OTC.BLP", "unit": "°C", "desc": "Base load OTC maximum (trip level)"},
+        {"label": "T.OTC.DIF", "srel": "T.OTC.DIF", "unit": "K",  "desc": "OTC alarm/trip differential"}
+      ]
+    },
+    {
+      "header": "TOTC Polynomial Coefficients (Inlet Temperature Correction)",
+      "rows": [
+        {"label": "TOTC.A0", "srel": "TOTC.A0", "unit": "°C",    "desc": "Polynom constant term"},
+        {"label": "TOTC.A1", "srel": "TOTC.A1", "unit": "°C/°C", "desc": "Polynom linear coefficient"},
+        {"label": "TOTC.A2", "srel": "TOTC.A2", "unit": "°C/°C²","desc": "Polynom quadratic coefficient"},
+        {"label": "TOTC.A3", "srel": "TOTC.A3", "unit": "°C/°C³","desc": "Polynom cubic coefficient"}
+      ],
+      "note": "Coefficients define OTC = A0 + A1·T_inlet + A2·T_inlet² + A3·T_inlet³"
+    },
+    {
+      "header": "IGV Influence",
+      "rows": [
+        {"label": "T.OTC.IGV",  "srel": "T.OTC.IGV",  "unit": "°C", "desc": "OTC correction at IGV limit"},
+        {"label": "T.OTC.IGVK", "srel": "T.OTC.IGVK", "unit": "K/°", "desc": "IGV–OTC coupling factor"}
+      ]
+    }
+  ]
+}

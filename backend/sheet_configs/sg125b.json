@@ -1,0 +1,40 @@
+{
+  "id": "SG125b",
+  "title": "3. Pilot Gas with LHV Correction (hot gas)",
+  "fuel": "FG",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MBP03DU010C|F2_LHV",
+      "description": "Pilot gas LHV-corrected flow polynomial (hot gas)",
+      "x_label": "n, Hz",
+      "y_label": "mPG_LHV, kg/s",
+      "points": [
+        {"x_srel": "S.TURB.362", "y_srel": "G.VLE1.01"},
+        {"x_srel": "S.TURB.363", "y_srel": "G.VLE1.02"},
+        {"x_srel": "S.TURB.364", "y_srel": "G.VLE1.03"},
+        {"x_srel": "S.TURB.365", "y_srel": "G.VLE1.04"},
+        {"x_srel": "S.TURB.366", "y_srel": "G.VLE1.05"},
+        {"x_srel": "S.TURB.367", "y_srel": "G.VLE1.06"},
+        {"x_srel": "S.TURB.368", "y_srel": "G.VLE1.07"},
+        {"x_srel": "S.TURB.369", "y_srel": "G.VLE1.08"},
+        {"x_srel": "S.TURB.370", "y_srel": "G.VLE1.09"},
+        {"x_srel": "S.TURB.371", "y_srel": "G.VLE1.10"}
+      ]
+    },
+    {
+      "name": "MBP03DU010C|F2_CORR",
+      "description": "LHV correction factor polynomial (hot gas)",
+      "x_label": "Hu, MJ/m³",
+      "y_label": "Corr factor, -",
+      "points": [
+        {"x_srel": "LHV.CORRHOT.A1", "y_srel": "LHV.CORRHOT.B1"},
+        {"x_srel": "LHV.CORRHOT.A2", "y_srel": "LHV.CORRHOT.B2"},
+        {"x_srel": "LHV.CORRHOT.A3", "y_srel": "LHV.CORRHOT.B3"},
+        {"x_srel": "LHV.CORRHOT.A4", "y_srel": "LHV.CORRHOT.B4"},
+        {"x_srel": "LHV.CORRHOT.A5", "y_srel": "LHV.CORRHOT.B5"},
+        {"x_srel": "LHV.CORRHOT.A6", "y_srel": "LHV.CORRHOT.B6"}
+      ]
+    }
+  ]
+}

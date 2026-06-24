@@ -1,0 +1,53 @@
+{
+  "id": "SO111b",
+  "title": "1.1 Ignition and Start Up (new logic)",
+  "fuel": "FO",
+  "pattern": "A",
+  "sections": [
+    {
+      "header": "Fuel oil start supported by liquid propane gas (LPG)",
+      "rows": [
+        {"srel": "F.HOE.80",  "unit": "kg/s", "desc": "FO diffusion feed flow for speed < S.TURB.70", "editable": true},
+        {"srel": "FMFDUM.X", "unit": "",      "desc": "Gradient for changing FO DO feed flow",        "editable": true}
+      ]
+    },
+    {
+      "header": "Ignition gas setting for start over pilot gas line",
+      "rows": [
+        {"key": "ign_gas_pressure", "srel": null, "unit": "bar", "desc": "Ignition gas pressure dp-pvII (manual)", "default_value": "2", "editable": true, "manual": true},
+        {"srel": "S.TURB.31", "unit": "Hz", "desc": "Ignition speed for ignition gas",  "editable": true},
+        {"srel": "S.TURB.32", "unit": "Hz", "desc": "Switch off igniters",               "editable": true},
+        {"srel": "S.TURB.88", "unit": "Hz", "desc": "Switch off ignition gas",           "editable": true}
+      ]
+    },
+    {
+      "header": "FO ignition",
+      "rows": [
+        {"srel": "F.HOEDB.01", "unit": "kg/s", "desc": "FO ignition start amount", "editable": true},
+        {"srel": "S.TURB.30",  "unit": "Hz",   "desc": "FO ignition speed",         "editable": true}
+      ]
+    },
+    {
+      "header": "Position compressor inlet guide vane",
+      "rows": [
+        {"key": "igv_start_pos", "srel": null, "unit": "%", "desc": "Starting position IGV (48.7°)", "default_value": "10.9", "editable": true, "manual": true}
+      ]
+    },
+    {
+      "header": "Blow off valves (AGS E+L 307-001-05)",
+      "rows": [
+        {"srel": "S.TURB.70", "unit": "Hz", "desc": "Speed limit for blow off sequence", "editable": true},
+        {"srel": "K.ABBL.02", "unit": "s",  "desc": "Waiting time",                      "editable": true}
+      ]
+    },
+    {
+      "header": "Load Gradients",
+      "rows": [
+        {"srel": "EK.LEIST.01", "unit": "MW/min", "desc": "Normal load gradient",         "editable": true},
+        {"srel": "EK.LEIST.02", "unit": "MW/min", "desc": "Fast load gradient",           "editable": true},
+        {"srel": "EK.LEIST.03", "unit": "MW/min", "desc": "Slow loading",                 "editable": true},
+        {"srel": "EK.LEIST.08", "unit": "MW/min", "desc": "Fast gradient for warm GT",    "editable": true}
+      ]
+    }
+  ]
+}

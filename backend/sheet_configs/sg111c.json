@@ -1,0 +1,51 @@
+{
+  "id": "SG111c",
+  "title": "2.2 Run Up Controller",
+  "fuel": "FG",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MBY10DU040C|F2",
+      "description": "Total fuel gas mass flow as function of speed",
+      "x_label": "n, Hz",
+      "y_label": "mNG, kg/s",
+      "points": [
+        {"x_srel": "S.TURB.302", "y_srel": "F.EG.49"},
+        {"x_srel": "S.TURB.303", "y_srel": "F.EG.50"},
+        {"x_srel": "S.TURB.304", "y_srel": "F.EG.51"},
+        {"x_srel": "S.TURB.305", "y_srel": "F.EG.52"},
+        {"x_srel": "S.TURB.306", "y_srel": "F.EG.53"},
+        {"x_srel": "S.TURB.307", "y_srel": "F.EG.54"},
+        {"x_srel": "S.TURB.308", "y_srel": "F.EG.55"},
+        {"x_srel": "S.TURB.309", "y_srel": "F.EG.56"},
+        {"x_srel": "S.TURB.310", "y_srel": "F.EG.57"},
+        {"x_srel": "S.TURB.311", "y_srel": "F.EG.58"},
+        {"x_srel": "S.TURB.312", "y_srel": "F.EG.59"},
+        {"x_srel": "S.TURB.313", "y_srel": "F.EG.60"},
+        {"x_srel": "S.TURB.314", "y_srel": "F.EG.61"},
+        {"x_srel": "S.TURB.315", "y_srel": "F.EG.62"},
+        {"x_srel": "S.TURB.316", "y_srel": "F.EG.63"},
+        {"x_srel": "S.TURB.317", "y_srel": "F.EG.64"},
+        {"x_srel": "S.TURB.318", "y_srel": "F.EG.65"},
+        {"x_srel": "S.TURB.319", "y_srel": "F.EG.66"},
+        {"x_srel": "S.TURB.320", "y_srel": "F.EG.67"},
+        {"x_srel": "S.TURB.321", "y_srel": "F.EG.68"}
+      ]
+    },
+    {
+      "name": "MBP03DU002C|VBNTM",
+      "description": "Premix gas as function of speed",
+      "x_label": "n, Hz",
+      "y_label": "mVB, kg/s",
+      "static": true,
+      "points": [
+        {"x_srel": "VBNTM.A1", "y_srel": "VBNTM.B1"},
+        {"x_srel": "VBNTM.A2", "y_srel": "VBNTM.B2"},
+        {"x_srel": "VBNTM.A3", "y_srel": "VBNTM.B3"},
+        {"x_srel": "VBNTM.A4", "y_srel": "VBNTM.B4"},
+        {"x_srel": "VBNTM.A5", "y_srel": "VBNTM.B5"},
+        {"x_srel": "VBNTM.A6", "y_srel": "VBNTM.B6"}
+      ]
+    }
+  ]
+}

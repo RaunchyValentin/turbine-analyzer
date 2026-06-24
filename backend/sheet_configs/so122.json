@@ -1,0 +1,26 @@
+{
+  "id": "SO122",
+  "title": "3. Fuel Oil Diffusion Feed Amount",
+  "fuel": "FO",
+  "pattern": "B",
+  "blocks": [
+    {
+      "name": "MBN53DU070C|FMDF",
+      "description": "FO diffusion feed flow as function of injection pressure",
+      "x_label": "Injection pressure, bar",
+      "y_label": "FO feed flow, kg/s",
+      "points": [
+        {"x_srel": "FMFD.A1",  "x_label": "P1",  "y_srel": "FMFD.B1",  "y_label": "F1"},
+        {"x_srel": "FMFD.A2",  "x_label": "P2",  "y_srel": "FMFD.B2",  "y_label": "F2"},
+        {"x_srel": "FMFD.A3",  "x_label": "P3",  "y_srel": "FMFD.B3",  "y_label": "F3"},
+        {"x_srel": "FMFD.A4",  "x_label": "P4",  "y_srel": "FMFD.B4",  "y_label": "F4"},
+        {"x_srel": "FMFD.A5",  "x_label": "P5",  "y_srel": "FMFD.B5",  "y_label": "F5"},
+        {"x_srel": "FMFD.A6",  "x_label": "P6",  "y_srel": "FMFD.B6",  "y_label": "F6"},
+        {"x_srel": "FMFD.A7",  "x_label": "P7",  "y_srel": "FMFD.B7",  "y_label": "F7"},
+        {"x_srel": "FMFD.A8",  "x_label": "P8",  "y_srel": "FMFD.B8",  "y_label": "F8"},
+        {"x_srel": "FMFD.A9",  "x_label": "P9",  "y_srel": "FMFD.B9",  "y_label": "F9"},
+        {"x_srel": "FMFD.A10", "x_label": "P10", "y_srel": "FMFD.B10", "y_label": "F10"}
+      ]
+    }
+  ]
+}

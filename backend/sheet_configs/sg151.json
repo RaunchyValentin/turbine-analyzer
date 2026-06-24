@@ -1,0 +1,42 @@
+{
+  "id": "SG151",
+  "title": "6. Protection",
+  "fuel": "FG",
+  "pattern": "A",
+  "sections": [
+    {
+      "header": "Turbine Outlet Temperature Protection",
+      "rows": [
+        {"srel": "T.OTC.BLP", "unit": "°C", "desc": "BL OTC trip level",                   "editable": true},
+        {"srel": "T.OTC.ALM", "unit": "°C", "desc": "OTC alarm level (above BL setpoint)", "editable": true},
+        {"srel": "T.OTC.DLP", "unit": "K",  "desc": "Delta OTC for load protection",       "editable": true}
+      ]
+    },
+    {
+      "header": "Speed Protection",
+      "rows": [
+        {"srel": "S.PROT.01", "unit": "Hz", "desc": "Overspeed alarm level",        "editable": true},
+        {"srel": "S.PROT.02", "unit": "Hz", "desc": "Overspeed trip level",         "editable": true},
+        {"srel": "S.PROT.03", "unit": "Hz", "desc": "Underspeed alarm (load shed)", "editable": true}
+      ]
+    },
+    {
+      "header": "Gas Fuel Protection",
+      "rows": [
+        {"srel": "G.PROT.01", "unit": "bar", "desc": "Gas supply pressure min alarm", "editable": true},
+        {"srel": "G.PROT.02", "unit": "bar", "desc": "Gas supply pressure min trip",  "editable": true},
+        {"srel": "G.PROT.03", "unit": "bar", "desc": "Gas supply pressure max alarm", "editable": true},
+        {"srel": "G.PROT.04", "unit": "bar", "desc": "Gas supply pressure max trip",  "editable": true}
+      ]
+    },
+    {
+      "header": "Combustion Protection",
+      "rows": [
+        {"srel": "G.COMB.01", "unit": "K",   "desc": "Combustion instability detection — amplitude limit", "editable": true},
+        {"srel": "G.COMB.02", "unit": "Hz",  "desc": "Combustion instability — frequency band lower",      "editable": true},
+        {"srel": "G.COMB.03", "unit": "Hz",  "desc": "Combustion instability — frequency band upper",      "editable": true},
+        {"srel": "G.COMB.04", "unit": "s",   "desc": "Combustion instability — detection delay",           "editable": true}
+      ]
+    }
+  ]
+}

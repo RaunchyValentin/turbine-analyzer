@@ -1,0 +1,36 @@
+{
+  "id": "SO122b",
+  "title": "3.2 Fuel Oil Diffusion Feed Flow for Premix Operation",
+  "fuel": "FO",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MBN53DU070C|FMDFPM",
+      "description": "FO diffusion feed vs premix proportion — loading",
+      "x_label": "Premix proportion, %",
+      "y_label": "FO diffusion flow, kg/s",
+      "points": [
+        {"x_srel": "FMDFPM.A1", "x_label": "P1", "y_srel": "FMDFPM.B1", "y_label": "F1"},
+        {"x_srel": "FMDFPM.A2", "x_label": "P2", "y_srel": "FMDFPM.B2", "y_label": "F2"},
+        {"x_srel": "FMDFPM.A3", "x_label": "P3", "y_srel": "FMDFPM.B3", "y_label": "F3"},
+        {"x_srel": "FMDFPM.A4", "x_label": "P4", "y_srel": "FMDFPM.B4", "y_label": "F4"},
+        {"x_srel": "FMDFPM.A5", "x_label": "P5", "y_srel": "FMDFPM.B5", "y_label": "F5"},
+        {"x_srel": "FMDFPM.A6", "x_label": "P6", "y_srel": "FMDFPM.B6", "y_label": "F6"}
+      ]
+    },
+    {
+      "name": "MBN53DU070C|FMDFPME",
+      "description": "FO diffusion feed vs premix proportion — unloading",
+      "x_label": "Premix proportion, %",
+      "y_label": "FO diffusion flow, kg/s",
+      "points": [
+        {"x_srel": "FMDFPME.A1", "x_label": "P1", "y_srel": "FMDFPME.B1", "y_label": "F1"},
+        {"x_srel": "FMDFPME.A2", "x_label": "P2", "y_srel": "FMDFPME.B2", "y_label": "F2"},
+        {"x_srel": "FMDFPME.A3", "x_label": "P3", "y_srel": "FMDFPME.B3", "y_label": "F3"},
+        {"x_srel": "FMDFPME.A4", "x_label": "P4", "y_srel": "FMDFPME.B4", "y_label": "F4"},
+        {"x_srel": "FMDFPME.A5", "x_label": "P5", "y_srel": "FMDFPME.B5", "y_label": "F5"},
+        {"x_srel": "FMDFPME.A6", "x_label": "P6", "y_srel": "FMDFPME.B6", "y_label": "F6"}
+      ]
+    }
+  ]
+}

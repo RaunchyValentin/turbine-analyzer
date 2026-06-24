@@ -1,0 +1,40 @@
+{
+  "id": "SG111e",
+  "title": "2.4 Run Up Trim Controller Speed",
+  "fuel": "FG",
+  "pattern": "D",
+  "sections": [
+    {
+      "header": "Speed Trim Controller Parameters",
+      "type": "scalar",
+      "rows": [
+        {"srel": "SK.TURB.21", "unit": "Hz", "desc": "Speed setpoint upper limit (Solldrehzahl oben)",  "editable": true},
+        {"srel": "SK.TURB.20", "unit": "Hz", "desc": "Speed setpoint lower limit (Solldrehzahl unten)", "editable": true},
+        {"srel": "K.START.03", "unit": "-",  "desc": "Start controller gain factor",                    "editable": true},
+        {"srel": "U.REGLER.77","unit": "-",  "desc": "Controller parameter 77",                         "editable": true},
+        {"srel": "U.REGLER.78","unit": "-",  "desc": "Controller parameter 78",                         "editable": true},
+        {"srel": "S.TURB.422", "unit": "Hz", "desc": "Speed threshold for trim activation",             "editable": true}
+      ]
+    },
+    {
+      "header": "TCI Fuel Correction vs Inlet Temperature (F1 block)",
+      "type": "poly",
+      "block_name": "MBY10DU040C|F1",
+      "description": "Fuel flow correction factor as function of inlet air temperature",
+      "x_label": "T_inlet, °C",
+      "y_label": "U.BRENNST correction, -",
+      "points": [
+        {"x_srel": "T.TVI.120", "x_label": "T1",  "y_srel": "U.BRENNST.16", "y_label": "f1"},
+        {"x_srel": "T.TVI.121", "x_label": "T2",  "y_srel": "U.BRENNST.17", "y_label": "f2"},
+        {"x_srel": "T.TVI.122", "x_label": "T3",  "y_srel": "U.BRENNST.18", "y_label": "f3"},
+        {"x_srel": "T.TVI.123", "x_label": "T4",  "y_srel": "U.BRENNST.19", "y_label": "f4"},
+        {"x_srel": "T.TVI.124", "x_label": "T5",  "y_srel": "U.BRENNST.20", "y_label": "f5"},
+        {"x_srel": "T.TVI.125", "x_label": "T6",  "y_srel": "U.BRENNST.21", "y_label": "f6"},
+        {"x_srel": "T.TVI.126", "x_label": "T7",  "y_srel": "U.BRENNST.22", "y_label": "f7"},
+        {"x_srel": "T.TVI.127", "x_label": "T8",  "y_srel": "U.BRENNST.23", "y_label": "f8"},
+        {"x_srel": "T.TVI.128", "x_label": "T9",  "y_srel": "U.BRENNST.24", "y_label": "f9"},
+        {"x_srel": "T.TVI.129", "x_label": "T10", "y_srel": "U.BRENNST.25", "y_label": "f10"}
+      ]
+    }
+  ]
+}

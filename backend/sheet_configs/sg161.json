@@ -1,0 +1,37 @@
+{
+  "id": "SG161",
+  "title": "7. SMC",
+  "fuel": "FG",
+  "pattern": "F",
+  "message": "Sequential Motive Control (SMC) — emission optimization parameters.",
+  "sections": [
+    {
+      "header": "SMC Threshold Parameters",
+      "rows": [
+        {"label": "Load threshold 1", "srel": "SMC.P01", "unit": "%", "desc": "Normalized load threshold for SMC activation"},
+        {"label": "Load threshold 2", "srel": "SMC.P02", "unit": "%", "desc": "Normalized load threshold for SMC activation"},
+        {"label": "Load threshold 3", "srel": "SMC.P03", "unit": "%", "desc": "Normalized load threshold for SMC activation"},
+        {"label": "Load threshold 4", "srel": "SMC.P04", "unit": "%", "desc": "Normalized load threshold for SMC activation"}
+      ]
+    },
+    {
+      "header": "SMC Timing",
+      "rows": [
+        {"label": "Transition time 1", "srel": "SMC.T01", "unit": "s", "desc": "SMC transition time at step 1"},
+        {"label": "Transition time 2", "srel": "SMC.T02", "unit": "s", "desc": "SMC transition time at step 2"},
+        {"label": "Transition time 3", "srel": "SMC.T03", "unit": "s", "desc": "SMC transition time at step 3"},
+        {"label": "Transition time 4", "srel": "SMC.T04", "unit": "s", "desc": "SMC transition time at step 4"}
+      ]
+    },
+    {
+      "header": "SMC Correction Limits",
+      "rows": [
+        {"label": "Min/Max correction limits 1", "srel": "SMC.L01", "unit": "%", "desc": "SMC correction limit at step 1"},
+        {"label": "Min/Max correction limits 2", "srel": "SMC.L02", "unit": "%", "desc": "SMC correction limit at step 2"},
+        {"label": "Min/Max correction limits 3", "srel": "SMC.L03", "unit": "%", "desc": "SMC correction limit at step 3"},
+        {"label": "Min/Max correction limits 4", "srel": "SMC.L04", "unit": "%", "desc": "SMC correction limit at step 4"}
+      ],
+      "note": "SMC parameters are set during commissioning and verified by emission measurement."
+    }
+  ]
+}

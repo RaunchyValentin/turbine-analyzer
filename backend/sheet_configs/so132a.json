@@ -1,0 +1,18 @@
+{
+  "id": "SO132a",
+  "title": "FO→NG Changeover — Scalar Parameters",
+  "fuel": "FO",
+  "pattern": "A",
+  "sections": [
+    {
+      "header": "FO → Natural Gas Changeover Thresholds",
+      "rows": [
+        {"srel": "K.FONG.01", "unit": "°C",   "desc": "OTC setpoint during FO→NG changeover",    "editable": true},
+        {"srel": "K.FONG.02", "unit": "s",    "desc": "FO→NG transfer delay timer",              "editable": true},
+        {"srel": "K.FONG.03", "unit": "kg/s", "desc": "FO minimum before NG feed opens",         "editable": true},
+        {"srel": "K.FONG.04", "unit": "kg/s", "desc": "NG minimum feed at start of changeover",  "editable": true},
+        {"srel": "K.FONG.05", "unit": "s",    "desc": "FO purge timer after switchover",         "editable": true}
+      ]
+    }
+  ]
+}

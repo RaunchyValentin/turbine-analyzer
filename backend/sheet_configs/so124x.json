@@ -1,0 +1,8 @@
+{
+  "id": "SO124x",
+  "title": "5. Pilot Oil Dry Worksheet",
+  "fuel": "FO",
+  "pattern": "F",
+  "note": "Reference worksheet for pilot oil dry operation. Contains lookup tables and computed SREL values for cross-referencing FO diffusion and premix settings.",
+  "links": ["SO122", "SO124"]
+}

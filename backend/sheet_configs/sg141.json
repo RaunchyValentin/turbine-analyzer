@@ -1,0 +1,36 @@
+{
+  "id": "SG141",
+  "title": "5. Gas Valve Settings vs IGV Position",
+  "fuel": "FG",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MSPG+MIG",
+      "description": "EG valve position (GVMIVL) as function of IGV opening",
+      "x_label": "IGV, %",
+      "y_label": "GVMIVL, %",
+      "points": [
+        {"x_srel": "G.VLE0.45", "x_label": "IGV1", "y_srel": "F.EGVB.28", "y_label": "GVMIVL1"},
+        {"x_srel": "G.VLE0.46", "x_label": "IGV2", "y_srel": "F.EGVB.29", "y_label": "GVMIVL2"},
+        {"x_srel": "G.VLE0.47", "x_label": "IGV3", "y_srel": "F.EGVB.30", "y_label": "GVMIVL3"},
+        {"x_srel": "G.VLE0.48", "x_label": "IGV4", "y_srel": "F.EGVB.31", "y_label": "GVMIVL4"},
+        {"x_srel": "G.VLE0.49", "x_label": "IGV5", "y_srel": "F.EGVB.32", "y_label": "GVMIVL5"},
+        {"x_srel": "G.VLE0.50", "x_label": "IGV6", "y_srel": "F.EGVB.33", "y_label": "GVMIVL6"}
+      ]
+    },
+    {
+      "name": "MSPG",
+      "description": "Pilot gas law (PGLAW) as function of IGV opening",
+      "x_label": "IGV, %",
+      "y_label": "PGLAW, kg/s",
+      "points": [
+        {"x_srel": "G.VLE0.45", "x_label": "IGV1", "y_srel": "F.PILOT.86", "y_label": "PGLAW1"},
+        {"x_srel": "G.VLE0.46", "x_label": "IGV2", "y_srel": "F.PILOT.87", "y_label": "PGLAW2"},
+        {"x_srel": "G.VLE0.47", "x_label": "IGV3", "y_srel": "F.PILOT.88", "y_label": "PGLAW3"},
+        {"x_srel": "G.VLE0.48", "x_label": "IGV4", "y_srel": "F.PILOT.89", "y_label": "PGLAW4"},
+        {"x_srel": "G.VLE0.49", "x_label": "IGV5", "y_srel": "F.PILOT.90", "y_label": "PGLAW5"},
+        {"x_srel": "G.VLE0.50", "x_label": "IGV6", "y_srel": "F.PILOT.91", "y_label": "PGLAW6"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "id": "SG132",
+  "title": "4. TOTC Polynoms (CAC Cold Ambient Correction)",
+  "fuel": "FG",
+  "pattern": "D",
+  "sections": [
+    {
+      "header": "TOTC Reference Temperatures",
+      "type": "scalar",
+      "rows": [
+        {"srel": "TS.TTAGG.X",  "unit": "°C", "desc": "BL-OTC setpoint (Base Load, standard)",   "editable": true},
+        {"srel": "TS.TTAGGK.X", "unit": "°C", "desc": "BL-OTC setpoint (Base Load, corrected)",  "editable": true},
+        {"srel": "LTR.DTSHSO.X","unit": "K",  "desc": "LTR delta OTC (part load offset)",         "editable": true}
+      ]
+    },
+    {
+      "header": "T1.F1 — Base Load CAC Correction vs Inlet Temperature",
+      "type": "poly",
+      "block_name": "T1.F1",
+      "description": "Cold ambient correction for BL-OTC as function of inlet temperature",
+      "x_label": "T_inlet, °C",
+      "y_label": "CAC correction, K",
+      "points": [
+        {"x_srel": "TS.TVI12.X", "x_label": "T (-20°C)", "y_srel": "TS.F1.B1", "y_label": "ΔOTC1"},
+        {"x_srel": "TS.TVI22.X", "x_label": "T (-10°C)", "y_srel": "TS.F1.B2", "y_label": "ΔOTC2"},
+        {"x_srel": "TS.TVI32.X", "x_label": "T (0°C)",   "y_srel": "TS.F1.B3", "y_label": "ΔOTC3"},
+        {"x_srel": "TS.TVI42.X", "x_label": "T (10°C)",  "y_srel": "TS.F1.B4", "y_label": "ΔOTC4"},
+        {"x_srel": "TS.TVI52.X", "x_label": "T (20°C)",  "y_srel": "TS.F1.B5", "y_label": "ΔOTC5"},
+        {"x_srel": "TS.TVI62.X", "x_label": "T (30°C)",  "y_srel": "TS.F1.B6", "y_label": "ΔOTC6"},
+        {"x_srel": "TS.TVI63.X", "x_label": "T (40°C)",  "y_srel": "TS.F1.B7", "y_label": "ΔOTC7"},
+        {"x_srel": "TS.TVI64.X", "x_label": "T (50°C)",  "y_srel": "TS.F1.B8", "y_label": "ΔOTC8"},
+        {"x_srel": "TS.TVI71.X", "x_label": "T (60°C)",  "y_srel": "TS.F1.B9", "y_label": "ΔOTC9"}
+      ]
+    },
+    {
+      "header": "LTR.F1 — Part Load CAC Correction vs Inlet Temperature",
+      "type": "poly",
+      "block_name": "LTR.F1",
+      "description": "Cold ambient correction for PL-OTC as function of inlet temperature",
+      "x_label": "T_inlet, °C",
+      "y_label": "CAC correction, K",
+      "points": [
+        {"x_srel": "TS.TVI12.X", "x_label": "T (-20°C)", "y_srel": "LTR.F1.B1", "y_label": "ΔOTC1"},
+        {"x_srel": "TS.TVI22.X", "x_label": "T (-10°C)", "y_srel": "LTR.F1.B2", "y_label": "ΔOTC2"},
+        {"x_srel": "TS.TVI32.X", "x_label": "T (0°C)",   "y_srel": "LTR.F1.B3", "y_label": "ΔOTC3"},
+        {"x_srel": "TS.TVI42.X", "x_label": "T (10°C)",  "y_srel": "LTR.F1.B4", "y_label": "ΔOTC4"},
+        {"x_srel": "TS.TVI52.X", "x_label": "T (20°C)",  "y_srel": "LTR.F1.B5", "y_label": "ΔOTC5"},
+        {"x_srel": "TS.TVI62.X", "x_label": "T (30°C)",  "y_srel": "LTR.F1.B6", "y_label": "ΔOTC6"},
+        {"x_srel": "TS.TVI63.X", "x_label": "T (40°C)",  "y_srel": "LTR.F1.B7", "y_label": "ΔOTC7"},
+        {"x_srel": "TS.TVI64.X", "x_label": "T (50°C)",  "y_srel": "LTR.F1.B8", "y_label": "ΔOTC8"},
+        {"x_srel": "TS.TVI71.X", "x_label": "T (60°C)",  "y_srel": "LTR.F1.B9", "y_label": "ΔOTC9"}
+      ]
+    }
+  ]
+}

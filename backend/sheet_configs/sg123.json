@@ -1,0 +1,44 @@
+{
+  "id": "SG123",
+  "title": "3. Pilot Gas Flow (Split Controller)",
+  "fuel": "FG",
+  "pattern": "C",
+  "blocks": [
+    {
+      "name": "MBP03DU010C|F2_SPLIT",
+      "description": "Pilot gas split flow polynomial",
+      "x_label": "n, Hz",
+      "y_label": "mPG_split, kg/s",
+      "points": [
+        {"x_srel": "S.TURB.342", "y_srel": "G.VLE0.02"},
+        {"x_srel": "S.TURB.343", "y_srel": "G.VLE0.03"},
+        {"x_srel": "S.TURB.344", "y_srel": "G.VLE0.04"},
+        {"x_srel": "S.TURB.345", "y_srel": "G.VLE0.05"},
+        {"x_srel": "S.TURB.346", "y_srel": "G.VLE0.06"},
+        {"x_srel": "S.TURB.347", "y_srel": "G.VLE0.07"},
+        {"x_srel": "S.TURB.348", "y_srel": "G.VLE0.08"},
+        {"x_srel": "S.TURB.349", "y_srel": "G.VLE0.09"},
+        {"x_srel": "S.TURB.350", "y_srel": "G.VLE0.10"},
+        {"x_srel": "S.TURB.351", "y_srel": "G.VLE0.11"}
+      ]
+    },
+    {
+      "name": "MBP03DU010C|F2_DIFF",
+      "description": "Pilot gas differential flow polynomial",
+      "x_label": "n, Hz",
+      "y_label": "mPG_diff, kg/s",
+      "points": [
+        {"x_srel": "S.TURB.352", "y_srel": "G.VLE0.12"},
+        {"x_srel": "S.TURB.353", "y_srel": "G.VLE0.13"},
+        {"x_srel": "S.TURB.354", "y_srel": "G.VLE0.14"},
+        {"x_srel": "S.TURB.355", "y_srel": "G.VLE0.15"},
+        {"x_srel": "S.TURB.356", "y_srel": "G.VLE0.16"},
+        {"x_srel": "S.TURB.357", "y_srel": "G.VLE0.17"},
+        {"x_srel": "S.TURB.358", "y_srel": "G.VLE0.18"},
+        {"x_srel": "S.TURB.359", "y_srel": "G.VLE0.19"},
+        {"x_srel": "S.TURB.360", "y_srel": "G.VLE0.20"},
+        {"x_srel": "S.TURB.361", "y_srel": "G.VLE0.21"}
+      ]
+    }
+  ]
+}

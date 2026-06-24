@@ -1,0 +1,22 @@
+{
+  "id": "SG116",
+  "title": "2.4 EG Valve Burnout Correction (GVHB)",
+  "fuel": "FG",
+  "pattern": "B",
+  "blocks": [
+    {
+      "name": "GVHB.EG300",
+      "description": "EG300 valve burnout correction factor as function of EG temperature",
+      "x_label": "T_EG, °C",
+      "y_label": "GVHB factor, -",
+      "points": [
+        {"x_srel": "J.EGVB.01", "x_label": "T1", "y_srel": "TT.ATK.87", "y_label": "K1"},
+        {"x_srel": "J.EGVB.02", "x_label": "T2", "y_srel": "TT.ATK.88", "y_label": "K2"},
+        {"x_srel": "J.EGVB.03", "x_label": "T3", "y_srel": "TT.ATK.89", "y_label": "K3"},
+        {"x_srel": "J.EGVB.04", "x_label": "T4", "y_srel": "TT.ATK.90", "y_label": "K4"},
+        {"x_srel": "J.EGVB.05", "x_label": "T5", "y_srel": "TT.ATK.91", "y_label": "K5"},
+        {"x_srel": "J.EGVB.06", "x_label": "T6", "y_srel": "TT.ATK.92", "y_label": "K6"}
+      ]
+    }
+  ]
+}

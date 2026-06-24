@@ -1,0 +1,19 @@
+{
+  "id": "SG124",
+  "title": "3.3 Advanced SMCP",
+  "fuel": "FG",
+  "pattern": "F",
+  "message": "Advanced SMCP (Sequential Motive Control Protection) — calculated parameters. Values are derived from TOTC and pilot gas polynomials.",
+  "sections": [
+    {
+      "header": "SMCP Parameters",
+      "rows": [
+        {"label": "Pilot gas split ratio at idle",  "srel": "SMCP.01", "unit": "%", "desc": "Pilot gas split ratio at idle"},
+        {"label": "Pilot gas split ratio at BL",    "srel": "SMCP.02", "unit": "%", "desc": "Pilot gas split ratio at BL"},
+        {"label": "SMCP activation threshold",      "srel": "SMCP.03", "unit": "-", "desc": "SMCP activation threshold"},
+        {"label": "SMCP transition time",           "srel": "SMCP.04", "unit": "s", "desc": "SMCP transition time"}
+      ],
+      "note": "These values are computed by the T3000 controller from the polynomials on sheets SG121 and SG122."
+    }
+  ]
+}
