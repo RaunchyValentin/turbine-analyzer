@@ -46,11 +46,12 @@ def _find_srel_sheet(xl) -> str | None:
     for name in xl.sheet_names:
         if any(kw in name.lower() for kw in _SREL_SHEET_KEYWORDS):
             return name
-    # 2. Scan all sheets for a Diagram-Name column header
+    # 2. Scan all sheets for a Diagram-Name column header (check first 5 rows)
     for name in xl.sheet_names:
         try:
-            df = xl.parse(name, nrows=0)
-            if any("Diagram" in str(c) for c in df.columns):
+            df = xl.parse(name, nrows=5, header=None)
+            flat = " ".join(str(v) for v in df.values.flatten())
+            if "Diagram" in flat:
                 return name
         except Exception:
             continue
@@ -73,12 +74,22 @@ def parse_srel_excel(file_bytes: bytes, filename: str = "") -> dict[str, Any]:
 
     Works for both single-sheet exports and multi-sheet workbooks that
     contain an 'IMPORTED SREL-List' or similarly named sheet.
+    Auto-detects the header row (some exports have a title row on row 0).
     Converts the target sheet to CSV then delegates to parse_srel().
     """
     import pandas as pd
     xl = pd.ExcelFile(io.BytesIO(file_bytes))
     target = _find_srel_sheet(xl) or xl.sheet_names[0]
-    df = xl.parse(target, dtype=str, keep_default_na=False)
+
+    # Auto-detect header row: look for "Diagram" in first 5 rows
+    header_row = 0
+    probe = xl.parse(target, nrows=5, header=None, dtype=str, keep_default_na=False)
+    for i, row in probe.iterrows():
+        if any("Diagram" in str(v) for v in row.values):
+            header_row = i
+            break
+
+    df = xl.parse(target, header=header_row, dtype=str, keep_default_na=False)
     csv_bytes = df.to_csv(index=False).encode("utf-8")
     return parse_srel(csv_bytes, filename)
 

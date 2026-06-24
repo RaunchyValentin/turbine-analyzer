@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
@@ -21,42 +21,64 @@ const COL_DEFS = [
   {
     headerName: 'Tag-Name',
     valueGetter: raw('Tag-Name', 'TagName'),
-    width: 200,
+    minWidth: 140,
+    flex: 2,
     sortable: true,
     filter: true,
   },
   {
     headerName: 'Port-Name',
     valueGetter: raw('Port-Name', 'PortName'),
-    width: 110,
+    minWidth: 90,
+    flex: 1,
+    sortable: true,
+    filter: true,
+  },
+  {
+    headerName: 'Designation',
+    valueGetter: raw('Designation'),
+    minWidth: 120,
+    flex: 2,
+    sortable: true,
+    filter: true,
+  },
+  {
+    headerName: 'Signal Name',
+    valueGetter: raw('Signal Name', 'Signal-Name', 'SignalName'),
+    minWidth: 120,
+    flex: 2,
     sortable: true,
     filter: true,
   },
   {
     field: 'value',
     headerName: 'Value',
-    width: 120,
+    minWidth: 80,
+    flex: 1,
     sortable: true,
     filter: true,
   },
   {
-    headerName: 'Variation Min',
-    valueGetter: raw('Variation-Min', 'Variation Min', 'Var-Min', 'VarMin', 'Min', 'Min.'),
-    width: 130,
+    headerName: 'Parameter Key',
+    valueGetter: raw('Parameter Key', 'Parameter-Key', 'ParameterKey', 'Param-Key'),
+    minWidth: 110,
+    flex: 1,
     sortable: true,
     filter: true,
   },
   {
-    headerName: 'Variation Max',
-    valueGetter: raw('Variation-Max', 'Variation Max', 'Var-Max', 'VarMax', 'Max', 'Max.'),
-    width: 130,
+    headerName: 'Variation min',
+    valueGetter: raw('Variation min', 'Variation-Min', 'Variation Min', 'Var-Min', 'VarMin'),
+    minWidth: 100,
+    flex: 1,
     sortable: true,
     filter: true,
   },
   {
-    field: 'unit',
-    headerName: 'EU',
-    width: 80,
+    headerName: 'Variation max',
+    valueGetter: raw('Variation max', 'Variation-Max', 'Variation Max', 'Var-Max', 'VarMax'),
+    minWidth: 100,
+    flex: 1,
     sortable: true,
     filter: true,
   },
@@ -106,16 +128,16 @@ export default function Dashboard() {
     if (!search.trim()) return rows
     const q = search.toLowerCase()
     return rows.filter((r) => {
-      const tag = (r._raw?.['Tag-Name'] || r._raw?.['TagName'] || '').toLowerCase()
-      const port = (r._raw?.['Port-Name'] || r._raw?.['PortName'] || '').toLowerCase()
-      const val = (r.value || '').toLowerCase()
-      return tag.includes(q) || port.includes(q) || val.includes(q)
+      const rd = r._raw || {}
+      const tag  = (rd['Tag-Name'] || rd['TagName'] || '').toLowerCase()
+      const port = (rd['Port-Name'] || rd['PortName'] || '').toLowerCase()
+      const desg = (rd['Designation'] || '').toLowerCase()
+      const sig  = (rd['Signal Name'] || rd['Signal-Name'] || '').toLowerCase()
+      const val  = (r.value || '').toLowerCase()
+      const key  = (rd['Parameter Key'] || rd['Parameter-Key'] || '').toLowerCase()
+      return tag.includes(q) || port.includes(q) || desg.includes(q) || sig.includes(q) || val.includes(q) || key.includes(q)
     })
   }, [rows, search])
-
-  const onGridReady = useCallback((params) => {
-    params.api.sizeColumnsToFit()
-  }, [])
 
   const selected = turbines.find((t) => t.id === selectedId)
 
@@ -158,7 +180,6 @@ export default function Dashboard() {
           rowData={filtered}
           columnDefs={COL_DEFS}
           defaultColDef={DEFAULT_COL}
-          onGridReady={onGridReady}
           pagination
           paginationPageSize={200}
           suppressCellFocus

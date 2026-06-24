@@ -1,6 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
+import { ModuleRegistry, ClientSideRowModelModule } from 'ag-grid-community'
+
+ModuleRegistry.registerModules([ClientSideRowModelModule])
 
 import NavBar from './components/NavBar/NavBar'
 import Dashboard from './pages/Dashboard'
