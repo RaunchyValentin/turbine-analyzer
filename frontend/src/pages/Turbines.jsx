@@ -22,6 +22,8 @@ export default function Turbines() {
   const [importError, setImportError]   = useState(null)
   const [dragging, setDragging]         = useState(false)
   const [editingProject, setEditingProject] = useState(null) // {id, name}
+  const [cleaning, setCleaning]             = useState(false)
+  const [cleanResult, setCleanResult]       = useState(null)
   const [sortBy, setSortBy]             = useState('project')
   const fileInputRef = useRef()
   const navigate = useNavigate()
@@ -76,6 +78,18 @@ export default function Turbines() {
     if (!window.confirm(`Delete turbine "${turbineName}" and all its data?`)) return
     await client.delete(`/turbines/${turbineId}`)
     loadTurbines()
+  }
+
+  const handleCleanup = async () => {
+    setCleaning(true)
+    setCleanResult(null)
+    try {
+      const r = await client.post('/db/cleanup')
+      setCleanResult(r.data)
+      loadTurbines()
+    } finally {
+      setCleaning(false)
+    }
   }
 
   const handleRenameProject = async (projectId, newName) => {
@@ -164,6 +178,19 @@ export default function Turbines() {
         <div style={s.listHeader}>
           <h2 style={s.sectionTitle}>Turbines ({turbines.length})</h2>
           <div style={s.sortGroup}>
+            <button
+              onClick={handleCleanup}
+              disabled={cleaning}
+              style={{ ...s.sortBtn, color: cleaning ? '#555' : '#c0784a', borderColor: '#3a2a1a', marginRight: 8 }}
+              title="Remove orphaned parameters and curves left after turbine deletion"
+            >
+              {cleaning ? 'Cleaning…' : '⌫ Clean DB'}
+            </button>
+            {cleanResult && (
+              <span style={{ fontSize: '0.72rem', color: '#888', marginRight: 8 }}>
+                Removed: {cleanResult.deleted_parameters} params, {cleanResult.deleted_curves} curves
+              </span>
+            )}
             <span style={s.sortLabel}>Sort:</span>
             {['project', 'turbine'].map(k => (
               <button key={k} style={{ ...s.sortBtn, ...(sortBy === k ? s.sortActive : {}) }}

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, text
 from pydantic import BaseModel
 from datetime import date
 
@@ -102,6 +102,31 @@ async def list_turbines_with_stats(db: AsyncSession = Depends(get_db)):
         }
         for r in rows
     ]
+
+
+@router.post("/db/cleanup")
+async def cleanup_db(db: AsyncSession = Depends(get_db)):
+    """Delete all orphaned rows left after project/turbine deletion."""
+    r1 = await db.execute(text(
+        "DELETE FROM parameters WHERE turbine_id NOT IN (SELECT id FROM turbines)"
+    ))
+    r2 = await db.execute(text(
+        "DELETE FROM curve_points WHERE curve_id NOT IN (SELECT id FROM curves)"
+    ))
+    r3 = await db.execute(text(
+        "DELETE FROM curves WHERE turbine_id NOT IN (SELECT id FROM turbines)"
+    ))
+    r4 = await db.execute(text(
+        "DELETE FROM turbines WHERE project_id NOT IN (SELECT id FROM projects)"
+    ))
+    await db.execute(text("VACUUM"))
+    await db.commit()
+    return {
+        "deleted_parameters": r1.rowcount,
+        "deleted_curve_points": r2.rowcount,
+        "deleted_curves": r3.rowcount,
+        "deleted_turbines": r4.rowcount,
+    }
 
 
 @router.patch("/projects/{project_id}")
