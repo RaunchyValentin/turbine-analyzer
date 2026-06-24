@@ -251,7 +251,7 @@ def _parse_icdiagram(content: bytes, filepath: str = "") -> dict[str, Any]:
     curves_acc: dict[str, dict] = {}
 
     for afi in root.iter("afi"):
-        afi_designation = afi.get("designation", "")
+        afi_designation = afi.get("designation", "") or diagram_name
         name_el = afi.find("name")
         if name_el is None:
             continue
