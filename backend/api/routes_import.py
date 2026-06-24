@@ -57,7 +57,10 @@ def _dispatch(content: bytes, filename: str) -> tuple[dict, str]:
     """
     fn = (filename or "").lower()
 
-    if fn.endswith((".jar", ".srel")):
+    if fn.endswith(".jar"):
+        return parse_jar(content, filename), "jar"
+
+    if fn.endswith(".srel"):
         return parse_jar(content, filename), "srel"
 
     if fn.endswith((".csv", ".txt")):
