@@ -279,7 +279,7 @@ def _parse_icdiagram(content: bytes, filepath: str = "") -> dict[str, Any]:
         # Process each port
         for port in afi.findall("port"):
             param_val = port.get("parameter", "")
-            if not param_val or param_val.lower() in ("true", "false"):
+            if not param_val or param_val.lower() == "false":
                 continue
 
             port_id_el = port.find("portIdentifier/portId")
@@ -288,12 +288,21 @@ def _parse_icdiagram(content: bytes, filepath: str = "") -> dict[str, Any]:
             ctx_key  = f"@{port_id}"
             raw_srel = ctx.get(ctx_key, "")
 
-            # Only keep ports that have a §SREL / §ASP / §GOV key
-            if not raw_srel or not any(kw in raw_srel.upper() for kw in ("SREL:", "ASP:", "GOV:", "PAR:")):
+            # Skip internal/layout ports with no context key and no numeric value
+            is_numeric = bool(_NUMERIC_RE.match(param_val))
+            if not raw_srel and not is_numeric:
+                continue
+
+            # Skip pure display/text context entries
+            if raw_srel.strip().lower() in ("text:", "text"):
                 continue
 
             m = _SREL_RE.search(raw_srel)
             srel_key = m.group(1).strip() if m else raw_srel.strip()
+
+            # For boolean ports (parameter="true") without a context key — skip
+            if param_val.lower() == "true" and not srel_key:
+                continue
 
             var_el  = port.find("variation")
             eu      = var_el.get("engUnit", "") if var_el is not None else ""
