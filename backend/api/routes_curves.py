@@ -1,4 +1,5 @@
 import json
+import os.path
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -71,6 +72,71 @@ async def delete_curve(curve_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(404)
     await db.delete(curve)
     await db.commit()
+
+
+@router.get("/curves/{curve_id}/axis-info")
+async def get_curve_axis_info(curve_id: int, db: AsyncSession = Depends(get_db)):
+    """Return X/Y axis labels derived from the SREL keys of underlying jar parameters."""
+    curve = await db.get(Curve, curve_id)
+    if not curve:
+        raise HTTPException(404)
+
+    parts = (curve.name or "").split("|", 1)
+    if len(parts) != 2:
+        return {"x_label": "X", "y_label": "Y", "x_unit": "", "y_unit": ""}
+
+    tag, port = parts
+
+    result = await db.execute(
+        select(Parameter).where(
+            Parameter.turbine_id == curve.turbine_id,
+            Parameter.name.like(f"{tag}|{port}.%"),
+        )
+    )
+    params = result.scalars().all()
+
+    x_keys, y_keys = [], []
+    x_units, y_units = set(), set()
+
+    for p in params:
+        if not p.raw_data:
+            continue
+        try:
+            rd = json.loads(p.raw_data)
+            pid = int(rd.get("Port-ID", "0"))
+        except Exception:
+            continue
+        if pid % 20 == 0:
+            if p.kks:
+                x_keys.append(p.kks)
+            if p.unit:
+                x_units.add(p.unit)
+        elif pid % 20 == 10:
+            if p.kks:
+                y_keys.append(p.kks)
+            if p.unit:
+                y_units.add(p.unit)
+
+    def common_prefix(keys: list[str]) -> str:
+        if not keys:
+            return ""
+        bases = [k.rsplit(".", 1)[0] for k in keys if "." in k]
+        if not bases:
+            return keys[0]
+        cp = os.path.commonprefix(bases)
+        return cp.rstrip(".")
+
+    # Unit "1" in SPPA-T3000 means dimensionless — omit it for cleaner labels
+    def clean_unit(units: set) -> str:
+        meaningful = {u for u in units if u and u != "1"}
+        return next(iter(meaningful), "")
+
+    return {
+        "x_label": common_prefix(x_keys) or "X",
+        "y_label": common_prefix(y_keys) or "Y",
+        "x_unit":  clean_unit(x_units),
+        "y_unit":  clean_unit(y_units),
+    }
 
 
 @router.post("/curves/detect-pli")

@@ -18,6 +18,7 @@ function CurvePanel({ turbines, label }) {
   const [dirty,     setDirty]     = useState(false)
   const [saving,    setSaving]    = useState(false)
   const [detecting, setDetecting] = useState(false)
+  const [axisInfo,  setAxisInfo]  = useState({ x_label: 'X', y_label: 'Y', x_unit: '', y_unit: '' })
 
   const gdRef     = useRef(null)    // Plotly graphDiv (via onInitialized)
   const dragRef   = useRef(null)    // {idx} when dragging
@@ -41,9 +42,13 @@ function CurvePanel({ turbines, label }) {
     setDirty(false); setSelIdx(null)
     const c = curves.find(c => c.id === curveId)
     setCurveMeta(c ?? null)
-    client.get(`/curves/${curveId}/points`).then(r =>
-      setPoints(r.data.map((p, i) => ({ x: p.x, y: p.y, order: i })))
-    )
+    Promise.all([
+      client.get(`/curves/${curveId}/points`),
+      client.get(`/curves/${curveId}/axis-info`),
+    ]).then(([pts, ax]) => {
+      setPoints(pts.data.map((p, i) => ({ x: p.x, y: p.y, order: i })))
+      setAxisInfo(ax.data)
+    })
   }, [curveId, curves])
 
   // ── coordinate helpers ──────────────────────────────────────────────────
@@ -179,13 +184,22 @@ function CurvePanel({ turbines, label }) {
     hovertemplate: 'X: %{x}<br>Y: %{y}<extra></extra>',
   }]
 
+  const xTitle = axisInfo.x_unit ? `${axisInfo.x_label} [${axisInfo.x_unit}]` : axisInfo.x_label
+  const yTitle = axisInfo.y_unit ? `${axisInfo.y_label} [${axisInfo.y_unit}]` : axisInfo.y_label
+
   const plotLayout = {
-    margin: { l: 52, r: 8, t: 8, b: 36 },
+    margin: { l: 72, r: 12, t: 12, b: 58 },
     paper_bgcolor: '#1e1e2e',
     plot_bgcolor:  '#16162a',
     font:  { color: '#a0a0c0', size: 11 },
-    xaxis: { gridcolor: '#2a2a45', zerolinecolor: '#444', color: '#777' },
-    yaxis: { gridcolor: '#2a2a45', zerolinecolor: '#444', color: '#777' },
+    xaxis: {
+      gridcolor: '#2a2a45', zerolinecolor: '#444', color: '#777',
+      title: { text: xTitle, font: { size: 11, color: '#8888aa' }, standoff: 8 },
+    },
+    yaxis: {
+      gridcolor: '#2a2a45', zerolinecolor: '#444', color: '#777',
+      title: { text: yTitle, font: { size: 11, color: '#8888aa' }, standoff: 8 },
+    },
     showlegend: false,
     dragmode: 'pan',
   }
@@ -267,55 +281,64 @@ function CurvePanel({ turbines, label }) {
       </div>
 
       {/* point table */}
-      <div style={{ flex: '0 0 auto', maxHeight: 180, overflowY: 'auto', borderRadius: 4, border: '1px solid #222' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
+      <div style={{ flex: '0 0 auto', maxHeight: 200, overflowY: 'auto', borderRadius: 4, border: '1px solid #252535' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
           <thead>
-            <tr style={{ background: '#1a1a2e', position: 'sticky', top: 0 }}>
-              <th style={TH}>#</th>
-              <th style={TH}>X</th>
-              <th style={TH}>Y</th>
-              <th style={{ ...TH, width: 24 }}></th>
+            <tr style={{ background: '#14142a', position: 'sticky', top: 0, zIndex: 1 }}>
+              <th style={TH_N}>#</th>
+              <th style={TH_X} title={axisInfo.x_label}>
+                {axisInfo.x_label}
+                {axisInfo.x_unit && <span style={UNIT_BADGE}>{axisInfo.x_unit}</span>}
+              </th>
+              <th style={TH_X} title={axisInfo.y_label}>
+                {axisInfo.y_label}
+                {axisInfo.y_unit && <span style={UNIT_BADGE}>{axisInfo.y_unit}</span>}
+              </th>
+              <th style={{ ...TH_N, width: 28 }} />
             </tr>
           </thead>
           <tbody>
-            {points.map((pt, i) => (
-              <tr
-                key={i}
-                onClick={() => setSelIdx(i)}
-                style={{
-                  background: i === selIdx ? '#1a2535' : i % 2 ? '#141420' : 'transparent',
-                  cursor: 'pointer',
-                  outline: i === selIdx ? '1px solid #ff980066' : 'none',
-                }}
-              >
-                <td style={{ ...TD, color: '#555', width: 24 }}>{i + 1}</td>
-                <td style={TD}>
-                  <input
-                    type="number" step="any" value={pt.x}
-                    onChange={e => updatePoint(i, 'x', e.target.value)}
-                    onFocus={() => setSelIdx(i)}
-                    style={NUM_IN}
-                  />
-                </td>
-                <td style={TD}>
-                  <input
-                    type="number" step="any" value={pt.y}
-                    onChange={e => updatePoint(i, 'y', e.target.value)}
-                    onFocus={() => setSelIdx(i)}
-                    style={NUM_IN}
-                  />
-                </td>
-                <td style={TD}>
-                  <button
-                    onClick={e => { e.stopPropagation(); deletePoint(i) }}
-                    style={DEL_BTN}
-                    title="Delete point"
-                  >×</button>
-                </td>
-              </tr>
-            ))}
+            {points.map((pt, i) => {
+              const active = i === selIdx
+              return (
+                <tr
+                  key={i}
+                  onClick={() => setSelIdx(i)}
+                  style={{
+                    background: active ? '#1c2a40' : i % 2 ? '#131320' : 'transparent',
+                    cursor: 'pointer',
+                    borderLeft: active ? '2px solid #ff9800' : '2px solid transparent',
+                  }}
+                >
+                  <td style={TD_N}>{i + 1}</td>
+                  <td style={TD_V}>
+                    <input
+                      type="number" step="any" value={pt.x}
+                      onChange={e => updatePoint(i, 'x', e.target.value)}
+                      onFocus={() => setSelIdx(i)}
+                      style={NUM_IN}
+                    />
+                  </td>
+                  <td style={TD_V}>
+                    <input
+                      type="number" step="any" value={pt.y}
+                      onChange={e => updatePoint(i, 'y', e.target.value)}
+                      onFocus={() => setSelIdx(i)}
+                      style={NUM_IN}
+                    />
+                  </td>
+                  <td style={TD_N}>
+                    <button
+                      onClick={e => { e.stopPropagation(); deletePoint(i) }}
+                      style={DEL_BTN}
+                      title="Delete point"
+                    >×</button>
+                  </td>
+                </tr>
+              )
+            })}
             {points.length === 0 && (
-              <tr><td colSpan={4} style={{ padding: '0.5rem', color: '#444', textAlign: 'center', fontSize: '0.75rem' }}>
+              <tr><td colSpan={4} style={{ padding: '0.6rem', color: '#444', textAlign: 'center', fontSize: '0.75rem' }}>
                 No points
               </td></tr>
             )}
@@ -382,20 +405,34 @@ const SEL = {
   padding: '0.3rem 0.5rem', fontSize: '0.8rem', minWidth: 120,
 }
 
-const TH = {
-  padding: '0.3rem 0.5rem', textAlign: 'left',
-  color: '#888', fontWeight: 600, fontSize: '0.72rem',
-  borderBottom: '1px solid #222',
+const TH_BASE = {
+  padding: '0.35rem 0.5rem', textAlign: 'left',
+  color: '#7a7a9a', fontWeight: 600, fontSize: '0.72rem',
+  borderBottom: '1px solid #252535', whiteSpace: 'nowrap',
+  overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0,
 }
+const TH_N = { ...TH_BASE, width: 28, maxWidth: 'none', textAlign: 'center' }
+const TH_X = { ...TH_BASE, width: '45%' }
 
-const TD = {
-  padding: '0.15rem 0.4rem',
+const TD_N = {
+  padding: '0.2rem 0.4rem', color: '#4a4a6a',
+  fontSize: '0.72rem', textAlign: 'center', width: 28,
+  borderBottom: '1px solid #1a1a2a',
+}
+const TD_V = {
+  padding: '0.1rem 0.4rem',
+  borderBottom: '1px solid #1a1a2a',
 }
 
 const NUM_IN = {
   width: '100%', background: 'transparent', border: 'none',
-  color: '#d0d0e8', fontSize: '0.78rem', padding: '0.1rem 0',
+  color: '#c8c8e8', fontSize: '0.8rem', padding: '0.15rem 0',
   outline: 'none', fontFamily: 'monospace',
+}
+
+const UNIT_BADGE = {
+  marginLeft: '0.3rem', fontSize: '0.65rem',
+  color: '#5588aa', fontWeight: 400,
 }
 
 const DEL_BTN = {
