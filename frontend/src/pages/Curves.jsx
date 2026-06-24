@@ -286,10 +286,10 @@ function CurvePanel({ turbines, label }) {
       </div>
 
       {/* point table */}
-      <div style={{ flex: '0 0 auto', maxHeight: 160, overflowY: 'auto', borderRadius: 4, border: '1px solid #1e1e30', isolation: 'isolate' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+      <div style={{ flex: '0 0 auto', maxHeight: 160, overflowY: 'auto', borderRadius: 4, border: '1px solid #2a2a3e', isolation: 'isolate' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
           <thead>
-            <tr style={{ background: '#14142a', position: 'sticky', top: 0, zIndex: 1 }}>
+            <tr style={{ background: '#131325', position: 'sticky', top: 0, zIndex: 1, borderBottom: '2px solid #2a2a3e' }}>
               <th style={TH_N}>#</th>
               <th style={TH_X} title={axisInfo.x_label}>
                 {axisInfo.x_label}
@@ -310,9 +310,10 @@ function CurvePanel({ turbines, label }) {
                   key={i}
                   onClick={() => setSelIdx(i)}
                   style={{
-                    background: active ? '#1e2d3d' : 'transparent',
+                    background: active ? '#1a2b3c' : i % 2 ? '#13131f' : '#0f0f1a',
                     cursor: 'pointer',
-                    borderLeft: active ? '2px solid #e08030' : '2px solid transparent',
+                    borderLeft: active ? '2px solid #c07030' : '2px solid transparent',
+                    borderBottom: '1px solid #1e1e2e',
                   }}
                 >
                   <td style={TD_N}>{i + 1}</td>
@@ -411,25 +412,25 @@ const SEL = {
 }
 
 const TH_BASE = {
-  padding: '0.25rem 0.45rem', textAlign: 'left',
-  color: '#5a5a7a', fontWeight: 600, fontSize: '0.7rem',
-  borderBottom: '1px solid #1e1e30', whiteSpace: 'nowrap',
-  overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0,
+  padding: '0.3rem 0.5rem', textAlign: 'left',
+  color: '#7070a0', fontWeight: 700, fontSize: '0.7rem',
+  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0,
 }
-const TH_N = { ...TH_BASE, width: 24, maxWidth: 'none', textAlign: 'center' }
-const TH_X = { ...TH_BASE, width: '45%' }
+const TH_N = { ...TH_BASE, width: 28, maxWidth: 'none', textAlign: 'center' }
+const TH_X = { ...TH_BASE, width: '45%', borderLeft: '1px solid #2a2a3e' }
 
 const TD_N = {
-  padding: '0.05rem 0.4rem', color: '#3e3e58',
-  fontSize: '0.7rem', textAlign: 'center', width: 24,
+  padding: '0.18rem 0.4rem', color: '#484868',
+  fontSize: '0.7rem', textAlign: 'center', width: 28,
 }
 const TD_V = {
-  padding: '0 0.4rem',
+  padding: '0.1rem 0.5rem',
+  borderLeft: '1px solid #1e1e2e',
 }
 
 const NUM_IN = {
   width: '100%', background: 'transparent', border: 'none',
-  color: '#a8a8c8', fontSize: '0.77rem', padding: '0.08rem 0',
+  color: '#c0c0e0', fontSize: '0.78rem', padding: '0.1rem 0',
   outline: 'none', fontFamily: 'monospace',
 }
 
