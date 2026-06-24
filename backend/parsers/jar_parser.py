@@ -53,10 +53,9 @@ def _parse_zip(file_bytes: bytes, outer_filename: str) -> dict[str, Any]:
     with zf:
         names = zf.namelist()
 
-        # Priority order: CSV first, then Excel, then XML
         csv_names  = [n for n in names if n.lower().endswith((".csv", ".srel", ".txt"))]
         xl_names   = [n for n in names if n.lower().endswith((".xlsx", ".xls"))]
-        xml_names  = [n for n in names if n.lower().endswith(".xml")]
+        ic_names_check = [n for n in names if n.lower().endswith("icdiagram.xml")]
 
         for inner in csv_names:
             content = zf.read(inner)
@@ -72,8 +71,14 @@ def _parse_zip(file_bytes: bytes, outer_filename: str) -> dict[str, Any]:
                 all_params.extend(r.get("parameters", []))
                 all_curves.extend(r.get("curves", []))
 
-        if not all_params:
-            for inner in xml_names:
+        # SREL XML only when archive has no icdiagram.xml (not a T3000 project JAR)
+        if not all_params and not ic_names_check:
+            srel_xml_names = [
+                n for n in names
+                if n.lower().endswith(".xml")
+                and not n.lower().endswith("node.xml")
+            ]
+            for inner in srel_xml_names:
                 content = zf.read(inner)
                 try:
                     r = _parse_srel_xml(content, inner)
@@ -82,7 +87,7 @@ def _parse_zip(file_bytes: bytes, outer_filename: str) -> dict[str, Any]:
                 except Exception:
                     pass
 
-        # Fallback: T3000 project JAR — parse icdiagram.xml blocks
+        # T3000 project JAR: parse icdiagram.xml blocks
         if not all_params and not all_curves:
             # Build folder → designation map from ALL node.xml files in the archive
             desig_map: dict[str, str] = {}
@@ -328,13 +333,18 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
                 ctx[k.strip()] = v.strip()
 
         # Collect signal info from output port sigdefs
-        sig_tagname = sig_signal = sig_designation = ""
+        # Signal Name = "KKS|signal" (e.g. "42MBY10DT010|U220"), not sigdef.designation
+        # sigdef.designation is the IC page description — same as afi_designation, not useful here
+        sig_tagname = sig_signal = ""
         for port in afi.findall("port"):
             sigdef = port.find("sigdef")
             if sigdef is not None and not sig_tagname:
-                sig_tagname   = sigdef.get("tagname", "")
-                sig_signal    = sigdef.get("signal", "")
-                sig_designation = sigdef.get("designation", "")
+                sig_tagname = sigdef.get("tagname", "")
+                sig_signal  = sigdef.get("signal", "")
+
+        # Skip AFI blocks with no KKS tag — nothing to identify them by
+        if not tag_name:
+            continue
 
         # Process each port
         for port in afi.findall("port"):
@@ -355,6 +365,13 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
             m = _SREL_RE.search(raw_srel)
             srel_key = m.group(1).strip() if m else raw_srel.strip()
 
+            # param_val must be numeric or boolean "true"
+            # String values like "Time Signal", "FO CONSUM..." are text elements, not parameters
+            is_numeric = bool(_NUMERIC_RE.match(param_val))
+            is_bool = param_val.lower() == "true"
+            if not is_numeric and not is_bool and not srel_key:
+                continue
+
             var_el  = port.find("variation")
             eu      = var_el.get("engUnit", "") if var_el is not None else ""
 
@@ -362,11 +379,15 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
             par_visible  = port.get("parVisible", "false")
             is_archive   = port.get("isarchive", "false")
 
+            # Port-Name: use item_name (block port), append portId to distinguish
+            # multiple settable ports within the same AFI block
+            port_name = f"{item_name}.{port_id}" if item_name and port_id else (item_name or port_id)
+
             raw_data = {
                 "Tag-Name":        tag_name,
-                "Port-Name":       item_name,
+                "Port-Name":       port_name,
                 "Designation":     afi_designation,
-                "Signal Name":     sig_designation,
+                "Signal Name":     f"{sig_tagname}|{sig_signal}" if sig_tagname and sig_signal else sig_tagname,
                 "Signal Tag Name": sig_tagname,
                 "Signal Item":     sig_signal,
                 "Value":           param_val,
@@ -378,10 +399,10 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
                 "Diagram-Name":    diagram_name,
             }
 
-            kks = srel_key if srel_key else (f"{tag_name}|{item_name}" if item_name else tag_name)
+            kks = srel_key if srel_key else (f"{tag_name}|{port_name}" if port_name else tag_name)
             parameters.append({
                 "kks":         kks,
-                "name":        f"{tag_name}|{item_name}" if item_name else tag_name,
+                "name":        f"{tag_name}|{port_name}" if port_name else tag_name,
                 "value":       param_val,
                 "unit":        eu,
                 "group":       diagram_name,

@@ -1,7 +1,7 @@
 import json
 from fastapi import APIRouter, Depends, File, UploadFile, Form, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, insert
 from datetime import date
 
 from database import get_db
@@ -13,8 +13,22 @@ from parsers import (
 
 router = APIRouter(tags=["import"])
 
-# Scalar fields that map directly to Parameter columns
 _SCALAR_FIELDS = {"kks", "name", "value", "unit", "data_type", "group", "description"}
+_BATCH_SIZE = 2000
+
+
+async def _bulk_insert_params(db: AsyncSession, turbine_id: int, source: str, params: list[dict]):
+    """Insert parameters in batches for performance."""
+    rows = []
+    for p in params:
+        raw = p.get("raw_data")
+        row = {k: v for k, v in p.items() if k in _SCALAR_FIELDS}
+        row["turbine_id"] = turbine_id
+        row["source"] = source
+        row["raw_data"] = json.dumps(raw, ensure_ascii=False) if raw else None
+        rows.append(row)
+    for i in range(0, len(rows), _BATCH_SIZE):
+        await db.execute(insert(Parameter), rows[i:i + _BATCH_SIZE])
 
 
 def _dispatch(content: bytes, filename: str) -> tuple[dict, str]:
@@ -73,21 +87,10 @@ async def save_import(
 
     data, source = _dispatch(content, filename)
 
-    for p in data.get("parameters", []):
-        raw = p.get("raw_data")
-        db.add(Parameter(
-            turbine_id=turbine_id,
-            source=source,
-            raw_data=json.dumps(raw, ensure_ascii=False) if raw else None,
-            **{k: v for k, v in p.items() if k in _SCALAR_FIELDS},
-        ))
+    await _bulk_insert_params(db, turbine_id, source, data.get("parameters", []))
 
     for c in data.get("curves", []):
-        curve = Curve(
-            turbine_id=turbine_id,
-            name=c["name"],
-            description=c.get("description", ""),
-        )
+        curve = Curve(turbine_id=turbine_id, name=c["name"], description=c.get("description", ""))
         db.add(curve)
         await db.flush()
         for i, pt in enumerate(c.get("points", [])):
@@ -153,14 +156,7 @@ async def create_and_import(
     await db.flush()
 
     # Save parameters
-    for p in data.get("parameters", []):
-        raw = p.get("raw_data")
-        db.add(Parameter(
-            turbine_id=turbine.id,
-            source=source,
-            raw_data=json.dumps(raw, ensure_ascii=False) if raw else None,
-            **{k: v for k, v in p.items() if k in _SCALAR_FIELDS},
-        ))
+    await _bulk_insert_params(db, turbine.id, source, data.get("parameters", []))
 
     # Save curves
     for c in data.get("curves", []):
