@@ -146,6 +146,24 @@ async def create_and_import(
     """One-shot: find-or-create project, create turbine, parse and save."""
     content = await file.read()
     filename = file.filename or ""
+
+    # Duplicate check: same project + turbine + file_date
+    file_date = _extract_file_date(filename)
+    if file_date:
+        dup = await db.execute(
+            select(Turbine)
+            .join(Project, Turbine.project_id == Project.id)
+            .where(Project.name == project_name)
+            .where(Turbine.name == turbine_name)
+            .where(Turbine.file_date == file_date)
+        )
+        if dup.scalar_one_or_none():
+            raise HTTPException(
+                409,
+                f"File dated {file_date} is already imported for {project_name} / {turbine_name}. "
+                "Delete the existing entry first or use a file with a different date."
+            )
+
     try:
         data, source = _dispatch(content, filename)
     except NotImplementedError as e:
@@ -166,7 +184,7 @@ async def create_and_import(
         project_id=project.id,
         name=turbine_name,
         source_file=filename,
-        file_date=_extract_file_date(filename),
+        file_date=file_date,
         imported_at=date.today(),
     )
     db.add(turbine)

@@ -2,6 +2,15 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import client from '../api/client'
 
+function sourceLabel(filename) {
+  if (!filename) return '—'
+  const ext = filename.split('.').pop().toLowerCase()
+  if (ext === 'jar') return 'T3000 (JAR)'
+  if (ext === 'xlsx' || ext === 'xls') return 'SREL (Excel)'
+  if (ext === 'csv' || ext === 'txt' || ext === 'srel') return 'SREL (CSV)'
+  return ext.toUpperCase()
+}
+
 // Parse "Sarir_GT12_SettingList_SGT5-4000F_4_.xls" → {project:"Sarir", turbine:"GT12"}
 function parseFilename(filename) {
   const base = filename.replace(/\.[^.]+$/, '').replace(/\s+/g, '_')
@@ -208,7 +217,8 @@ export default function Turbines() {
                   <th style={s.th}>Project</th>
                   <th style={s.th}>Turbine</th>
                   <th style={s.th}>Source file</th>
-                  <th style={s.th}>Imported</th>
+                  <th style={s.th}>Source</th>
+                  <th style={s.th}>Date</th>
                   <th style={{ ...s.th, textAlign: 'right' }}>Parameters</th>
                   <th style={s.th}></th>
                 </tr>
@@ -246,8 +256,11 @@ export default function Turbines() {
                         title="Open in Setting List"
                       >{t.name}</span>
                     </td>
-                    <td style={{ ...s.td, ...s.fileCell }}>{t.source_file || '—'}</td>
-                    <td style={s.td}>{t.imported_at || '—'}</td>
+                    <td style={{ ...s.td, ...s.fileCell }} title={t.source_file}>{t.source_file || '—'}</td>
+                    <td style={s.td}>
+                      <span style={sourceStyle(t.source_file)}>{sourceLabel(t.source_file)}</span>
+                    </td>
+                    <td style={s.td}>{t.file_date || t.imported_at || '—'}</td>
                     <td style={{ ...s.td, textAlign: 'right' }}>
                       <span style={s.paramCount}>{t.param_count}</span>
                     </td>
@@ -263,6 +276,12 @@ export default function Turbines() {
       </section>
     </div>
   )
+}
+
+function sourceStyle(filename) {
+  const ext = (filename || '').split('.').pop().toLowerCase()
+  if (ext === 'jar') return { color: '#4fc3f7', fontSize: '0.75rem', fontWeight: 600 }
+  return { color: '#a5d6a7', fontSize: '0.75rem', fontWeight: 600 }
 }
 
 const s = {
