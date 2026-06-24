@@ -34,7 +34,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/" element={<Dashboard />} />
           <Route path="/parameters/:turbineId" element={<Parameters />} />
           <Route path="/comparison" element={<Comparison />} />
-          <Route path="/curves/:turbineId" element={<Curves />} />
+          <Route path="/curves" element={<Curves />} />
           <Route path="/import" element={<Import />} />
           <Route path="/turbines" element={<Turbines />} />
           <Route path="/export" element={<Export />} />

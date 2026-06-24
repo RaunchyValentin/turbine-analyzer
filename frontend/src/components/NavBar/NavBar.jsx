@@ -6,6 +6,7 @@ const links = [
   { to: '/turbines', label: 'Turbines' },
   { to: '/settings', label: 'Setting List' },
   { to: '/comparison', label: 'Comparison' },
+  { to: '/curves', label: 'Curves' },
   { to: '/export', label: 'Export' },
 ]
 
