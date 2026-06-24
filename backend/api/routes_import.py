@@ -1,5 +1,7 @@
+import io
 import json
 import re
+import zipfile
 from fastapi import APIRouter, Depends, File, UploadFile, Form, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, insert
@@ -44,6 +46,68 @@ async def _bulk_insert_params(db: AsyncSession, turbine_id: int, source: str, pa
         rows.append(row)
     for i in range(0, len(rows), _BATCH_SIZE):
         await db.execute(insert(Parameter), rows[i:i + _BATCH_SIZE])
+
+
+_TAG_RE  = re.compile(rb'<name\b[^>]*\btag="([^"]+)"')
+_WORD_RE = re.compile(rb'(?:^|[,;\t])(\d{2}[A-Z]{2,}[^\s,;\t|]*)', re.MULTILINE)
+_NUM_PFX = re.compile(r'^(\d+)')
+
+
+def _add_prefix(counts: dict, tag: str) -> None:
+    m = _NUM_PFX.match(tag)
+    if m:
+        pfx = m.group(1)
+        counts[pfx] = counts.get(pfx, 0) + 1
+
+
+def _scan_kks_prefixes(content: bytes) -> list[dict]:
+    """Fast scan of JAR: extract leading KKS unit prefixes from all sources."""
+    try:
+        zf = zipfile.ZipFile(io.BytesIO(content))
+    except Exception:
+        return []
+
+    counts: dict[str, int] = {}
+    with zf:
+        names = zf.namelist()
+
+        # 1. icdiagram.xml — <name tag="KKS"> attributes
+        for name in names:
+            if not name.lower().endswith("icdiagram.xml"):
+                continue
+            try:
+                data = zf.read(name)
+            except Exception:
+                continue
+            for m in _TAG_RE.finditer(data):
+                _add_prefix(counts, m.group(1).decode("utf-8", errors="ignore"))
+
+        # 2. CSV/SREL/TXT — first token on each line that looks like KKS
+        if not counts:
+            for name in names:
+                if not name.lower().endswith((".csv", ".srel", ".txt")):
+                    continue
+                try:
+                    data = zf.read(name)[:65536]   # first 64 KB is enough
+                except Exception:
+                    continue
+                for m in _WORD_RE.finditer(data):
+                    _add_prefix(counts, m.group(1).decode("utf-8", errors="ignore"))
+
+    return sorted(
+        [{"prefix": k, "count": v} for k, v in counts.items()],
+        key=lambda x: -x["count"],
+    )
+
+
+@router.post("/import/detect-prefixes")
+async def detect_prefixes(file: UploadFile = File(...)):
+    """Quickly scan a JAR and return detected KKS unit prefixes with tag counts."""
+    content = await file.read()
+    fn = (file.filename or "").lower()
+    if not fn.endswith(".jar"):
+        return []
+    return _scan_kks_prefixes(content)
 
 
 def _dispatch(content: bytes, filename: str) -> tuple[dict, str]:
@@ -144,6 +208,7 @@ async def create_and_import(
     project_name: str = Form(...),
     turbine_name: str = Form(...),
     file: UploadFile = File(...),
+    kks_prefix: str = Form(""),
     db: AsyncSession = Depends(get_db),
 ):
     """One-shot: find-or-create project, create turbine, parse and save."""
@@ -193,8 +258,21 @@ async def create_and_import(
     db.add(turbine)
     await db.flush()
 
+    # Filter by KKS prefix if specified
+    params = data.get("parameters", [])
+    pfx = kks_prefix.strip().upper()
+    if pfx:
+        params = [
+            p for p in params
+            if (p.get("kks") or "").upper().startswith(pfx)
+            or (
+                isinstance(p.get("raw_data"), dict)
+                and (p["raw_data"].get("Tag-Name") or "").upper().startswith(pfx)
+            )
+        ]
+
     # Save parameters
-    await _bulk_insert_params(db, turbine.id, source, data.get("parameters", []))
+    await _bulk_insert_params(db, turbine.id, source, params)
 
     # Save curves
     for c in data.get("curves", []):
@@ -211,6 +289,7 @@ async def create_and_import(
         "project_name": project_name,
         "turbine_id": turbine.id,
         "turbine_name": turbine_name,
-        "parameters": len(data.get("parameters", [])),
+        "parameters": len(params),
         "curves": len(data.get("curves", [])),
+        "kks_prefix": pfx or None,
     }

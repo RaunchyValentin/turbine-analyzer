@@ -35,6 +35,14 @@ const COL_DEFS = [
     filter: true,
   },
   {
+    headerName: 'Port-ID',
+    valueGetter: raw('Port-ID', 'PortID'),
+    minWidth: 70,
+    width: 70,
+    sortable: true,
+    filter: true,
+  },
+  {
     headerName: 'Designation',
     valueGetter: raw('Designation'),
     minWidth: 120,
@@ -99,11 +107,13 @@ function parseRows(raw_rows) {
 }
 
 export default function Dashboard() {
-  const [turbines, setTurbines] = useState([])
+  const [turbines, setTurbines]     = useState([])
   const [selectedId, setSelectedId] = useState(null)
-  const [rows, setRows] = useState([])
-  const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [rows, setRows]             = useState([])
+  const [search, setSearch]         = useState('')
+  const [loading, setLoading]       = useState(false)
+  const [kksPrefixes, setKksPrefixes] = useState([])  // [{prefix,count}] detected in current turbine
+  const [kksFilter, setKksFilter]   = useState('')    // selected prefix filter
 
   // Load turbine list once
   useEffect(() => {
@@ -113,33 +123,51 @@ export default function Dashboard() {
     })
   }, [])
 
-  // Load parameters when turbine changes
+  // Load parameters + prefix stats when turbine changes
   useEffect(() => {
     if (!selectedId) return
     setLoading(true)
-    client
-      .get('/parameters', { params: { turbine_id: selectedId } })
-      .then((r) => setRows(parseRows(r.data)))
-      .finally(() => setLoading(false))
+    setKksPrefixes([])
+    setKksFilter('')
+    Promise.all([
+      client.get('/parameters', { params: { turbine_id: selectedId } }),
+      client.get('/db/kks-prefixes'),
+    ]).then(([pRes, pfxRes]) => {
+      setRows(parseRows(pRes.data))
+      const turbineStats = pfxRes.data.find(t => t.turbine_id === selectedId)
+      if (turbineStats) {
+        const pfxs = turbineStats.prefixes.filter(p => p.prefix !== 'empty' && p.prefix !== 'other')
+        setKksPrefixes(pfxs)
+        // Auto-select if only one numeric prefix
+        if (pfxs.length === 1) setKksFilter(pfxs[0].prefix)
+      }
+    }).finally(() => setLoading(false))
   }, [selectedId])
 
-  // Client-side search across Tag-Name, Port-Name and value
+  // Client-side filter: KKS prefix + search
   const filtered = useMemo(() => {
-    if (!search.trim()) return rows
-    const q = search.toLowerCase()
-    return rows.filter((r) => {
-      const rd = r._raw || {}
-      const tag  = (rd['Tag-Name'] || rd['TagName'] || '').toLowerCase()
-      const port = (rd['Port-Name'] || rd['PortName'] || '').toLowerCase()
-      const desg = (rd['Designation'] || '').toLowerCase()
-      const sig  = (rd['Signal Name'] || rd['Signal-Name'] || '').toLowerCase()
-      const val  = (r.value || '').toLowerCase()
-      const key  = (rd['Parameter Key'] || rd['Parameter-Key'] || '').toLowerCase()
-      return tag.includes(q) || port.includes(q) || desg.includes(q) || sig.includes(q) || val.includes(q) || key.includes(q)
-    })
-  }, [rows, search])
+    let r = rows
+    if (kksFilter) {
+      r = r.filter(row => (row.kks || '').toUpperCase().startsWith(kksFilter.toUpperCase()))
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      r = r.filter((row) => {
+        const rd = row._raw || {}
+        const tag  = (rd['Tag-Name'] || rd['TagName'] || '').toLowerCase()
+        const port = (rd['Port-Name'] || rd['PortName'] || '').toLowerCase()
+        const desg = (rd['Designation'] || '').toLowerCase()
+        const sig  = (rd['Signal Name'] || rd['Signal-Name'] || '').toLowerCase()
+        const val  = (row.value || '').toLowerCase()
+        const key  = (rd['Parameter Key'] || rd['Parameter-Key'] || '').toLowerCase()
+        return tag.includes(q) || port.includes(q) || desg.includes(q) || sig.includes(q) || val.includes(q) || key.includes(q)
+      })
+    }
+    return r
+  }, [rows, search, kksFilter])
 
   const selected = turbines.find((t) => t.id === selectedId)
+  const mixedData = kksPrefixes.length > 1
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', height: 'calc(100vh - 72px)' }}>
@@ -158,9 +186,27 @@ export default function Dashboard() {
           ))}
         </select>
 
+        {/* KKS prefix filter — shown only when turbine has mixed data */}
+        {kksPrefixes.length > 1 && (
+          <select
+            value={kksFilter}
+            onChange={e => setKksFilter(e.target.value)}
+            style={{ padding: '0.35rem 0.6rem', fontSize: '0.875rem', background: kksFilter ? '#1a2a1a' : '#2a1a1a', borderColor: kksFilter ? '#4caf7d' : '#e57373', border: '1px solid', borderRadius: 3, color: '#e0e0e0' }}
+            title="Filter by KKS prefix (turbine unit number)"
+          >
+            <option value="">⚠ Mixed data — all {rows.length.toLocaleString()} params</option>
+            {kksPrefixes.map(({ prefix, count }) => (
+              <option key={prefix} value={prefix}>
+                {prefix}… — {count.toLocaleString()} params
+              </option>
+            ))}
+          </select>
+        )}
+
         {selected && (
-          <span style={{ fontSize: '0.8rem', color: '#666' }}>
-            {selected.param_count} parameters
+          <span style={{ fontSize: '0.8rem', color: mixedData && !kksFilter ? '#e57373' : '#666' }}>
+            {kksFilter ? filtered.length.toLocaleString() : selected.param_count.toLocaleString()} parameters
+            {mixedData && !kksFilter ? ' ⚠ mixed' : ''}
           </span>
         )}
 

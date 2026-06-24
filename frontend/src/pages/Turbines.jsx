@@ -26,6 +26,9 @@ export default function Turbines() {
   const [file, setFile]                 = useState(null)
   const [projectName, setProjectName]   = useState('')
   const [turbineName, setTurbineName]   = useState('')
+  const [kksPrefix, setKksPrefix]       = useState('')
+  const [kksPrefixes, setKksPrefixes]   = useState([])   // [{prefix, count}]
+  const [scanningPfx, setScanningPfx]   = useState(false)
   const [importing, setImporting]       = useState(false)
   const [importResult, setImportResult] = useState(null)
   const [importError, setImportError]   = useState(null)
@@ -33,6 +36,8 @@ export default function Turbines() {
   const [editingProject, setEditingProject] = useState(null) // {id, name}
   const [cleaning, setCleaning]             = useState(false)
   const [cleanResult, setCleanResult]       = useState(null)
+  const [purgingId, setPurgingId]           = useState(null)
+  const [purgePrefix, setPurgePrefix]       = useState({}) // {turbineId: prefix}
   const [sortBy, setSortBy]             = useState('project')
   const fileInputRef = useRef()
   const navigate = useNavigate()
@@ -43,7 +48,7 @@ export default function Turbines() {
 
   useEffect(() => { loadTurbines() }, [loadTurbines])
 
-  const onFileChosen = (f) => {
+  const onFileChosen = async (f) => {
     if (!f) return
     setFile(f)
     setImportResult(null)
@@ -51,6 +56,22 @@ export default function Turbines() {
     const parsed = parseFilename(f.name)
     setProjectName(parsed.project)
     setTurbineName(parsed.turbine)
+    setKksPrefix('')
+    setKksPrefixes([])
+
+    // Scan JAR for KKS prefixes
+    if (f.name.toLowerCase().endsWith('.jar')) {
+      setScanningPfx(true)
+      try {
+        const fd = new FormData()
+        fd.append('file', f)
+        const r = await client.post('/import/detect-prefixes', fd)
+        setKksPrefixes(r.data)
+        // Auto-select if only one prefix found
+        if (r.data.length === 1) setKksPrefix(r.data[0].prefix)
+      } catch (_) {}
+      finally { setScanningPfx(false) }
+    }
   }
 
   const handleDrop = (e) => {
@@ -70,16 +91,31 @@ export default function Turbines() {
       fd.append('file', file)
       fd.append('project_name', projectName)
       fd.append('turbine_name', turbineName)
+      if (kksPrefix.trim()) fd.append('kks_prefix', kksPrefix.trim())
       const r = await client.post('/import/create', fd)
       setImportResult(r.data)
       setFile(null)
       setProjectName('')
       setTurbineName('')
+      setKksPrefix('')
       loadTurbines()
     } catch (e) {
       setImportError(e.response?.data?.detail || 'Import failed')
     } finally {
       setImporting(false)
+    }
+  }
+
+  const handlePurge = async (turbineId) => {
+    const pfx = (purgePrefix[turbineId] || '').trim()
+    if (!pfx) return
+    if (!window.confirm(`Keep only "${pfx}…" params in this turbine? All others will be deleted.`)) return
+    setPurgingId(turbineId)
+    try {
+      await client.delete(`/turbines/${turbineId}/params`, { params: { keep_prefix: pfx } })
+      loadTurbines()
+    } finally {
+      setPurgingId(null)
     }
   }
 
@@ -167,6 +203,35 @@ export default function Turbines() {
                 placeholder="e.g. GT12"
               />
             </label>
+            <label style={s.label}>
+              KKS prefix
+              {scanningPfx
+                ? <span style={{ ...s.input, color: '#555', width: '130px' }}>scanning…</span>
+                : kksPrefixes.length > 1
+                  ? (
+                    <select
+                      style={{ ...s.input, width: '150px' }}
+                      value={kksPrefix}
+                      onChange={e => setKksPrefix(e.target.value)}
+                    >
+                      <option value="">— all turbines —</option>
+                      {kksPrefixes.map(({ prefix, count }) => (
+                        <option key={prefix} value={prefix}>
+                          {prefix}  ({count.toLocaleString()} tags)
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      style={{ ...s.input, width: '90px' }}
+                      value={kksPrefix}
+                      onChange={e => setKksPrefix(e.target.value)}
+                      placeholder="e.g. 12"
+                      title="Filter: only import tags starting with this prefix"
+                    />
+                  )
+              }
+            </label>
             <button style={{ ...s.importBtn, ...(isReady ? {} : s.importBtnDisabled) }}
               onClick={handleImport} disabled={!isReady || importing}>
               {importing ? 'Importing…' : 'Import'}
@@ -220,6 +285,7 @@ export default function Turbines() {
                   <th style={s.th}>Source</th>
                   <th style={s.th}>Date</th>
                   <th style={{ ...s.th, textAlign: 'right' }}>Parameters</th>
+                  <th style={s.th}>Keep prefix</th>
                   <th style={s.th}></th>
                 </tr>
               </thead>
@@ -263,6 +329,25 @@ export default function Turbines() {
                     <td style={{ ...s.td, color: '#c0c0d0' }}>{t.file_date || t.imported_at || '—'}</td>
                     <td style={{ ...s.td, textAlign: 'right' }}>
                       <span style={s.paramCount}>{t.param_count}</span>
+                    </td>
+                    <td style={{ ...s.td }}>
+                      <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
+                        <input
+                          style={{ ...s.inlineInput, width: 44 }}
+                          placeholder="e.g. 31"
+                          value={purgePrefix[t.id] || ''}
+                          onChange={e => setPurgePrefix(p => ({ ...p, [t.id]: e.target.value }))}
+                          title="Keep only params with this KKS prefix, delete the rest"
+                        />
+                        <button
+                          style={{ ...s.deleteBtn, color: '#c0784a', borderColor: '#3a2a1a', whiteSpace: 'nowrap' }}
+                          disabled={!purgePrefix[t.id]?.trim() || purgingId === t.id}
+                          onClick={() => handlePurge(t.id)}
+                          title="Delete all params NOT matching this prefix"
+                        >
+                          {purgingId === t.id ? '…' : '⌫'}
+                        </button>
+                      </div>
                     </td>
                     <td style={s.td}>
                       <button style={s.deleteBtn} onClick={() => handleDelete(t.id, t.name)} title="Delete turbine">✕</button>

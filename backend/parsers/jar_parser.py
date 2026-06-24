@@ -346,7 +346,8 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
         if not tag_name:
             continue
 
-        # Process each port
+        # Collect all settable ports for this AFI block first
+        settable_ports = []
         for port in afi.findall("port"):
             param_val = port.get("parameter", "")
             if not param_val or param_val.lower() == "false":
@@ -358,34 +359,38 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
             ctx_key  = f"@{port_id}"
             raw_srel = ctx.get(ctx_key, "")
 
-            # Skip pure display/text context entries
-            if raw_srel.strip().lower() in ("text:", "text"):
+            # Skip ports with no context key — only import SREL-referenced params
+            if not raw_srel.strip() or raw_srel.strip().lower() in ("text:", "text"):
                 continue
 
             m = _SREL_RE.search(raw_srel)
             srel_key = m.group(1).strip() if m else raw_srel.strip()
 
-            # param_val must be numeric or boolean "true"
-            # String values like "Time Signal", "FO CONSUM..." are text elements, not parameters
-            is_numeric = bool(_NUMERIC_RE.match(param_val))
-            is_bool = param_val.lower() == "true"
-            if not is_numeric and not is_bool and not srel_key:
-                continue
+            var_el = port.find("variation")
+            settable_ports.append({
+                "port":      port,
+                "port_id":   port_id,
+                "param_val": param_val,
+                "raw_srel":  raw_srel,
+                "srel_key":  srel_key,
+                "eu":        var_el.get("engUnit", "") if var_el is not None else "",
+            })
 
-            var_el  = port.find("variation")
-            eu      = var_el.get("engUnit", "") if var_el is not None else ""
+        for sp in settable_ports:
+            port_id   = sp["port_id"]
+            param_val = sp["param_val"]
+            raw_srel  = sp["raw_srel"]
+            srel_key  = sp["srel_key"]
+            eu        = sp["eu"]
+            port      = sp["port"]
 
-            is_visible   = port.get("isvisible", "false")
-            par_visible  = port.get("parVisible", "false")
-            is_archive   = port.get("isarchive", "false")
-
-            # Port-Name: use item_name (block port), append portId to distinguish
-            # multiple settable ports within the same AFI block
-            port_name = f"{item_name}.{port_id}" if item_name and port_id else (item_name or port_id)
+            # Port-Name = item_name only; Port-ID stored separately
+            port_name = item_name or port_id
 
             raw_data = {
                 "Tag-Name":        tag_name,
                 "Port-Name":       port_name,
+                "Port-ID":         port_id,
                 "Designation":     afi_designation,
                 "Signal Name":     f"{sig_tagname}|{sig_signal}" if sig_tagname and sig_signal else sig_tagname,
                 "Signal Tag Name": sig_tagname,
@@ -393,16 +398,18 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
                 "Value":           param_val,
                 "Parameter Key":   raw_srel,
                 "EU":              eu,
-                "Visible Port":    is_visible,
-                "Visible Parameter": par_visible,
-                "Archive":         is_archive,
+                "Visible Port":    port.get("isvisible", "false"),
+                "Visible Parameter": port.get("parVisible", "false"),
+                "Archive":         port.get("isarchive", "false"),
                 "Diagram-Name":    diagram_name,
             }
 
-            kks = srel_key if srel_key else (f"{tag_name}|{port_name}" if port_name else tag_name)
+            # kks: SREL key if present, else Tag|Port.PortID for uniqueness
+            kks_port = f"{port_name}.{port_id}" if port_name and port_id else (port_name or port_id)
+            kks = srel_key if srel_key else (f"{tag_name}|{kks_port}" if kks_port else tag_name)
             parameters.append({
                 "kks":         kks,
-                "name":        f"{tag_name}|{port_name}" if port_name else tag_name,
+                "name":        f"{tag_name}|{kks_port}" if kks_port else tag_name,
                 "value":       param_val,
                 "unit":        eu,
                 "group":       diagram_name,

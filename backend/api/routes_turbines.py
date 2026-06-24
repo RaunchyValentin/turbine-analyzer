@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, text
 from pydantic import BaseModel
@@ -102,6 +102,50 @@ async def list_turbines_with_stats(db: AsyncSession = Depends(get_db)):
         }
         for r in rows
     ]
+
+
+@router.get("/db/kks-prefixes")
+async def kks_prefix_stats(db: AsyncSession = Depends(get_db)):
+    """Return KKS prefix distribution per turbine for diagnostics."""
+    import re
+    turbines_r = await db.execute(select(Turbine))
+    result = []
+    num_pfx = re.compile(r'^(\d+)')
+    for t in turbines_r.scalars().all():
+        r = await db.execute(
+            text("SELECT kks FROM parameters WHERE turbine_id = :tid"),
+            {"tid": t.id}
+        )
+        counts: dict[str, int] = {}
+        for (kks,) in r.fetchall():
+            m = num_pfx.match(kks or "")
+            pfx = m.group(1) if m else ("other" if kks else "empty")
+            counts[pfx] = counts.get(pfx, 0) + 1
+        result.append({
+            "turbine_id":   t.id,
+            "turbine_name": t.name,
+            "total":        sum(counts.values()),
+            "prefixes":     sorted([{"prefix": k, "count": v} for k, v in counts.items()], key=lambda x: -x["count"]),
+        })
+    return result
+
+
+@router.delete("/turbines/{turbine_id}/params")
+async def purge_params_by_prefix(
+    turbine_id: int,
+    keep_prefix: str = Query(..., description="Keep only params whose kks starts with this prefix"),
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete all parameters of a turbine that don't match the given KKS prefix."""
+    turbine = await db.get(Turbine, turbine_id)
+    if not turbine:
+        raise HTTPException(404)
+    r = await db.execute(
+        text("DELETE FROM parameters WHERE turbine_id = :tid AND kks NOT LIKE :pfx"),
+        {"tid": turbine_id, "pfx": keep_prefix.upper() + "%"},
+    )
+    await db.commit()
+    return {"deleted": r.rowcount, "kept_prefix": keep_prefix.upper()}
 
 
 @router.post("/db/cleanup")
