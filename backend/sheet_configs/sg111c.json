@@ -2,7 +2,7 @@
   "id": "SG111c",
   "title": "2.2 Run Up Controller",
   "fuel": "FG",
-  "pattern": "C",
+  "pattern": "G",
   "blocks": [
     {
       "name": "MBY10DU040C|F2",
@@ -37,14 +37,17 @@
       "description": "Premix gas as function of speed",
       "x_label": "n, Hz",
       "y_label": "mVB, kg/s",
-      "static": true,
       "points": [
-        {"x_srel": "VBNTM.A1", "y_srel": "VBNTM.B1"},
-        {"x_srel": "VBNTM.A2", "y_srel": "VBNTM.B2"},
-        {"x_srel": "VBNTM.A3", "y_srel": "VBNTM.B3"},
-        {"x_srel": "VBNTM.A4", "y_srel": "VBNTM.B4"},
-        {"x_srel": "VBNTM.A5", "y_srel": "VBNTM.B5"},
-        {"x_srel": "VBNTM.A6", "y_srel": "VBNTM.B6"}
+        {"x_srel": "VBNTM.A1",  "y_srel": "VBNTM.B1"},
+        {"x_srel": "VBNTM.A2",  "y_srel": "VBNTM.B2"},
+        {"x_srel": "VBNTM.A3",  "y_srel": "VBNTM.B3"},
+        {"x_srel": "VBNTM.A4",  "y_srel": "VBNTM.B4"},
+        {"x_srel": "VBNTM.A5",  "y_srel": "VBNTM.B5"},
+        {"x_srel": "VBNTM.A6",  "y_srel": "VBNTM.B6"},
+        {"x_srel": "VBNTM.A7",  "y_srel": "VBNTM.B7"},
+        {"x_srel": "VBNTM.A8",  "y_srel": "VBNTM.B8"},
+        {"x_srel": "VBNTM.A9",  "y_srel": "VBNTM.B9"},
+        {"x_srel": "VBNTM.A10", "y_srel": "VBNTM.B10"}
       ]
     }
   ]

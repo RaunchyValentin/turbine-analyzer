@@ -47,6 +47,22 @@
         {"x_srel": "TT.ATK.45", "x_label": "ZUET4",  "y_srel": "F.EG.25", "y_label": "ZUEM4"},
         {"x_srel": "TT.ATK.46", "x_label": "ZUET5",  "y_srel": "F.EG.26", "y_label": "ZUEM5"}
       ]
+    },
+    {
+      "header": "Ignition Timing Diagram — FPG vs Zeit nach SSV-Öffnung",
+      "type": "timing_diagram",
+      "x_label": "Zeit [sec]",
+      "y_label": "FPG [kg/s]",
+      "srel_keys": {
+        "ZUET0":  "K.IGNITE.06",
+        "ZUEMT1": "K.IGNITE.07",
+        "ZUEMTD": "K.IGNITE.08",
+        "ZUEMT2": "K.IGNITE.09",
+        "ZUEM0":  "F.EG.42",
+        "ZUEM1":  "F.EG.44",
+        "ZUEM2":  "F.EG.45",
+        "ZUEFL":  "F.EG.43"
+      }
     }
   ]
 }

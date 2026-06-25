@@ -41,9 +41,14 @@ async def get_sheet(turbine_id: int, sheet_id: str, db: AsyncSession) -> dict:
     elif pattern == "B":
         _enrich_b(enriched, srel_lookup, overrides)
     elif pattern == "C":
-        _enrich_b(enriched, srel_lookup, overrides)   # same point structure
+        if enriched.get("id", "").upper() == "SG111C":
+            _enrich_sg111c(enriched, srel_lookup, overrides)
+        else:
+            _enrich_b(enriched, srel_lookup, overrides)
     elif pattern == "D":
         _enrich_d(enriched, srel_lookup, overrides)
+    elif pattern == "G":
+        _enrich_sg111c(enriched, srel_lookup, overrides)
     # E, F — config returned as-is (no live values needed for now)
 
     return enriched
@@ -145,6 +150,99 @@ def _enrich_b(config: dict, srel: dict, overrides: dict) -> None:
                     pt[f"{axis}_overridden"] = ov is not None
 
 
+def _safe_float(v) -> float | None:
+    if v is None:
+        return None
+    try:
+        f = float(v)
+        return f if f == f else None  # NaN check
+    except (ValueError, TypeError):
+        return None
+
+
+def _linear_interp(xs: list, ys: list, x: float) -> float | None:
+    if len(xs) < 2:
+        return ys[0] if ys else None
+    if x <= xs[0]:
+        return ys[0]
+    if x >= xs[-1]:
+        return ys[-1]
+    for i in range(len(xs) - 1):
+        if xs[i] <= x <= xs[i + 1]:
+            t = (x - xs[i]) / (xs[i + 1] - xs[i])
+            return ys[i] + t * (ys[i + 1] - ys[i])
+    return None
+
+
+def _compute_ignition_diagram(vals: dict) -> list[dict]:
+    """Build step-function points for FPG vs Zeit chart."""
+    t0  = vals.get("ZUET0")  or 2.5
+    t1  = vals.get("ZUEMT1") or 5.0
+    td  = vals.get("ZUEMTD") or 6.5
+    t2  = vals.get("ZUEMT2") or 9.0
+    m0  = vals.get("ZUEM0")  or 0.20
+    m1  = vals.get("ZUEM1")  or 0.30
+    m2  = vals.get("ZUEM2")  or 0.38
+    mfl = vals.get("ZUEFL")  or 0.15
+    return [
+        {"t": -1.5,     "flow": round(m0, 4),  "label": "Vorpositionierung"},
+        {"t": -0.01,    "flow": round(m0, 4),  "label": ""},
+        {"t":  0.0,     "flow": round(m0, 4),  "label": "SSV öffnet"},
+        {"t":  t0,      "flow": round(m1, 4),  "label": "Beginn 1. Rampe"},
+        {"t":  t1,      "flow": round(m1, 4),  "label": "Ende 1. Rampe"},
+        {"t":  td,      "flow": round(m2, 4),  "label": "Beginn 2. Rampe"},
+        {"t":  t2,      "flow": round(m2, 4),  "label": "Ende 2. Rampe"},
+        {"t":  t2+0.01, "flow": round(mfl, 4), "label": "Flamme ein"},
+        {"t": 12.0,     "flow": round(mfl, 4), "label": ""},
+    ]
+
+
+def _enrich_sg111c(config: dict, srel: dict, overrides: dict) -> None:
+    """Enrich SG111c: static VBNTM values for first 6 pts + computed pilot gas."""
+    f2_curve: list[tuple[float, float]] = []
+    vb_curve: list[tuple[float, float]] = []
+
+    for block in config.get("blocks", []):
+        name = block.get("name", "")
+        is_f2    = "|F2"    in name
+        is_vbntm = "|VBNTM" in name or "VBNTM" in name
+
+        for i, pt in enumerate(block.get("points", [])):
+            xk = pt.get("x_srel", "")
+            yk = pt.get("y_srel", "")
+
+                xv = _safe_float(overrides.get(xk) or srel.get(xk))
+            yv = _safe_float(overrides.get(yk) or srel.get(yk))
+            xo = _safe_float(srel.get(xk))
+            yo = _safe_float(srel.get(yk))
+            pt["x_value"]      = xv
+            pt["y_value"]      = yv
+            pt["x_original"]   = xo
+            pt["y_original"]   = yo
+            pt["x_overridden"] = xk in overrides
+            pt["y_overridden"] = yk in overrides
+            pt["x_source"]     = "srel" if xv is not None else "not_found"
+            pt["y_source"]     = "srel" if yv is not None else "not_found"
+
+            if is_f2 and xv is not None and yv is not None:
+                f2_curve.append((float(xv), float(yv)))
+            if is_vbntm and xv is not None and yv is not None:
+                vb_curve.append((float(xv), float(yv)))
+
+    # Compute pilot gas
+    pilot: list[dict] = []
+    if vb_curve:
+        vb_s = sorted(vb_curve, key=lambda t: t[0])
+        vb_xs = [p[0] for p in vb_s]
+        vb_ys = [p[1] for p in vb_s]
+        for speed, mng in f2_curve:
+            mpremix = _linear_interp(vb_xs, vb_ys, speed)
+            mpilot  = round(mng - mpremix, 4) if mpremix is not None else None
+            pilot.append({"speed": speed, "mNG": mng, "mPremix": mpremix, "mPilot": mpilot})
+
+    config["pilot_gas"] = pilot
+
+
 def _enrich_d(config: dict, srel: dict, overrides: dict) -> None:
     for section in config.get("sections", []):
         stype = section.get("type", "scalar")
@@ -167,6 +265,13 @@ def _enrich_d(config: dict, srel: dict, overrides: dict) -> None:
                     pt[f"{axis}_value"] = ov if ov is not None else original
                     pt[f"{axis}_original"] = original
                     pt[f"{axis}_overridden"] = ov is not None
+
+        elif stype == "timing_diagram":
+            keys = section.get("srel_keys", {})
+            vals = {name: _safe_float(overrides.get(key) or srel.get(key))
+                    for name, key in keys.items()}
+            section["computed_values"] = vals
+            section["chart_points"] = _compute_ignition_diagram(vals)
 
 
 def _stub(sheet_id: str) -> dict:

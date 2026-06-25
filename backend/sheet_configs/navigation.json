@@ -82,7 +82,7 @@
           "sheets": [
             {"id": "SG111",  "label": "2. Ignition and Start Up (OLD)", "pattern": "A", "priority": 3},
             {"id": "SG111b", "label": "2.1 Ignition",                      "pattern": "D", "priority": 1},
-            {"id": "SG111c", "label": "2.2 Run Up Controller",          "pattern": "C", "priority": 1},
+            {"id": "SG111c", "label": "2.2 Run Up Controller",          "pattern": "G", "priority": 1},
             {"id": "SG111d", "label": "2.3 Run Up Trim Controller OTC", "pattern": "C", "priority": 1},
             {"id": "SG111e", "label": "2.4 Run Up Trim Controller Speed","pattern": "D", "priority": 1},
             {"id": "SG115",  "label": "2.3 Premix Gas as Function of Speed", "pattern": "C", "priority": 2},

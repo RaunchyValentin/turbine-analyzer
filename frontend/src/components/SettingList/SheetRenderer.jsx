@@ -6,6 +6,7 @@ import PolyTablePaired from './patterns/PolyTablePaired'
 import MixedSection from './patterns/MixedSection'
 import SequenceTable from './patterns/SequenceTable'
 import ReadOnlyCalc from './patterns/ReadOnlyCalc'
+import RunUpController from './patterns/RunUpController'
 
 const PATTERNS = {
   A: ScalarTable,
@@ -14,6 +15,7 @@ const PATTERNS = {
   D: MixedSection,
   E: SequenceTable,
   F: ReadOnlyCalc,
+  G: RunUpController,
 }
 
 export default function SheetRenderer({ turbineId, sheetId }) {
