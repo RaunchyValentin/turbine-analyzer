@@ -1,21 +1,37 @@
 {
   "id": "SG122",
-  "title": "3.3 Pilot Gas vs Inlet Temperature (TVIK)",
+  "title": "3.3 Pilot Gas vs Inlet Temperature",
   "fuel": "FG",
-  "pattern": "B",
+  "pattern": "C",
   "blocks": [
     {
       "name": "MSPG.TVIK",
-      "description": "Pilot gas inlet temperature correction factor (TVI-index based)",
-      "x_label": "T_inlet, °C",
-      "y_label": "TVIK correction, -",
+      "static": true,
+      "description": "Inlet temperature correction factor (static reference values)",
+      "x_label": "T_inlet [°C]",
+      "y_label": "Correction [-]",
       "points": [
-        {"x_srel": "TVIK.A1", "x_label": "T1 (-20°C)", "y_srel": "TVIK.B1", "y_label": "f1"},
-        {"x_srel": "TVIK.A2", "x_label": "T2 (-5°C)",  "y_srel": "TVIK.B2", "y_label": "f2"},
-        {"x_srel": "TVIK.A3", "x_label": "T3 (0°C)",   "y_srel": "TVIK.B3", "y_label": "f3"},
-        {"x_srel": "TVIK.A4", "x_label": "T4 (5°C)",   "y_srel": "TVIK.B4", "y_label": "f4"},
-        {"x_srel": "TVIK.A5", "x_label": "T5 (15°C)",  "y_srel": "TVIK.B5", "y_label": "f5"},
-        {"x_srel": "TVIK.A6", "x_label": "T6 (40°C)",  "y_srel": "TVIK.B6", "y_label": "f6"}
+        {"x_label": "-20 °C", "x_value": -20, "y_value": 0.80},
+        {"x_label": "-5 °C",  "x_value": -5,  "y_value": 0.90},
+        {"x_label": "0 °C",   "x_value": 0,   "y_value": 0.95},
+        {"x_label": "5 °C",   "x_value": 5,   "y_value": 1.00},
+        {"x_label": "15 °C",  "x_value": 15,  "y_value": 1.15},
+        {"x_label": "40 °C",  "x_value": 40,  "y_value": 1.25}
+      ]
+    },
+    {
+      "name": "MSPG.F5",
+      "static": true,
+      "description": "OTC correction at IGV-open (currently inactive — all zeros)",
+      "x_label": "IGV [%]",
+      "y_label": "Δ m PG [kg/s]",
+      "points": [
+        {"x_label": "0 %",   "x_value": 0,   "y_value": 0},
+        {"x_label": "10 %",  "x_value": 10,  "y_value": 0},
+        {"x_label": "40 %",  "x_value": 40,  "y_value": 0},
+        {"x_label": "60 %",  "x_value": 60,  "y_value": 0},
+        {"x_label": "90 %",  "x_value": 90,  "y_value": 0},
+        {"x_label": "100 %", "x_value": 100, "y_value": 0}
       ]
     }
   ]

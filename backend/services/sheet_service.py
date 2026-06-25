@@ -49,6 +49,8 @@ async def get_sheet(turbine_id: int, sheet_id: str, db: AsyncSession) -> dict:
         _enrich_d(enriched, srel_lookup, overrides)
     elif pattern == "G":
         _enrich_sg111c(enriched, srel_lookup, overrides)
+    elif pattern == "H":
+        _enrich_h(enriched, srel_lookup, overrides)
     # E, F — config returned as-is (no live values needed for now)
 
     return enriched
@@ -135,6 +137,45 @@ def _enrich_a(config: dict, srel: dict, overrides: dict) -> None:
                 row["overridden"] = ov is not None
 
 
+def _ep(pt: dict, srel: dict, overrides: dict) -> None:
+    """Enrich a single H-pattern point in-place. sx/sy = static override."""
+    for axis, sk, sv in (("x", "xk", "sx"), ("y", "yk", "sy")):
+        if sv in pt:
+            pt[f"{axis}v"] = pt[sv]
+            pt[f"{axis}s"] = "static"
+        else:
+            k = pt.get(sk, "")
+            if k:
+                ov   = overrides.get(k)
+                orig = _safe_float(srel.get(k))
+                pt[f"{axis}v"]          = _safe_float(ov) if ov is not None else orig
+                pt[f"{axis}o"]          = orig
+                pt[f"{axis}_overridden"] = k in overrides
+            pt[f"{axis}s"] = "srel"
+
+
+def _enrich_h(config: dict, srel: dict, overrides: dict) -> None:
+    """Enrich pattern H (PilotGasPaired): sections with points / points_u."""
+    for section in config.get("sections", []):
+        for key in ("points", "points_u"):
+            for pt in section.get(key, []):
+                _ep(pt, srel, overrides)
+    # Optional gas_index panel
+    gi = config.get("gas_index")
+    if gi:
+        gi["values"] = {
+            name: {"key": k, "value": _safe_float(overrides.get(k) or srel.get(k))}
+            for name, k in gi.get("keys", {}).items()
+        }
+    # Optional lhv_panel
+    lp = config.get("lhv_panel")
+    if lp:
+        lp["values"] = {
+            name: {"key": k, "value": _safe_float(overrides.get(k) or srel.get(k))}
+            for name, k in lp.get("keys", {}).items()
+        }
+
+
 def _enrich_b(config: dict, srel: dict, overrides: dict) -> None:
     for block_key in ("blocks", "blocks_split"):
         for block in config.get(block_key, []):
@@ -211,7 +252,7 @@ def _enrich_sg111c(config: dict, srel: dict, overrides: dict) -> None:
             xk = pt.get("x_srel", "")
             yk = pt.get("y_srel", "")
 
-                xv = _safe_float(overrides.get(xk) or srel.get(xk))
+            xv = _safe_float(overrides.get(xk) or srel.get(xk))
             yv = _safe_float(overrides.get(yk) or srel.get(yk))
             xo = _safe_float(srel.get(xk))
             yo = _safe_float(srel.get(yk))

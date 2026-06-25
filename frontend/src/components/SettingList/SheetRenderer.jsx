@@ -7,6 +7,7 @@ import MixedSection from './patterns/MixedSection'
 import SequenceTable from './patterns/SequenceTable'
 import ReadOnlyCalc from './patterns/ReadOnlyCalc'
 import RunUpController from './patterns/RunUpController'
+import PilotGasPaired from './patterns/PilotGasPaired'
 
 const PATTERNS = {
   A: ScalarTable,
@@ -16,6 +17,7 @@ const PATTERNS = {
   E: SequenceTable,
   F: ReadOnlyCalc,
   G: RunUpController,
+  H: PilotGasPaired,
 }
 
 export default function SheetRenderer({ turbineId, sheetId }) {

@@ -93,12 +93,12 @@
           "id": "SG12x",
           "label": "Pilot Gas Flow",
           "sheets": [
-            {"id": "SG121",  "label": "3. Pilot Gas Flow (cold gas)",            "pattern": "C", "priority": 1},
-            {"id": "SG121b", "label": "3. Pilot Gas Flow (hot gas)",             "pattern": "C", "priority": 1},
-            {"id": "SG122",  "label": "3.3 Pilot Gas vs Inlet Temperature",      "pattern": "B", "priority": 1},
-            {"id": "SG123",  "label": "3. Pilot Gas Flow (Split Controller)",     "pattern": "C", "priority": 3},
+            {"id": "SG121",  "label": "3. Pilot Gas Flow (cold gas)",            "pattern": "H", "priority": 1},
+            {"id": "SG121b", "label": "3. Pilot Gas Flow (hot gas)",             "pattern": "H", "priority": 1},
+            {"id": "SG122",  "label": "3.3 Pilot Gas vs Inlet Temperature",      "pattern": "C", "priority": 1},
+            {"id": "SG123",  "label": "3. Pilot Gas Flow (Split Controller)",     "pattern": "H", "priority": 3},
             {"id": "SG124",  "label": "3.3 Advanced SMCP",                        "pattern": "F", "priority": 3},
-            {"id": "SG125",  "label": "3. Pilot Gas with LHV Correction",         "pattern": "C", "priority": 3},
+            {"id": "SG125",  "label": "3. Pilot Gas with LHV Correction",         "pattern": "H", "priority": 3},
             {"id": "SG125b", "label": "3. Pilot Gas with LHV Correction (hot)",   "pattern": "C", "priority": 3},
             {"id": "SG126",  "label": "3.3a Pilot Gas vs Inlet Temperature (10pt)","pattern": "B", "priority": 3}
           ]

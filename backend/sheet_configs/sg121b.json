@@ -1,43 +1,62 @@
 {
   "id": "SG121b",
-  "title": "3. Pilot Gas Flow vs OTC (hot gas)",
+  "title": "3. Pilot Gas Flow (HOT Fuel Gas)",
   "fuel": "FG",
-  "pattern": "C",
-  "blocks": [
+  "pattern": "H",
+  "show_gas_temp": true,
+  "unloading_disabled": true,
+  "sections": [
     {
-      "name": "MSPG.F6H",
-      "description": "Pilot gas — hot gas loading curve (OTC-based)",
-      "x_label": "OTC, °C",
-      "y_label": "m PG, kg/s",
+      "title": "3.1b Pilot Gas as Function of OTC — HOT Fuel Gas",
+      "x_label": "OTC [°C]",
+      "y_label": "m PG [kg/s]",
+      "loading_label": "MSPG.F6H — Loading",
+      "unloading_label": "MSPG.F6HE — Unloading",
       "points": [
-        {"x_srel": "F6H.A1",  "x_label": "OTC1",  "y_srel": "F6H.B1",  "y_label": "mPG1"},
-        {"x_srel": "F6H.A2",  "x_label": "OTC2",  "y_srel": "F6H.B2",  "y_label": "mPG2"},
-        {"x_srel": "F6H.A3",  "x_label": "OTC3",  "y_srel": "F6H.B3",  "y_label": "mPG3"},
-        {"x_srel": "F6H.A4",  "x_label": "OTC4",  "y_srel": "F6H.B4",  "y_label": "mPG4"},
-        {"x_srel": "F6H.A5",  "x_label": "OTC5",  "y_srel": "F6H.B5",  "y_label": "mPG5"},
-        {"x_srel": "F6H.A6",  "x_label": "OTC6",  "y_srel": "F6H.B6",  "y_label": "mPG6"},
-        {"x_srel": "F6H.A7",  "x_label": "OTC7",  "y_srel": "F6H.B7",  "y_label": "mPG7"},
-        {"x_srel": "F6H.A8",  "x_label": "OTC8",  "y_srel": "F6H.B8",  "y_label": "mPG8"},
-        {"x_srel": "F6H.A9",  "x_label": "OTC9",  "y_srel": "F6H.B9",  "y_label": "mPG9"},
-        {"x_srel": "F6H.A10", "x_label": "OTC10", "y_srel": "F6H.B10", "y_label": "mPG10"}
+        {"xk":"F6H.A1","yk":"F6H.B1"},{"xk":"F6H.A2","yk":"F6H.B2"},
+        {"xk":"F6H.A3","yk":"F6H.B3"},{"xk":"F6H.A4","yk":"F6H.B4"},
+        {"xk":"F6H.A5","yk":"F6H.B5"},{"xk":"F6H.A6","yk":"F6H.B6"},
+        {"xk":"F6H.A7","yk":"F6H.B7"},{"xk":"F6H.A8","yk":"F6H.B8"},
+        {"xk":"F6H.A9","yk":"F6H.B9"},{"xk":"F6H.A10","yk":"F6H.B10"}
+      ],
+      "points_u": [
+        {"xk":"F6HE.A1","yk":"F6HE.B1"},{"xk":"F6HE.A2","yk":"F6HE.B2"},
+        {"xk":"F6HE.A3","yk":"F6HE.B3"},{"xk":"F6HE.A4","yk":"F6HE.B4"},
+        {"xk":"F6HE.A5","yk":"F6HE.B5"},{"xk":"F6HE.A6","yk":"F6HE.B6"},
+        {"xk":"F6HE.A7","yk":"F6HE.B7"},{"xk":"F6HE.A8","yk":"F6HE.B8"},
+        {"xk":"F6HE.A9","yk":"F6HE.B9"},{"xk":"F6HE.A10","yk":"F6HE.B10"}
       ]
     },
     {
-      "name": "MSPG.F6HE",
-      "description": "Pilot gas — hot gas unloading curve (OTC-based)",
-      "x_label": "OTC, °C",
-      "y_label": "m PG, kg/s",
+      "title": "3.2b Pilot Gas as Function of IGV — HOT Fuel Gas",
+      "x_label": "IGV [%]",
+      "y_label": "m PG [kg/s]",
+      "static_note": "All values static (embedded in Excel, design reference only)",
+      "loading_label": "MSPG.F4H — Loading",
+      "unloading_label": "MSPG.F4HE — Unloading",
       "points": [
-        {"x_srel": "F6HE.A1",  "x_label": "OTC1",  "y_srel": "F6HE.B1",  "y_label": "mPG1"},
-        {"x_srel": "F6HE.A2",  "x_label": "OTC2",  "y_srel": "F6HE.B2",  "y_label": "mPG2"},
-        {"x_srel": "F6HE.A3",  "x_label": "OTC3",  "y_srel": "F6HE.B3",  "y_label": "mPG3"},
-        {"x_srel": "F6HE.A4",  "x_label": "OTC4",  "y_srel": "F6HE.B4",  "y_label": "mPG4"},
-        {"x_srel": "F6HE.A5",  "x_label": "OTC5",  "y_srel": "F6HE.B5",  "y_label": "mPG5"},
-        {"x_srel": "F6HE.A6",  "x_label": "OTC6",  "y_srel": "F6HE.B6",  "y_label": "mPG6"},
-        {"x_srel": "F6HE.A7",  "x_label": "OTC7",  "y_srel": "F6HE.B7",  "y_label": "mPG7"},
-        {"x_srel": "F6HE.A8",  "x_label": "OTC8",  "y_srel": "F6HE.B8",  "y_label": "mPG8"},
-        {"x_srel": "F6HE.A9",  "x_label": "OTC9",  "y_srel": "F6HE.B9",  "y_label": "mPG9"},
-        {"x_srel": "F6HE.A10", "x_label": "OTC10", "y_srel": "F6HE.B10", "y_label": "mPG10"}
+        {"xk":"F4H.A1","yk":"F4H.B1","sx":0,"sy":1.25},
+        {"xk":"F4H.A2","yk":"F4H.B2","sx":10,"sy":1.25},
+        {"xk":"F4H.A3","yk":"F4H.B3","sx":40,"sy":0.8},
+        {"xk":"F4H.A4","yk":"F4H.B4","sx":60,"sy":0.8},
+        {"xk":"F4H.A5","yk":"F4H.B5","sx":90,"sy":0.8},
+        {"xk":"F4H.A6","yk":"F4H.B6","sx":100,"sy":0.8},
+        {"xk":"F4H.A7","yk":"F4H.B7","sx":100,"sy":0.8},
+        {"xk":"F4H.A8","yk":"F4H.B8","sx":100,"sy":0.8},
+        {"xk":"F4H.A9","yk":"F4H.B9","sx":100,"sy":0.8},
+        {"xk":"F4H.A10","yk":"F4H.B10","sx":100,"sy":0.8}
+      ],
+      "points_u": [
+        {"xk":"F4HE.A1","yk":"F4HE.B1","sx":0,"sy":1.25},
+        {"xk":"F4HE.A2","yk":"F4HE.B2","sx":10,"sy":1.25},
+        {"xk":"F4HE.A3","yk":"F4HE.B3","sx":40,"sy":0.8},
+        {"xk":"F4HE.A4","yk":"F4HE.B4","sx":60,"sy":0.8},
+        {"xk":"F4HE.A5","yk":"F4HE.B5","sx":90,"sy":0.8},
+        {"xk":"F4HE.A6","yk":"F4HE.B6","sx":100,"sy":0.8},
+        {"xk":"F4HE.A7","yk":"F4HE.B7","sx":100,"sy":0.8},
+        {"xk":"F4HE.A8","yk":"F4HE.B8","sx":100,"sy":0.8},
+        {"xk":"F4HE.A9","yk":"F4HE.B9","sx":100,"sy":0.8},
+        {"xk":"F4HE.A10","yk":"F4HE.B10","sx":100,"sy":0.8}
       ]
     }
   ]

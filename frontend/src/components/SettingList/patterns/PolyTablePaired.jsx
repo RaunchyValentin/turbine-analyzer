@@ -67,31 +67,39 @@ export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
               <tbody>
                 {block.points?.map((pt, pi) => (
                   <tr key={pi} style={pi % 2 === 0 ? styles.rowEven : styles.rowOdd}>
-                    <td style={styles.tdKey}>{pt.x_srel}</td>
+                    <td style={styles.tdKey}>{block.static ? (pt.x_label || '◆') : pt.x_srel}</td>
                     <td style={styles.tdVal}>
-                      <ValueCell
-                        srelKey={pt.x_srel}
-                        value={pt.x_value}
-                        originalValue={pt.x_original}
-                        overridden={pt.x_overridden}
-                        editable={true}
-                        turbineId={turbineId}
-                        sheetId={sheetId}
-                        onSaved={onOverrideSaved}
-                      />
+                      {block.static ? (
+                        <span style={styles.staticVal}>{pt.x_value ?? '—'}</span>
+                      ) : (
+                        <ValueCell
+                          srelKey={pt.x_srel}
+                          value={pt.x_value}
+                          originalValue={pt.x_original}
+                          overridden={pt.x_overridden}
+                          editable={true}
+                          turbineId={turbineId}
+                          sheetId={sheetId}
+                          onSaved={onOverrideSaved}
+                        />
+                      )}
                     </td>
-                    <td style={styles.tdKey}>{pt.y_srel}</td>
+                    <td style={styles.tdKey}>{block.static ? (pt.y_label || '◆') : pt.y_srel}</td>
                     <td style={styles.tdVal}>
-                      <ValueCell
-                        srelKey={pt.y_srel}
-                        value={pt.y_value}
-                        originalValue={pt.y_original}
-                        overridden={pt.y_overridden}
-                        editable={true}
-                        turbineId={turbineId}
-                        sheetId={sheetId}
-                        onSaved={onOverrideSaved}
-                      />
+                      {block.static ? (
+                        <span style={styles.staticVal}>{pt.y_value ?? '—'}</span>
+                      ) : (
+                        <ValueCell
+                          srelKey={pt.y_srel}
+                          value={pt.y_value}
+                          originalValue={pt.y_original}
+                          overridden={pt.y_overridden}
+                          editable={true}
+                          turbineId={turbineId}
+                          sheetId={sheetId}
+                          onSaved={onOverrideSaved}
+                        />
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -133,6 +141,7 @@ const styles = {
   toggleActive:{ background: '#1a2a3a', borderColor: '#5b9bd5', color: '#5b9bd5' },
   modeActive:  { background: '#1a2a1a', borderColor: '#4caf7d', color: '#4caf7d' },
   tablesRow:   { display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-start' },
+  staticVal:   { color: '#8899bb', fontVariantNumeric: 'tabular-nums', fontFamily: 'monospace', fontSize: '0.82rem' },
   blockWrap:   { flexShrink: 0 },
   blockHeader: { marginBottom: '0.4rem' },
   blockName:   { fontFamily: 'monospace', color: '#5b9bd5', fontWeight: 700, fontSize: '0.82rem' },
