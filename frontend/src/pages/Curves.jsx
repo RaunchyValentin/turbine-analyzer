@@ -18,6 +18,7 @@ function CurvePanel({ turbines, label }) {
   const [dirty,     setDirty]     = useState(false)
   const [saving,    setSaving]    = useState(false)
   const [detecting, setDetecting] = useState(false)
+  const [resetting, setResetting] = useState(false)
   const [axisInfo,  setAxisInfo]  = useState({ x_label: 'X', y_label: 'Y', x_unit: '', y_unit: '' })
 
   const gdRef     = useRef(null)    // Plotly graphDiv (via onInitialized)
@@ -154,6 +155,22 @@ function CurvePanel({ turbines, label }) {
     setPoints(prev => [...prev].sort((a, b) => a.x - b.x).map((p, i) => ({ ...p, order: i })))
     setSelIdx(null)
     setDirty(true)
+  }
+
+  const resetToOriginal = async () => {
+    if (!curveId) return
+    if (!window.confirm('Reset to original imported values? Unsaved edits will be lost.')) return
+    setResetting(true)
+    try {
+      const r = await client.post(`/curves/${curveId}/reset`)
+      setPoints(r.data.map((p, i) => ({ x: p.x, y: p.y, order: i })))
+      setDirty(false)
+      setSelIdx(null)
+    } catch (e) {
+      alert('Reset failed: ' + (e?.response?.data?.detail ?? e.message))
+    } finally {
+      setResetting(false)
+    }
   }
 
   const save = async () => {
@@ -354,8 +371,14 @@ function CurvePanel({ turbines, label }) {
 
       {/* actions */}
       <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-        <button onClick={addPoint} disabled={!curveId} style={BTN}>+ Point</button>
-        <button onClick={sortByX}  disabled={points.length < 2} style={BTN}>Sort X</button>
+        <button
+          onClick={resetToOriginal}
+          disabled={!curveId || resetting}
+          style={{ ...BTN, borderColor: '#663', color: '#aa9944' }}
+          title="Restore original values from imported JAR parameters"
+        >
+          {resetting ? 'Resetting…' : '↺ Reset'}
+        </button>
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: '0.72rem', color: '#555' }}>
           {points.length} pts{dirty ? ' ●' : ''}

@@ -74,6 +74,66 @@ async def delete_curve(curve_id: int, db: AsyncSession = Depends(get_db)):
     await db.commit()
 
 
+@router.post("/curves/{curve_id}/reset")
+async def reset_curve_to_original(curve_id: int, db: AsyncSession = Depends(get_db)):
+    """Restore curve points from original jar parameters (undoes manual edits)."""
+    curve = await db.get(Curve, curve_id)
+    if not curve:
+        raise HTTPException(404)
+
+    parts = (curve.name or "").split("|", 1)
+    if len(parts) != 2:
+        raise HTTPException(400, detail="Curve name is not in TAG|PORT format")
+
+    tag, port = parts
+
+    result = await db.execute(
+        select(Parameter).where(
+            Parameter.turbine_id == curve.turbine_id,
+            Parameter.name.like(f"{tag}|{port}.%"),
+        )
+    )
+    params = result.scalars().all()
+
+    id_val: dict[int, float] = {}
+    for p in params:
+        if not p.raw_data:
+            continue
+        try:
+            rd = json.loads(p.raw_data)
+            pid = int(rd.get("Port-ID", "0"))
+            id_val[pid] = float(p.value or rd.get("Value", "0"))
+        except Exception:
+            continue
+
+    if not id_val:
+        raise HTTPException(400, detail="No parameter data found for this curve")
+
+    sorted_ids = sorted(id_val)
+    x_ids = [i for i in sorted_ids if i % 20 == 0]
+    y_ids = [i for i in sorted_ids if i % 20 == 10]
+
+    points = [
+        {"x": id_val[xi], "y": id_val[yi], "order": i}
+        for i, (xi, yi) in enumerate(zip(x_ids, y_ids))
+        if xi in id_val and yi in id_val
+    ]
+    if not points:
+        raise HTTPException(400, detail="Could not reconstruct points from parameters")
+
+    existing = await db.execute(select(CurvePoint).where(CurvePoint.curve_id == curve_id))
+    for pt in existing.scalars().all():
+        await db.delete(pt)
+    for pt in points:
+        db.add(CurvePoint(curve_id=curve_id, **pt))
+    await db.commit()
+
+    refreshed = await db.execute(
+        select(CurvePoint).where(CurvePoint.curve_id == curve_id).order_by(CurvePoint.order)
+    )
+    return refreshed.scalars().all()
+
+
 @router.get("/curves/{curve_id}/axis-info")
 async def get_curve_axis_info(curve_id: int, db: AsyncSession = Depends(get_db)):
     """Return X/Y axis labels derived from the SREL keys of underlying jar parameters."""
