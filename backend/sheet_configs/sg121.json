@@ -31,32 +31,21 @@
       "title": "3.2a Pilot Gas as Function of IGV — COLD Fuel Gas",
       "x_label": "IGV [%]",
       "y_label": "m PG [kg/s]",
-      "static_note": "All values static (embedded in Excel, design reference only)",
       "loading_label": "MSPG.F4L — Loading",
       "unloading_label": "MSPG.F4LE — Unloading",
       "points": [
-        {"xk":"F4L.A1","yk":"F4L.B1","sx":0,"sy":1.25},
-        {"xk":"F4L.A2","yk":"F4L.B2","sx":10,"sy":1.25},
-        {"xk":"F4L.A3","yk":"F4L.B3","sx":40,"sy":0.8},
-        {"xk":"F4L.A4","yk":"F4L.B4","sx":60,"sy":0.8},
-        {"xk":"F4L.A5","yk":"F4L.B5","sx":90,"sy":0.8},
-        {"xk":"F4L.A6","yk":"F4L.B6","sx":100,"sy":0.8},
-        {"xk":"F4L.A7","yk":"F4L.B7","sx":100,"sy":0.8},
-        {"xk":"F4L.A8","yk":"F4L.B8","sx":100,"sy":0.8},
-        {"xk":"F4L.A9","yk":"F4L.B9","sx":100,"sy":0.8},
-        {"xk":"F4L.A10","yk":"F4L.B10","sx":100,"sy":0.8}
+        {"xk":"F4L.A1","yk":"F4L.B1"},{"xk":"F4L.A2","yk":"F4L.B2"},
+        {"xk":"F4L.A3","yk":"F4L.B3"},{"xk":"F4L.A4","yk":"F4L.B4"},
+        {"xk":"F4L.A5","yk":"F4L.B5"},{"xk":"F4L.A6","yk":"F4L.B6"},
+        {"xk":"F4L.A7","yk":"F4L.B7"},{"xk":"F4L.A8","yk":"F4L.B8"},
+        {"xk":"F4L.A9","yk":"F4L.B9"},{"xk":"F4L.A10","yk":"F4L.B10"}
       ],
       "points_u": [
-        {"xk":"F4LE.A1","yk":"F4LE.B1","sx":0,"sy":1.25},
-        {"xk":"F4LE.A2","yk":"F4LE.B2","sx":10,"sy":1.25},
-        {"xk":"F4LE.A3","yk":"F4LE.B3","sx":40,"sy":0.8},
-        {"xk":"F4LE.A4","yk":"F4LE.B4","sx":60,"sy":0.8},
-        {"xk":"F4LE.A5","yk":"F4LE.B5","sx":90,"sy":0.8},
-        {"xk":"F4LE.A6","yk":"F4LE.B6","sx":100,"sy":0.8},
-        {"xk":"F4LE.A7","yk":"F4LE.B7","sx":100,"sy":0.8},
-        {"xk":"F4LE.A8","yk":"F4LE.B8","sx":100,"sy":0.8},
-        {"xk":"F4LE.A9","yk":"F4LE.B9","sx":100,"sy":0.8},
-        {"xk":"F4LE.A10","yk":"F4LE.B10","sx":100,"sy":0.8}
+        {"xk":"F4LE.A1","yk":"F4LE.B1"},{"xk":"F4LE.A2","yk":"F4LE.B2"},
+        {"xk":"F4LE.A3","yk":"F4LE.B3"},{"xk":"F4LE.A4","yk":"F4LE.B4"},
+        {"xk":"F4LE.A5","yk":"F4LE.B5"},{"xk":"F4LE.A6","yk":"F4LE.B6"},
+        {"xk":"F4LE.A7","yk":"F4LE.B7"},{"xk":"F4LE.A8","yk":"F4LE.B8"},
+        {"xk":"F4LE.A9","yk":"F4LE.B9"},{"xk":"F4LE.A10","yk":"F4LE.B10"}
       ]
     }
   ]

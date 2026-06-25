@@ -9,12 +9,12 @@
     "title": "LHV / WI Correction Reference",
     "note": "LHV and Wobbe Index correction factors — refer to gas analysis certificate",
     "keys": {
-      "LHV base [kWh/m³]":  "LHV.BASE",
+      "LHV base [kWh/m³]":    "LHV.BASE",
       "LHV current [kWh/m³]": "LHV.CURR",
-      "LHV ratio [-]":      "LHV.RATIO",
-      "WI base [kWh/m³]":   "WI.BASE",
-      "WI current [kWh/m³]": "WI.CURR",
-      "WI ratio [-]":       "WI.RATIO"
+      "LHV ratio [-]":        "LHV.RATIO",
+      "WI base [kWh/m³]":     "WI.BASE",
+      "WI current [kWh/m³]":  "WI.CURR",
+      "WI ratio [-]":         "WI.RATIO"
     }
   },
   "sections": [
@@ -55,22 +55,19 @@
       "y_label": "m PG correction [kg/s]",
       "loading_label": "MSPG.F8L — Loading",
       "unloading_label": "MSPG.F8LE — Unloading",
-      "static_note": "B1 (first row y-value) is a static reference = 13.5 kg/s",
       "points": [
-        {"xk":"F8L.A1","yk":"F8L.B1","sy":13.5},
-        {"xk":"F8L.A2","yk":"F8L.B2"},{"xk":"F8L.A3","yk":"F8L.B3"},
-        {"xk":"F8L.A4","yk":"F8L.B4"},{"xk":"F8L.A5","yk":"F8L.B5"},
-        {"xk":"F8L.A6","yk":"F8L.B6"},{"xk":"F8L.A7","yk":"F8L.B7"},
-        {"xk":"F8L.A8","yk":"F8L.B8"},{"xk":"F8L.A9","yk":"F8L.B9"},
-        {"xk":"F8L.A10","yk":"F8L.B10"}
+        {"xk":"F8L.A1","yk":"F8L.B1"},{"xk":"F8L.A2","yk":"F8L.B2"},
+        {"xk":"F8L.A3","yk":"F8L.B3"},{"xk":"F8L.A4","yk":"F8L.B4"},
+        {"xk":"F8L.A5","yk":"F8L.B5"},{"xk":"F8L.A6","yk":"F8L.B6"},
+        {"xk":"F8L.A7","yk":"F8L.B7"},{"xk":"F8L.A8","yk":"F8L.B8"},
+        {"xk":"F8L.A9","yk":"F8L.B9"},{"xk":"F8L.A10","yk":"F8L.B10"}
       ],
       "points_u": [
-        {"xk":"F8LE.A1","yk":"F8LE.B1","sy":13.5},
-        {"xk":"F8LE.A2","yk":"F8LE.B2"},{"xk":"F8LE.A3","yk":"F8LE.B3"},
-        {"xk":"F8LE.A4","yk":"F8LE.B4"},{"xk":"F8LE.A5","yk":"F8LE.B5"},
-        {"xk":"F8LE.A6","yk":"F8LE.B6"},{"xk":"F8LE.A7","yk":"F8LE.B7"},
-        {"xk":"F8LE.A8","yk":"F8LE.B8"},{"xk":"F8LE.A9","yk":"F8LE.B9"},
-        {"xk":"F8LE.A10","yk":"F8LE.B10"}
+        {"xk":"F8LE.A1","yk":"F8LE.B1"},{"xk":"F8LE.A2","yk":"F8LE.B2"},
+        {"xk":"F8LE.A3","yk":"F8LE.B3"},{"xk":"F8LE.A4","yk":"F8LE.B4"},
+        {"xk":"F8LE.A5","yk":"F8LE.B5"},{"xk":"F8LE.A6","yk":"F8LE.B6"},
+        {"xk":"F8LE.A7","yk":"F8LE.B7"},{"xk":"F8LE.A8","yk":"F8LE.B8"},
+        {"xk":"F8LE.A9","yk":"F8LE.B9"},{"xk":"F8LE.A10","yk":"F8LE.B10"}
       ]
     }
   ]
