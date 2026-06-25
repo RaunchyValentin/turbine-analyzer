@@ -1,11 +1,11 @@
 {
   "id": "SG111b",
-  "title": "2. Ignition and Start Up",
+  "title": "2.1 Ignition",
   "fuel": "FG",
   "pattern": "D",
   "sections": [
     {
-      "header": "Ignition speed",
+      "header": "Ignition speed (open ESV)",
       "type": "scalar",
       "rows": [
         {"srel": "S.TURB.09", "unit": "Hz", "desc": "Ignition speed — igniters on & fuel gas ESV opens", "editable": true}
@@ -15,21 +15,37 @@
       "header": "Ignition Recognition",
       "type": "scalar",
       "rows": [
-        {"srel": "GATKFL.X", "unit": "K", "desc": "Recognition threshold", "editable": true}
+        {"srel": "GATKFL.X", "unit": "K", "desc": "Flame recognition threshold", "editable": true}
       ]
     },
     {
       "header": "Ignition Parameters — MBP03DU002C / MIG",
       "type": "poly",
       "block_name": "MBP03DU002C|MIG",
-      "description": "Mass flow vs time ignition sequence",
-      "x_label": "time, s",
-      "y_label": "m PG, kg/s",
+      "description": "Mass flow vs time — ignition sequence",
+      "x_label": "m PG, kg/s",
+      "y_label": "time, sec",
       "points": [
-        {"x_srel": "K.IGNITE.06", "x_label": "ZUET0",  "y_srel": "F.EG.42", "y_label": "ZUEM0"},
-        {"x_srel": "K.IGNITE.07", "x_label": "ZUEMT1", "y_srel": "F.EG.44", "y_label": "ZUEM1"},
-        {"x_srel": "K.IGNITE.08", "x_label": "ZUEMTD", "y_srel": "F.EG.45", "y_label": "ZUEM2"},
-        {"x_srel": "K.IGNITE.09", "x_label": "ZUEMT2", "y_srel": "F.EG.43", "y_label": "ZUEFL"}
+        {"x_srel": "F.EG.42", "x_label": "ZUEM0",  "y_srel": "K.IGNITE.06", "y_label": "ZUET0"},
+        {"x_srel": "F.EG.44", "x_label": "ZUEM1",  "y_srel": "K.IGNITE.07", "y_label": "ZUEMT1"},
+        {"x_srel": "F.EG.45", "x_label": "ZUEM2",  "y_srel": "K.IGNITE.08", "y_label": "ZUEMTD"},
+        {"x_srel": "F.EG.43", "x_label": "ZUEFL",  "y_srel": "K.IGNITE.09", "y_label": "ZUEMT2"}
+      ]
+    },
+    {
+      "header": "2.2 OTC — Hot Start Flow Correction",
+      "type": "poly",
+      "block_name": "MIG.ZUEATK",
+      "description": "Relevant for warm or hot start",
+      "x_label": "OTC, °C",
+      "y_label": "Δ m Fuel, kg/s",
+      "points": [
+        {"x_srel": "TT.ATK.41", "x_label": "ZUET0",  "y_srel": "F.EG.21", "y_label": "ZUEM0"},
+        {"x_srel": "TT.ATK.42", "x_label": "ZUET1",  "y_srel": "F.EG.22", "y_label": "ZUEM1"},
+        {"x_srel": "TT.ATK.43", "x_label": "ZUET2",  "y_srel": "F.EG.23", "y_label": "ZUEM2"},
+        {"x_srel": "TT.ATK.44", "x_label": "ZUET3",  "y_srel": "F.EG.24", "y_label": "ZUEM3"},
+        {"x_srel": "TT.ATK.45", "x_label": "ZUET4",  "y_srel": "F.EG.25", "y_label": "ZUEM4"},
+        {"x_srel": "TT.ATK.46", "x_label": "ZUET5",  "y_srel": "F.EG.26", "y_label": "ZUEM5"}
       ]
     }
   ]

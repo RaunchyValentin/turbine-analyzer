@@ -108,6 +108,6 @@ const styles = {
   },
   arrow: { fontSize: '0.65rem', color: '#555', flexShrink: 0 },
   dot:   { width: '6px', height: '6px', borderRadius: '50%', flexShrink: 0 },
-  sheetId:    { color: '#5b9bd5', flexShrink: 0, minWidth: '52px' },
-  sheetLabel: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 },
+  sheetId:    { color: '#e0e0e0', flexShrink: 0, minWidth: '52px', fontSize: '0.82rem', fontWeight: 700 },
+  sheetLabel: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, color: '#b8b8cc' },
 }

@@ -73,6 +73,6 @@ const styles = {
   stubMsg:    { color: '#555', fontSize: '0.85rem' },
   header:     { display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1rem', borderBottom: '1px solid #222', paddingBottom: '0.5rem' },
   sheetId:    { color: '#5b9bd5', fontWeight: 700, fontSize: '0.85rem', flexShrink: 0 },
-  title:      { margin: 0, fontSize: '1.1rem', color: '#e0e0e0', fontWeight: 600 },
+  title:      { margin: 0, fontSize: '1.1rem', color: '#111111', fontWeight: 700 },
   fuelBadge:  { marginLeft: 'auto', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '3px', background: '#1e2a3a', color: '#5b9bd5' },
 }

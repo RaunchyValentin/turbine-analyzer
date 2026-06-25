@@ -3,22 +3,51 @@
   "title": "1. General — Service GTs",
   "fuel": "FG",
   "pattern": "E",
+  "columns": ["Speed, Hz", "OTC, °C", "IGV, %"],
   "sections": [
     {
-      "header": "Startup Sequence — Key Operating Points",
       "rows": [
-        {"is_section": true, "label": "— Cranking & Ignition —"},
-        {"srel": "S.TURB.01", "srel_speed": "S.TURB.01", "speed": "", "otc": "", "igv": "", "desc": "Start speed (turning gear release)"},
-        {"srel": "S.TURB.09", "srel_speed": "S.TURB.09", "speed": "", "otc": "", "igv": "", "desc": "Ignition speed — gas ESV opens"},
-        {"srel": "K.IGNITE.04", "speed": "", "otc": "", "igv": "", "desc": "End of ignition phase"},
-        {"is_section": true, "label": "— Run-Up —"},
-        {"srel": "S.TURB.50", "srel_speed": "S.TURB.50", "speed": "", "otc": "", "igv": "", "desc": "IGV opens — begin air mass flow control"},
-        {"srel": "S.TURB.55", "srel_speed": "S.TURB.55", "speed": "", "otc": "", "igv": "", "desc": "Premix gas switchover speed"},
-        {"srel": "S.TURB.60", "srel_speed": "S.TURB.60", "speed": "", "otc": "", "igv": "", "desc": "Rated speed — speed governor active"},
-        {"is_section": true, "label": "— Load Operation —"},
-        {"srel": "S.TURB.65", "srel_speed": "S.TURB.65", "speed": "", "otc": "", "igv": "", "desc": "Minimum stable load"},
-        {"srel": "S.TURB.70", "srel_speed": "S.TURB.70", "speed": "", "otc": "", "igv": "", "desc": "IGV full-open load point"},
-        {"srel": "S.TURB.75", "srel_speed": "S.TURB.75", "speed": "", "otc": "", "igv": "", "desc": "Base load — OTC controller active"}
+        {"is_section": true, "label": "FG start Up"},
+        {"srel": "S.TURB.09", "speed": "6.6", "otc": "", "igv": "", "desc": "Ignitors on & Fuel gas ESV opens"},
+        {"srel": "",          "speed": "",    "otc": "", "igv": "", "desc": "see appendix 2.1, Ignition with Pilot Gas"},
+
+        {"is_section": true, "label": "FG start up gradients (open control)"},
+        {"srel": "S.TURB.53",  "speed": "11",   "otc": "", "igv": "", "desc": "1st Gradient, 2.6 %/min"},
+        {"srel": "S.TURB.54",  "speed": "18",   "otc": "", "igv": "", "desc": "2nd Gradient, 4.5 %/min"},
+        {"srel": "S.TURB.104", "speed": "30",   "otc": "", "igv": "", "desc": "3rd Gradient, 6.3 %/min"},
+        {"srel": "S.TURB.124", "speed": "#N/A", "otc": "", "igv": "", "desc": "Premix gas addition during start depends on speed according to appendix 2.3"},
+        {"srel": "",           "speed": "47",   "otc": "", "igv": "", "desc": "Switch Over to Premix Mode"},
+
+        {"is_section": true, "label": "Blow off valves (E-L 307-001-05)"},
+        {"srel": "S.TURB.07", "speed": "40",   "otc": "", "igv": "", "desc": "Blow off valve 2 closes"},
+        {"srel": "S.TURB.13", "speed": "49",   "otc": "", "igv": "", "desc": "Blow off valve 12 closes"},
+        {"srel": "",          "speed": "49+5s","otc": "", "igv": "", "desc": "Blow off valve 11 closes"},
+
+        {"is_section": true, "label": "IGV set points during start up sequence (compressor type T4)"},
+        {"srel": "U.VLE.22", "speed": "0",  "otc": "", "igv": "10.9", "desc": "Starting position IGV"},
+        {"srel": "",         "speed": "",   "otc": "", "igv": "17.4", "desc": "IGV position at low load range from PSNL to 68 MW."},
+        {"srel": "",         "speed": "60", "otc": "", "igv": "0",    "desc": "IGV fully closes between 68 MW and 35 MW to \"turn down position\", 53.7"},
+
+        {"is_section": true, "label": "Load range with IGV fully closed"},
+        {"srel": "", "speed": "", "otc": "", "igv": "", "desc": "Synchronisation at premix mode, load jump is 5 MW"},
+        {"srel": "", "speed": "", "otc": "", "igv": "", "desc": "Loading in premix mode"},
+        {"srel": "", "speed": "", "otc": "", "igv": "", "desc": "Pilot gas mass flow according to appendix 3"},
+
+        {"is_section": true, "label": "Load within IGV range"},
+        {"srel": "LTR.F3.B1",  "speed": "550", "otc": "0",   "igv": "", "desc": "pilot gas mass flow as function of IGV position according to appendix 3.2"},
+        {"srel": "LTR.F3.B10", "speed": "550", "otc": "100", "igv": "", "desc": "IGV fully opened, 7.7"},
+        {"srel": "",            "speed": "",    "otc": "",    "igv": "", "desc": "Initial Part Load OTC according to appendix 4.1"},
+
+        {"is_section": true, "label": "Base Load"},
+        {"srel": "TS.TTAGG.X", "speed": "556", "otc": "100", "igv": "", "desc": "Adjustment of Base Load TOTC according to Settings Curve is mandatory", "emphasis": true},
+        {"srel": "", "speed": "", "otc": "", "igv": "", "desc": "BL TOTC determination according to setting curve 3.1-0120-702", "emphasis": true},
+        {"srel": "", "speed": "", "otc": "", "igv": "", "desc": "Load limit: 301 MW"},
+        {"srel": "", "speed": "", "otc": "", "igv": "", "desc": "Cold Ambient Curve according to appendix 4.2"},
+
+        {"is_section": true, "label": "Load Gradients"},
+        {"srel": "", "speed": "", "otc": "", "igv": "", "desc": "7 MW/min — Initial Load Gradient"},
+        {"srel": "", "speed": "", "otc": "", "igv": "", "desc": "2 MW/min — Crawl Gradient"},
+        {"srel": "", "speed": "", "otc": "", "igv": "", "desc": "13 MW/min — Standard Load Gradient"}
       ]
     }
   ]
