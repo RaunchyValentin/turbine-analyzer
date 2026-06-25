@@ -8,6 +8,7 @@ export default function Export() {
   const [selected, setSelected]       = useState(new Set()) // selected prefixes
   const [allSelected, setAllSelected] = useState(true)
   const [loadingTypes, setLoadingTypes] = useState(false)
+  const [overrideCount, setOverrideCount] = useState(null)
 
   useEffect(() => {
     client.get('/turbines/list').then(r => {
@@ -23,12 +24,16 @@ export default function Export() {
     setKeyTypes([])
     setSelected(new Set())
     setAllSelected(true)
+    setOverrideCount(null)
     client.get('/export/key-types', { params: { turbine_id: turbineId } })
       .then(r => {
         setKeyTypes(r.data)
         setSelected(new Set(r.data.map(t => t.prefix)))
       })
       .finally(() => setLoadingTypes(false))
+    client.get('/overrides', { params: { turbine_id: turbineId } })
+      .then(r => setOverrideCount(r.data.length))
+      .catch(() => setOverrideCount(0))
   }, [turbineId])
 
   const toggleType = (pfx) => {
@@ -133,6 +138,29 @@ export default function Export() {
               </span>
             </label>
           ))}
+        </div>
+      </div>
+
+      {/* Overrides export */}
+      <div style={FIELD}>
+        <label style={LABEL}>User overrides (edited parameters)</label>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <button
+            onClick={() => window.open(`/api/export/overrides?turbine_id=${turbineId}`, '_blank')}
+            disabled={!turbineId || overrideCount === 0}
+            style={{ ...BTN, opacity: (!turbineId || overrideCount === 0) ? 0.4 : 1, background: '#0a2a1a', borderColor: '#3a8a4a', color: '#5ab86a' }}
+          >
+            ↓ Download Overrides (.xlsx)
+          </button>
+          {overrideCount !== null && (
+            <span style={{ fontSize: '0.78rem', color: overrideCount > 0 ? '#5ab86a' : '#555' }}>
+              {overrideCount > 0 ? `${overrideCount} changed parameter(s)` : 'No overrides yet'}
+            </span>
+          )}
+        </div>
+        <div style={{ fontSize: '0.72rem', color: '#444', marginTop: 2 }}>
+          Delta export — only parameters changed vs original JAR values.
+          Edit curves on the Curves page and Save to create overrides.
         </div>
       </div>
 

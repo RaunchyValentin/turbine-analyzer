@@ -8,7 +8,7 @@ from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from database import init_db
-from api import routes_turbines, routes_parameters, routes_curves, routes_import, routes_export, routes_settings, routes_comparison
+from api import routes_turbines, routes_parameters, routes_curves, routes_import, routes_export, routes_settings, routes_comparison, routes_overrides
 
 
 def _dist_dir() -> str:
@@ -45,6 +45,7 @@ app.include_router(routes_import.router, prefix="/api")
 app.include_router(routes_export.router, prefix="/api")
 app.include_router(routes_settings.router, prefix="/api")
 app.include_router(routes_comparison.router, prefix="/api")
+app.include_router(routes_overrides.router, prefix="/api")
 
 # ── Serve built React frontend (must be registered after all /api routes) ──
 if os.path.isdir(DIST_DIR):

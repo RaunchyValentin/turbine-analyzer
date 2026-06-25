@@ -3,6 +3,7 @@ from .parameter import Parameter
 from .curve import Curve, CurvePoint
 from .session import WorkSession, ExperimentalData
 from .setting_override import SettingOverride
+from .override import UserOverride
 
 __all__ = ["Project", "Turbine", "Parameter", "Curve", "CurvePoint",
-           "WorkSession", "ExperimentalData", "SettingOverride"]
+           "WorkSession", "ExperimentalData", "SettingOverride", "UserOverride"]

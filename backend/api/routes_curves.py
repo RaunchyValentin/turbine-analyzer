@@ -1,5 +1,6 @@
 import json
 import os.path
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -8,6 +9,7 @@ from pydantic import BaseModel
 from database import get_db
 from models import Curve, CurvePoint
 from models.parameter import Parameter
+from models.override import UserOverride
 
 router = APIRouter(tags=["curves"])
 
@@ -48,6 +50,64 @@ async def get_curve_points(curve_id: int, db: AsyncSession = Depends(get_db)):
     return result.scalars().all()
 
 
+async def _sync_overrides(curve: Curve, points: list[PointUpsert], db: AsyncSession) -> None:
+    """Write/delete UserOverride records to reflect current curve edits vs original parameters."""
+    parts = (curve.name or "").split("|", 1)
+    if len(parts) != 2:
+        return
+    tag, port = parts
+
+    # Load all parameters for this curve's tag+port
+    res = await db.execute(
+        select(Parameter).where(
+            Parameter.turbine_id == curve.turbine_id,
+            Parameter.name.like(f"{tag}|{port}.%"),
+        )
+    )
+    param_by_name: dict[str, Parameter] = {p.name: p for p in res.scalars().all()}
+
+    now = datetime.utcnow()
+
+    for pt in points:
+        i = pt.order
+        for axis, port_id, new_val in [
+            ("x", 20 + i * 20, str(pt.x)),
+            ("y", 30 + i * 20, str(pt.y)),
+        ]:
+            pname = f"{tag}|{port}.{port_id}"
+            param = param_by_name.get(pname)
+            if not param:
+                continue
+
+            changed = (param.value or "").strip() != new_val.strip()
+
+            # Load existing override (if any)
+            ov_res = await db.execute(
+                select(UserOverride).where(
+                    UserOverride.turbine_id == curve.turbine_id,
+                    UserOverride.parameter_id == param.id,
+                )
+            )
+            ov = ov_res.scalar_one_or_none()
+
+            if changed:
+                if ov:
+                    ov.user_value = new_val
+                    ov.modified_at = now
+                else:
+                    db.add(UserOverride(
+                        turbine_id=curve.turbine_id,
+                        parameter_id=param.id,
+                        user_value=new_val,
+                        original_value=param.value,
+                        modified_at=now,
+                    ))
+            else:
+                # Value restored to original — remove override
+                if ov:
+                    await db.delete(ov)
+
+
 @router.put("/curves/{curve_id}/points")
 async def replace_curve_points(curve_id: int, points: list[PointUpsert], db: AsyncSession = Depends(get_db)):
     curve = await db.get(Curve, curve_id)
@@ -58,6 +118,7 @@ async def replace_curve_points(curve_id: int, points: list[PointUpsert], db: Asy
         await db.delete(pt)
     for pt in points:
         db.add(CurvePoint(curve_id=curve_id, **pt.model_dump()))
+    await _sync_overrides(curve, points, db)
     await db.commit()
     result = await db.execute(
         select(CurvePoint).where(CurvePoint.curve_id == curve_id).order_by(CurvePoint.order)
@@ -126,6 +187,22 @@ async def reset_curve_to_original(curve_id: int, db: AsyncSession = Depends(get_
         await db.delete(pt)
     for pt in points:
         db.add(CurvePoint(curve_id=curve_id, **pt))
+
+    # Clear overrides for this curve's parameters — values restored to original
+    ov_res = await db.execute(
+        select(UserOverride).where(
+            UserOverride.turbine_id == curve.turbine_id,
+            UserOverride.parameter_id.in_(
+                select(Parameter.id).where(
+                    Parameter.turbine_id == curve.turbine_id,
+                    Parameter.name.like(f"{tag}|{port}.%"),
+                )
+            ),
+        )
+    )
+    for ov in ov_res.scalars().all():
+        await db.delete(ov)
+
     await db.commit()
 
     refreshed = await db.execute(
