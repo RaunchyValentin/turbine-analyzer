@@ -7,7 +7,6 @@ export default function Export() {
   const [keyTypes, setKeyTypes]       = useState([])      // [{prefix, count}]
   const [selected, setSelected]       = useState(new Set()) // selected prefixes
   const [allSelected, setAllSelected] = useState(true)
-  const [keyFilter, setKeyFilter]     = useState('')
   const [loadingTypes, setLoadingTypes] = useState(false)
 
   useEffect(() => {
@@ -55,7 +54,7 @@ export default function Export() {
 
   const handleExport = () => {
     if (!turbineId) return
-    const params = new URLSearchParams({ turbine_id: turbineId, key_filter: keyFilter.trim() })
+    const params = new URLSearchParams({ turbine_id: turbineId })
     // send selected types only when not all selected (saves URL length)
     if (!allSelected && selected.size > 0) {
       params.set('key_types', [...selected].join(','))
@@ -137,20 +136,6 @@ export default function Export() {
         </div>
       </div>
 
-      {/* Text filter */}
-      <div style={FIELD}>
-        <label style={LABEL}>
-          Text filter{' '}
-          <span style={{ color: '#444', fontWeight: 400 }}>(optional — key, tag, diagram, designation)</span>
-        </label>
-        <input
-          style={INPUT}
-          placeholder="e.g.  MBY10  or  VLV  or  GOV"
-          value={keyFilter}
-          onChange={e => setKeyFilter(e.target.value)}
-        />
-      </div>
-
       {/* Export button */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         <button
@@ -162,7 +147,7 @@ export default function Export() {
         </button>
         <span style={{ fontSize: '0.78rem', color: '#555' }}>
           {keyTypes.length > 0
-            ? `~${totalFiltered.toLocaleString()} rows${keyFilter.trim() ? ' (filtered)' : ''}`
+            ? `~${totalFiltered.toLocaleString()} rows`
             : selectedTurbine
               ? `${(selectedTurbine.param_count || 0).toLocaleString()} rows`
               : ''
@@ -176,7 +161,6 @@ export default function Export() {
 const FIELD  = { display: 'flex', flexDirection: 'column', gap: 6 }
 const LABEL  = { fontSize: '0.78rem', color: '#888', fontWeight: 600, letterSpacing: '0.03em' }
 const SELECT = { background: '#1e1e2e', color: '#e0e0e0', border: '1px solid #333', borderRadius: 4, padding: '0.4rem 0.6rem', fontSize: '0.875rem' }
-const INPUT  = { background: '#1e1e2e', color: '#e0e0e0', border: '1px solid #333', borderRadius: 4, padding: '0.4rem 0.6rem', fontSize: '0.875rem', width: '100%' }
 const BTN    = { background: '#1a3a5a', border: '1px solid #5b9bd5', color: '#5b9bd5', borderRadius: 4, cursor: 'pointer', padding: '0.5rem 1.5rem', fontSize: '0.875rem', fontWeight: 600 }
 const CHIP   = { display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', padding: '0.25rem 0.6rem', borderRadius: 4, border: '1px solid', fontSize: '0.8rem', userSelect: 'none', transition: 'all 0.1s' }
 const TOGGLE = { display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: '0.75rem', color: '#666' }
