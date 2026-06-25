@@ -63,6 +63,12 @@ if os.path.isdir(DIST_DIR):
         return FileResponse(index) if os.path.isfile(index) else Response('Frontend not built', 404)
 
 
+@app.get('/api/version', include_in_schema=False)
+async def get_version():
+    from version import VERSION
+    return {"version": VERSION}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=False)

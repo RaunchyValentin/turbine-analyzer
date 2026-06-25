@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
+import client from '../../api/client'
 
 const links = [
   { to: '/', label: 'Dashboard' },
@@ -11,9 +12,17 @@ const links = [
 ]
 
 export default function NavBar() {
+  const [version, setVersion] = useState('')
+  useEffect(() => {
+    client.get('/version').then(r => setVersion(r.data.version)).catch(() => {})
+  }, [])
+
   return (
     <nav style={styles.nav}>
-      <span style={styles.brand}>Turbine Analyzer</span>
+      <span style={styles.brand}>
+        Turbine Analyzer
+        {version && <span style={styles.ver}>v{version}</span>}
+      </span>
       <div style={styles.links}>
         {links.map(({ to, label }) => (
           <NavLink
@@ -49,6 +58,15 @@ const styles = {
     color: '#fff',
     marginRight: '1rem',
     whiteSpace: 'nowrap',
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: '0.4rem',
+  },
+  ver: {
+    fontSize: '0.65rem',
+    fontWeight: 400,
+    color: '#4a6a8a',
+    letterSpacing: '0.04em',
   },
   links: {
     display: 'flex',
