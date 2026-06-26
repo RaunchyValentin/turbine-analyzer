@@ -48,14 +48,14 @@ const styles = {
     alignItems: 'center',
     gap: '1rem',
     padding: '0.5rem 1.25rem',
-    background: '#1a1a2e',
-    color: '#e0e0e0',
-    borderBottom: '1px solid #333',
+    background: '#d0ddd0',
+    color: '#1a2a1a',
+    borderBottom: '1px solid #b0c4b0',
   },
   brand: {
     fontWeight: 700,
     fontSize: '1rem',
-    color: '#fff',
+    color: '#1a2a1a',
     marginRight: '1rem',
     whiteSpace: 'nowrap',
     display: 'flex',
@@ -65,7 +65,7 @@ const styles = {
   ver: {
     fontSize: '0.65rem',
     fontWeight: 400,
-    color: '#4a6a8a',
+    color: '#5a8a5a',
     letterSpacing: '0.04em',
   },
   links: {
@@ -75,12 +75,12 @@ const styles = {
   link: {
     padding: '0.35rem 0.75rem',
     borderRadius: '4px',
-    color: '#ccc',
+    color: '#4a6a4a',
     textDecoration: 'none',
     fontSize: '0.875rem',
   },
   active: {
-    background: '#0f3460',
-    color: '#fff',
+    background: '#b8d4b8',
+    color: '#1a3a1a',
   },
 }

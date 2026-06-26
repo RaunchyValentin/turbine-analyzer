@@ -189,15 +189,15 @@ function CurvePanel({ turbines, label }) {
 
   const xs = points.map(p => p.x)
   const ys = points.map(p => p.y)
-  const markerColor = points.map((_, i) => i === selIdx ? '#ff9800' : '#5b9bd5')
+  const markerColor = points.map((_, i) => i === selIdx ? '#e06010' : '#2a7a4a')
   const markerSize  = points.map((_, i) => i === selIdx ? 13 : 8)
 
   const plotData = [{
     x: xs, y: ys,
     mode: 'lines+markers',
     type: 'scatter',
-    line:   { color: '#5b9bd5', width: 1.5 },
-    marker: { color: markerColor, size: markerSize, line: { color: '#1e1e2e', width: 1.5 } },
+    line:   { color: '#4a9a6a', width: 1.5 },
+    marker: { color: markerColor, size: markerSize, line: { color: '#d0ddd0', width: 1.5 } },
     hovertemplate: 'X: %{x}<br>Y: %{y}<extra></extra>',
   }]
 
@@ -205,20 +205,20 @@ function CurvePanel({ turbines, label }) {
   const yTitle = axisInfo.y_unit ? `${axisInfo.y_label} [${axisInfo.y_unit}]` : axisInfo.y_label
 
   const plotLayout = {
-    uirevision: curveId,   // reset zoom/pan when curve changes
+    uirevision: curveId,
     margin: { l: 72, r: 12, t: 12, b: 58 },
-    paper_bgcolor: '#1e1e2e',
-    plot_bgcolor:  '#16162a',
-    font:  { color: '#a0a0c0', size: 11 },
+    paper_bgcolor: '#f5f8f5',
+    plot_bgcolor:  '#ffffff',
+    font:  { color: '#4a6a4a', size: 11 },
     xaxis: {
-      gridcolor: '#2a2a45', zerolinecolor: '#444', color: '#777',
+      gridcolor: '#d0e8d0', zerolinecolor: '#b0c4b0', color: '#5a7a5a',
       autorange: true,
-      title: { text: xTitle, font: { size: 11, color: '#8888aa' }, standoff: 8 },
+      title: { text: xTitle, font: { size: 11, color: '#5a7a5a' }, standoff: 8 },
     },
     yaxis: {
-      gridcolor: '#2a2a45', zerolinecolor: '#444', color: '#777',
+      gridcolor: '#d0e8d0', zerolinecolor: '#b0c4b0', color: '#5a7a5a',
       autorange: true,
-      title: { text: yTitle, font: { size: 11, color: '#8888aa' }, standoff: 8 },
+      title: { text: yTitle, font: { size: 11, color: '#5a7a5a' }, standoff: 8 },
     },
     showlegend: false,
     dragmode: 'pan',
@@ -250,7 +250,7 @@ function CurvePanel({ turbines, label }) {
   return (
     <div style={PANEL}>
       {/* header label */}
-      <div style={{ fontSize: '0.72rem', color: '#555', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+      <div style={{ fontSize: '0.72rem', color: '#7a9a7a', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
         {label}
       </div>
 
@@ -276,7 +276,7 @@ function CurvePanel({ turbines, label }) {
           </button>
         )}
         {curveMeta?.description && (
-          <span style={{ fontSize: '0.72rem', color: '#555', alignSelf: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: '0.72rem', color: '#7a9a7a', alignSelf: 'center', flexShrink: 0 }}>
             {curveMeta.description}
           </span>
         )}
@@ -303,10 +303,10 @@ function CurvePanel({ turbines, label }) {
       </div>
 
       {/* point table */}
-      <div style={{ flex: '0 0 auto', maxHeight: 160, overflowY: 'auto', borderRadius: 4, border: '1px solid #2a2a3e', isolation: 'isolate' }}>
+      <div style={{ flex: '0 0 auto', maxHeight: 160, overflowY: 'auto', borderRadius: 4, border: '1px solid #b0c4b0', isolation: 'isolate' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
           <thead>
-            <tr style={{ background: '#131325', position: 'sticky', top: 0, zIndex: 1, borderBottom: '2px solid #2a2a3e' }}>
+            <tr style={{ position: 'sticky', top: 0, zIndex: 1, borderBottom: '2px solid #b0c4b0' }}>
               <th style={TH_N}>#</th>
               <th style={TH_X} title={axisInfo.x_label}>
                 {axisInfo.x_label}
@@ -327,10 +327,10 @@ function CurvePanel({ turbines, label }) {
                   key={i}
                   onClick={() => setSelIdx(i)}
                   style={{
-                    background: active ? '#1a2b3c' : i % 2 ? '#13131f' : '#0f0f1a',
+                    background: active ? '#e8f4e8' : i % 2 ? '#f5f7f5' : '#ffffff',
                     cursor: 'pointer',
                     borderLeft: active ? '2px solid #c07030' : '2px solid transparent',
-                    borderBottom: '1px solid #1e1e2e',
+                    borderBottom: '1px solid #dde8dd',
                   }}
                 >
                   <td style={TD_N}>{i + 1}</td>
@@ -361,7 +361,7 @@ function CurvePanel({ turbines, label }) {
               )
             })}
             {points.length === 0 && (
-              <tr><td colSpan={4} style={{ padding: '0.6rem', color: '#444', textAlign: 'center', fontSize: '0.75rem' }}>
+              <tr><td colSpan={4} style={{ padding: '0.6rem', color: '#aaa', textAlign: 'center', fontSize: '0.75rem' }}>
                 No points
               </td></tr>
             )}
@@ -380,7 +380,7 @@ function CurvePanel({ turbines, label }) {
           {resetting ? 'Resetting…' : '↺ Reset'}
         </button>
         <div style={{ flex: 1 }} />
-        <span style={{ fontSize: '0.72rem', color: '#555' }}>
+        <span style={{ fontSize: '0.72rem', color: '#7a9a7a' }}>
           {points.length} pts{dirty ? ' ●' : ''}
         </span>
         <button
@@ -406,7 +406,7 @@ export default function Curves() {
 
   if (turbines.length === 0) {
     return (
-      <div style={{ color: '#555', padding: '2rem', fontSize: '0.9rem' }}>
+      <div style={{ color: '#7a9a7a', padding: '2rem', fontSize: '0.9rem' }}>
         No turbines found — import a file first.
       </div>
     )
@@ -415,7 +415,7 @@ export default function Curves() {
   return (
     <div style={{ display: 'flex', gap: '0.75rem', height: 'calc(100vh - 72px)' }}>
       <CurvePanel turbines={turbines} label="Panel A" />
-      <div style={{ width: 1, background: '#222', flexShrink: 0 }} />
+      <div style={{ width: 1, background: '#b0c4b0', flexShrink: 0 }} />
       <CurvePanel turbines={turbines} label="Panel B" />
     </div>
   )
@@ -429,57 +429,58 @@ const PANEL = {
 }
 
 const SEL = {
-  background: '#1e1e2e', color: '#e0e0e0',
-  border: '1px solid #333', borderRadius: 4,
+  background: '#fff', color: '#1a1a1a',
+  border: '1px solid #b0c4b0', borderRadius: 4,
   padding: '0.3rem 0.5rem', fontSize: '0.8rem', minWidth: 120,
 }
 
 const TH_BASE = {
   padding: '0.3rem 0.5rem', textAlign: 'left',
-  color: '#7070a0', fontWeight: 700, fontSize: '0.7rem',
+  color: '#4a6a4a', fontWeight: 700, fontSize: '0.7rem',
   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0,
+  background: '#d0ddd0',
 }
 const TH_N = { ...TH_BASE, width: 28, maxWidth: 'none', textAlign: 'center' }
-const TH_X = { ...TH_BASE, width: '45%', borderLeft: '1px solid #2a2a3e' }
+const TH_X = { ...TH_BASE, width: '45%', borderLeft: '1px solid #b0c4b0' }
 
 const TD_N = {
-  padding: '0.18rem 0.4rem', color: '#484868',
+  padding: '0.18rem 0.4rem', color: '#7a9a7a',
   fontSize: '0.7rem', textAlign: 'center', width: 28,
 }
 const TD_V = {
   padding: '0.1rem 0.5rem',
-  borderLeft: '1px solid #1e1e2e',
+  borderLeft: '1px solid #dde8dd',
 }
 
 const NUM_IN = {
   width: '100%', background: 'transparent', border: 'none',
-  color: '#c0c0e0', fontSize: '0.78rem', padding: '0.1rem 0',
+  color: '#1a1a1a', fontSize: '0.78rem', padding: '0.1rem 0',
   outline: 'none', fontFamily: 'monospace',
 }
 
 const UNIT_BADGE = {
   marginLeft: '0.3rem', fontSize: '0.65rem',
-  color: '#5588aa', fontWeight: 400,
+  color: '#4a7a8a', fontWeight: 400,
 }
 
 const DEL_BTN = {
-  background: 'none', border: 'none', color: '#555',
+  background: 'none', border: 'none', color: '#aaa',
   cursor: 'pointer', fontSize: '0.9rem', padding: '0 2px',
   lineHeight: 1,
 }
 
 const BTN = {
-  background: '#1e1e2e', border: '1px solid #333', color: '#999',
+  background: '#eef3ee', border: '1px solid #b0c4b0', color: '#4a6a4a',
   borderRadius: 3, cursor: 'pointer', padding: '0.25rem 0.6rem',
   fontSize: '0.75rem',
 }
 
 const BTN_SAVE = {
-  borderColor: '#5b9bd5', color: '#5b9bd5', background: '#0a1a2a',
+  borderColor: '#4a8a4a', color: '#1a5a1a', background: '#d0ecd0',
 }
 
 const EMPTY_HINT = {
   position: 'absolute', inset: 0, display: 'flex',
   alignItems: 'center', justifyContent: 'center',
-  color: '#333', fontSize: '0.85rem', pointerEvents: 'none', zIndex: 1,
+  color: '#aaa', fontSize: '0.85rem', pointerEvents: 'none', zIndex: 1,
 }

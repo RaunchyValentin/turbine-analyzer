@@ -255,7 +255,7 @@ export default function Turbines() {
             <button
               onClick={handleCleanup}
               disabled={cleaning}
-              style={{ ...s.sortBtn, color: cleaning ? '#555' : '#c0784a', borderColor: '#3a2a1a', marginRight: 8 }}
+              style={{ ...s.sortBtn, color: cleaning ? '#999' : '#c05030', borderColor: '#e0b0a0', marginRight: 8 }}
               title="Remove orphaned parameters and curves left after turbine deletion"
             >
               {cleaning ? 'Cleaning…' : '⌫ Clean DB'}
@@ -326,7 +326,7 @@ export default function Turbines() {
                     <td style={s.td}>
                       <span style={sourceStyle(t.source_file)}>{sourceLabel(t.source_file)}</span>
                     </td>
-                    <td style={{ ...s.td, color: '#c0c0d0' }}>{t.file_date || t.imported_at || '—'}</td>
+                    <td style={{ ...s.td, color: '#7a8a7a' }}>{t.file_date || t.imported_at || '—'}</td>
                     <td style={{ ...s.td, textAlign: 'right' }}>
                       <span style={s.paramCount}>{t.param_count}</span>
                     </td>
@@ -365,50 +365,50 @@ export default function Turbines() {
 
 function sourceStyle(filename) {
   const ext = (filename || '').split('.').pop().toLowerCase()
-  if (ext === 'jar') return { color: '#4fc3f7', fontSize: '0.75rem', fontWeight: 600 }
-  return { color: '#a5d6a7', fontSize: '0.75rem', fontWeight: 600 }
+  if (ext === 'jar') return { color: '#0066cc', fontSize: '0.75rem', fontWeight: 600 }
+  return { color: '#2a8a4a', fontSize: '0.75rem', fontWeight: 600 }
 }
 
 const s = {
   page:          { padding: '1.25rem', maxWidth: '1100px' },
-  sectionTitle:  { margin: '0 0 0.75rem', fontSize: '1rem', color: '#e0e0e0', fontWeight: 600 },
-  importSection: { background: '#0d0d1e', border: '1px solid #1e1e30', borderRadius: '6px', padding: '1.25rem', marginBottom: '1.5rem' },
-  listSection:   { background: '#0d0d1e', border: '1px solid #1e1e30', borderRadius: '6px', padding: '1.25rem' },
+  sectionTitle:  { margin: '0 0 0.75rem', fontSize: '1rem', color: '#1a2a1a', fontWeight: 600 },
+  importSection: { background: '#f5f8f5', border: '1px solid #b0c4b0', borderRadius: '6px', padding: '1.25rem', marginBottom: '1.5rem' },
+  listSection:   { background: '#f5f8f5', border: '1px solid #b0c4b0', borderRadius: '6px', padding: '1.25rem' },
 
-  dropzone:      { border: '2px dashed #2a2a45', borderRadius: '6px', padding: '1.5rem', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', minHeight: '80px' },
-  dropzoneActive:{ borderColor: '#5b9bd5', background: '#0a1020' },
-  dropzoneFilled:{ borderColor: '#4caf7d', background: '#0a1a10' },
-  dropIcon:      { fontSize: '1.4rem', color: '#444' },
-  dropText:      { color: '#555', fontSize: '0.85rem' },
+  dropzone:      { border: '2px dashed #b0c4b0', borderRadius: '6px', padding: '1.5rem', textAlign: 'center', cursor: 'pointer', transition: 'all 0.15s', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', minHeight: '80px', background: '#fff' },
+  dropzoneActive:{ borderColor: '#4a8a4a', background: '#e8f5e8' },
+  dropzoneFilled:{ borderColor: '#4caf7d', background: '#f0faf0' },
+  dropIcon:      { fontSize: '1.4rem', color: '#aaa' },
+  dropText:      { color: '#7a9a7a', fontSize: '0.85rem' },
   fileIcon:      { fontSize: '1.2rem' },
-  fileName:      { color: '#4caf7d', fontSize: '0.85rem', fontFamily: 'monospace' },
+  fileName:      { color: '#2a7a4a', fontSize: '0.85rem', fontFamily: 'monospace' },
 
   nameRow:       { display: 'flex', alignItems: 'flex-end', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' },
-  label:         { display: 'flex', flexDirection: 'column', gap: '0.3rem', color: '#888', fontSize: '0.75rem' },
-  input:         { background: '#1e1e2e', color: '#e0e0e0', border: '1px solid #333', borderRadius: '4px', padding: '0.35rem 0.6rem', fontSize: '0.85rem', width: '140px' },
-  importBtn:     { background: '#1a3a5a', border: '1px solid #5b9bd5', color: '#5b9bd5', borderRadius: '4px', cursor: 'pointer', padding: '0.4rem 1.25rem', fontSize: '0.85rem', fontWeight: 600 },
+  label:         { display: 'flex', flexDirection: 'column', gap: '0.3rem', color: '#5a7a5a', fontSize: '0.75rem' },
+  input:         { background: '#fff', color: '#1a1a1a', border: '1px solid #b0c4b0', borderRadius: '4px', padding: '0.35rem 0.6rem', fontSize: '0.85rem', width: '140px' },
+  importBtn:     { background: '#d0ecd0', border: '1px solid #7aaa7a', color: '#1a3a1a', borderRadius: '4px', cursor: 'pointer', padding: '0.4rem 1.25rem', fontSize: '0.85rem', fontWeight: 600 },
   importBtnDisabled: { opacity: 0.4, cursor: 'not-allowed' },
 
-  success: { marginTop: '0.75rem', color: '#4caf7d', fontSize: '0.82rem', padding: '0.4rem 0.75rem', background: '#0a1a0a', borderRadius: '4px', border: '1px solid #1a3a1a' },
-  error:   { marginTop: '0.75rem', color: '#e74c3c', fontSize: '0.82rem', padding: '0.4rem 0.75rem', background: '#1a0a0a', borderRadius: '4px', border: '1px solid #3a1a1a' },
+  success: { marginTop: '0.75rem', color: '#2a7a2a', fontSize: '0.82rem', padding: '0.4rem 0.75rem', background: '#e8f5e8', borderRadius: '4px', border: '1px solid #7aaa7a' },
+  error:   { marginTop: '0.75rem', color: '#c0392b', fontSize: '0.82rem', padding: '0.4rem 0.75rem', background: '#fdecea', borderRadius: '4px', border: '1px solid #e57373' },
 
   listHeader:  { display: 'flex', alignItems: 'center', marginBottom: '0.75rem' },
   sortGroup:   { marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '4px' },
-  sortLabel:   { color: '#555', fontSize: '0.75rem' },
-  sortBtn:     { background: '#1e1e2e', border: '1px solid #2a2a45', color: '#666', borderRadius: '3px', cursor: 'pointer', padding: '0.15rem 0.5rem', fontSize: '0.72rem' },
-  sortActive:  { background: '#1a2a3a', borderColor: '#5b9bd5', color: '#5b9bd5' },
+  sortLabel:   { color: '#7a9a7a', fontSize: '0.75rem' },
+  sortBtn:     { background: '#eef3ee', border: '1px solid #b0c4b0', color: '#4a6a4a', borderRadius: '3px', cursor: 'pointer', padding: '0.15rem 0.5rem', fontSize: '0.72rem' },
+  sortActive:  { background: '#b8d4b8', borderColor: '#4a8a4a', color: '#1a3a1a' },
 
-  empty:       { color: '#444', fontSize: '0.85rem', textAlign: 'center', padding: '2rem' },
+  empty:       { color: '#7a9a7a', fontSize: '0.85rem', textAlign: 'center', padding: '2rem' },
   table:       { width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' },
-  th:          { background: '#0a0a18', color: '#555', fontWeight: 600, padding: '0.3rem 0.6rem', textAlign: 'left', borderBottom: '1px solid #1e1e30' },
-  rowEven:     { background: '#0a0a14' },
-  rowOdd:      { background: '#0d0d1a' },
-  td:          { padding: '0.35rem 0.6rem', borderBottom: '1px solid #12121e', verticalAlign: 'middle' },
-  fileCell:    { fontFamily: 'monospace', fontSize: '0.74rem', color: '#666', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
+  th:          { background: '#d0ddd0', color: '#1a2a1a', fontWeight: 600, padding: '0.3rem 0.6rem', textAlign: 'left', borderBottom: '1px solid #b0c4b0' },
+  rowEven:     { background: '#ffffff' },
+  rowOdd:      { background: '#f5f7f5' },
+  td:          { padding: '0.35rem 0.6rem', borderBottom: '1px solid #dde8dd', verticalAlign: 'middle' },
+  fileCell:    { fontFamily: 'monospace', fontSize: '0.74rem', color: '#7a9a7a', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' },
 
-  projectName: { color: '#c0c0e0', cursor: 'pointer', borderBottom: '1px dashed #333' },
-  inlineInput: { background: '#1e1e2e', color: '#e0e0e0', border: '1px solid #5b9bd5', borderRadius: '3px', padding: '0.1rem 0.4rem', fontSize: '0.8rem', width: '120px' },
-  turbineLink: { color: '#5b9bd5', cursor: 'pointer', fontWeight: 600 },
-  paramCount:  { color: '#888', fontFamily: 'monospace' },
-  deleteBtn:   { background: 'none', border: '1px solid #2a1a1a', color: '#555', borderRadius: '3px', cursor: 'pointer', padding: '0.1rem 0.4rem', fontSize: '0.75rem', transition: 'all 0.1s' },
+  projectName: { color: '#2a4a8a', cursor: 'pointer', borderBottom: '1px dashed #b0c4b0' },
+  inlineInput: { background: '#fff', color: '#1a1a1a', border: '1px solid #5b9bd5', borderRadius: '3px', padding: '0.1rem 0.4rem', fontSize: '0.8rem', width: '120px' },
+  turbineLink: { color: '#1a5a9a', cursor: 'pointer', fontWeight: 600 },
+  paramCount:  { color: '#5a7a5a', fontFamily: 'monospace' },
+  deleteBtn:   { background: 'none', border: '1px solid #d0d0d0', color: '#999', borderRadius: '3px', cursor: 'pointer', padding: '0.1rem 0.4rem', fontSize: '0.75rem', transition: 'all 0.1s' },
 }

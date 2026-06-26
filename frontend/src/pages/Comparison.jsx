@@ -78,7 +78,7 @@ export default function Comparison() {
       {/* Selectors */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: '0.75rem', color: '#666' }}>Before</label>
+          <label style={{ fontSize: '0.75rem', color: '#5a7a5a' }}>Before</label>
           <select value={idA} onChange={e => setIdA(e.target.value)} style={SEL_STYLE}>
             <option value="">— select turbine —</option>
             {turbines.map(t => (
@@ -88,7 +88,7 @@ export default function Comparison() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: '0.75rem', color: '#666' }}>After</label>
+          <label style={{ fontSize: '0.75rem', color: '#5a7a5a' }}>After</label>
           <select value={idB} onChange={e => setIdB(e.target.value)} style={SEL_STYLE}>
             <option value="">— select turbine —</option>
             {turbines.map(t => (
@@ -110,7 +110,7 @@ export default function Comparison() {
 
       {/* Mixed mode notice */}
       {result?.mixed && (
-        <div style={{ fontSize: '0.8rem', color: '#ff9800', background: '#1a1200', border: '1px solid #3a2800', borderRadius: 4, padding: '0.4rem 0.75rem' }}>
+        <div style={{ fontSize: '0.8rem', color: '#8a6000', background: '#fef8e0', border: '1px solid #e0c060', borderRadius: 4, padding: '0.4rem 0.75rem' }}>
           Mixed comparison (JAR vs SREL) — showing only parameters present in the SREL file
         </div>
       )}
@@ -146,8 +146,10 @@ export default function Comparison() {
                   onClick={() => setFilter(f.value)}
                   style={{
                     ...TAB_STYLE,
-                    background: filter === f.value ? '#1976d2' : '#eee',
-                    color: filter === f.value ? '#fff' : '#333',
+                    background: filter === f.value ? '#b8d4b8' : '#eef3ee',
+                    color: filter === f.value ? '#1a3a1a' : '#4a6a4a',
+                    borderColor: filter === f.value ? '#4a8a4a' : '#b0c4b0',
+                    fontWeight: filter === f.value ? 600 : 400,
                   }}
                 >
                   {f.label} ({result.stats[f.value]})
@@ -158,9 +160,9 @@ export default function Comparison() {
               placeholder="Search by Tag / Key / Port / Description…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ padding: '0.35rem 0.6rem', fontSize: '0.875rem', width: 300 }}
+              style={{ padding: '0.35rem 0.6rem', fontSize: '0.875rem', width: 300, background: '#fff', border: '1px solid #b0c4b0', borderRadius: 4 }}
             />
-            <button onClick={handleExport} style={{ ...BTN_STYLE, background: '#388e3c' }}>
+            <button onClick={handleExport} style={{ ...BTN_STYLE, background: '#d0ecd0', borderColor: '#7aaa7a', color: '#1a3a1a' }}>
               ↓ Download Excel report
             </button>
           </div>
@@ -169,7 +171,7 @@ export default function Comparison() {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
-                <tr style={{ background: '#263238', color: '#fff' }}>
+                <tr style={{ background: '#d0ddd0', color: '#1a2a1a' }}>
                   <Th>#</Th>
                   <Th>Tag-Name</Th>
                   <Th>Parameter Key</Th>
@@ -218,17 +220,17 @@ function Td({ children, style }) {
   return <td style={{ padding: '0.4rem 0.75rem', borderBottom: '1px solid #eee', ...style }}>{children}</td>
 }
 
-const SEL_STYLE = { padding: '0.4rem 0.6rem', fontSize: '0.875rem', minWidth: 280 }
+const SEL_STYLE = { padding: '0.4rem 0.6rem', fontSize: '0.875rem', minWidth: 280, background: '#fff', border: '1px solid #b0c4b0', borderRadius: 4 }
 const BTN_STYLE = {
   padding: '0.45rem 1.25rem', fontSize: '0.875rem', fontWeight: 600,
-  background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer',
+  background: '#d0ecd0', color: '#1a3a1a', border: '1px solid #7aaa7a', borderRadius: 4, cursor: 'pointer',
 }
 const TAB_STYLE = {
-  padding: '0.3rem 0.75rem', fontSize: '0.8rem', border: 'none', borderRadius: 4, cursor: 'pointer',
+  padding: '0.3rem 0.75rem', fontSize: '0.8rem', border: '1px solid #b0c4b0', borderRadius: 4, cursor: 'pointer',
 }
 const CARD_STYLE = {
-  padding: '1rem 1.5rem', background: '#fff', borderRadius: 8,
-  boxShadow: '0 1px 4px rgba(0,0,0,0.1)', minWidth: 140, textAlign: 'center',
+  padding: '1rem 1.5rem', background: '#f5f8f5', borderRadius: 8,
+  border: '1px solid #b0c4b0', minWidth: 140, textAlign: 'center',
 }
 const CHANGED_STYLE = { background: '#ffe0b2', fontWeight: 600, color: '#e65100' }
 const ONLY_STYLE_A  = { background: '#e3f2fd', color: '#1565c0', fontStyle: 'italic' }

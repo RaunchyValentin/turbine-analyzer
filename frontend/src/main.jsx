@@ -17,7 +17,7 @@ import Settings from './pages/Settings'
 
 function Layout() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#f0f5f0' }}>
       <NavBar />
       <main style={{ flex: 1, padding: '1rem 1.25rem' }}>
         <Outlet />
