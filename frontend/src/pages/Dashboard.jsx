@@ -97,14 +97,19 @@ function getTagName(row) {
   return rd['Tag-Name'] || rd['TagName'] || ''
 }
 
+const PAGE_SIZE = 100
+
 export default function Dashboard() {
-  const [turbines, setTurbines]   = useState([])
+  const [turbines, setTurbines]     = useState([])
   const [selectedId, setSelectedId] = useState(null)
-  const [rows, setRows]           = useState([])
-  const [search, setSearch]       = useState('')
-  const [loading, setLoading]     = useState(false)
-  const [tagFilter, setTagFilter] = useState('')   // numeric prefix of Tag-Name, e.g. "41"
-  const [portView, setPortView]   = useState('all') // 'all' | 'annotated' | 'srel'
+  const [rows, setRows]             = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const [offset, setOffset]         = useState(0)
+  const [search, setSearch]         = useState('')
+  const [loading, setLoading]       = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [tagFilter, setTagFilter]   = useState('')
+  const [portView, setPortView]     = useState('annotated')  // default: non-empty Parameter Key
 
   useEffect(() => {
     const el = document.createElement('style')
@@ -120,14 +125,44 @@ export default function Dashboard() {
     })
   }, [])
 
+  // Build API params from current view settings
+  const apiParams = (extra = {}) => ({
+    turbine_id: selectedId,
+    annotated_only: portView === 'annotated',
+    limit: PAGE_SIZE,
+    ...extra,
+  })
+
   useEffect(() => {
     if (!selectedId) return
     setLoading(true)
     setTagFilter('')
-    client.get('/parameters', { params: { turbine_id: selectedId } })
-      .then(r => setRows(parseRows(r.data)))
-      .finally(() => setLoading(false))
-  }, [selectedId])
+    setRows([])
+    setOffset(0)
+    setTotalCount(0)
+    Promise.all([
+      client.get('/parameters/count', { params: { turbine_id: selectedId } }),
+      client.get('/parameters', { params: apiParams({ offset: 0 }) }),
+    ]).then(([cntRes, parRes]) => {
+      setTotalCount(cntRes.data.count)
+      setRows(parseRows(parRes.data))
+      setOffset(parRes.data.length)
+    }).finally(() => setLoading(false))
+  }, [selectedId, portView])
+
+  const handleLoadMore = async () => {
+    if (loadingMore) return
+    setLoadingMore(true)
+    try {
+      const r = await client.get('/parameters', { params: apiParams({ offset }) })
+      setRows(prev => [...prev, ...parseRows(r.data)])
+      setOffset(prev => prev + r.data.length)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
+  const hasMore = offset < totalCount
 
   // Detect Tag-Name numeric prefixes from loaded rows (client-side)
   const tagPrefixes = useMemo(() => {
@@ -169,8 +204,7 @@ export default function Dashboard() {
     return r
   }, [rows, search, tagFilter, portView])
 
-  const selected     = turbines.find((t) => t.id === selectedId)
-  const annotCount   = useMemo(() => rows.filter(r => (r._raw?.['Parameter Key'] || '').trim() !== '').length, [rows])
+  const selected = turbines.find((t) => t.id === selectedId)
 
   const handleDeleteTurbine = async () => {
     if (!selectedId) return
@@ -209,8 +243,8 @@ export default function Dashboard() {
         {/* Port view toggle: All / With annotation / SREL only */}
         <div style={{ display: 'flex', border: '1px solid #b0c4b0', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
           {[
-            { key: 'all',       label: 'All ports',       count: rows.length },
-            { key: 'annotated', label: 'With annotation', count: annotCount  },
+            { key: 'all',       label: 'All ports',       count: totalCount },
+            { key: 'annotated', label: 'With annotation', count: null       },
           ].map(({ key, label, count }, i) => (
             <button
               key={key}
@@ -223,7 +257,7 @@ export default function Dashboard() {
                 fontWeight: portView === key ? 600 : 400,
               }}
             >
-              {label} ({count.toLocaleString()})
+              {label}{count !== null ? ` (${count.toLocaleString()})` : ''}
             </button>
           ))}
         </div>
@@ -247,7 +281,7 @@ export default function Dashboard() {
         )}
 
         <span style={{ fontSize: '0.75rem', color: mixedData && !tagFilter ? '#c0392b' : '#3a5a3a' }}>
-          {filtered.length.toLocaleString()} rows
+          {filtered.length.toLocaleString()}{totalCount > rows.length ? ` / ${totalCount.toLocaleString()} total` : ''} rows
           {mixedData && !tagFilter ? ' ⚠ mixed GTs' : ''}
         </span>
 
@@ -259,6 +293,16 @@ export default function Dashboard() {
         />
 
         {loading && <span style={{ fontSize: '0.75rem', color: '#7a9a7a' }}>Loading…</span>}
+
+        {!loading && hasMore && (
+          <button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            style={{ ...TB, background: '#e8f4e8', borderColor: '#7aaa7a' }}
+          >
+            {loadingMore ? 'Loading…' : `Load more (${(totalCount - offset).toLocaleString()} left)`}
+          </button>
+        )}
 
         {/* Delete current turbine */}
         {selectedId && (
