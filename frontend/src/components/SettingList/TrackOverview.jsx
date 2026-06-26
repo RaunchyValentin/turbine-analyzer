@@ -63,10 +63,10 @@ const s = {
   hint:     { color: '#9888B8', fontSize: '0.82rem' },
 
   group:    { marginBottom: '1.25rem' },
-  table:    { width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', border: '1px solid #1e1e30' },
+  table:    { width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', border: '1px solid #D0C4E8' },
 
-  thId:     { background: '#5C3D99', color: '#9888B8', fontWeight: 700, padding: '0.35rem 0.6rem', textAlign: 'left', borderBottom: '2px solid #D0C4E8', width: '90px', whiteSpace: 'nowrap' },
-  thLabel:  { background: '#5C3D99', color: '#9888B8', fontWeight: 700, padding: '0.35rem 0.6rem', textAlign: 'left', borderBottom: '2px solid #D0C4E8' },
+  thId:     { background: '#5C3D99', color: '#ffffff', fontWeight: 700, padding: '0.35rem 0.6rem', textAlign: 'left', borderBottom: '2px solid #D0C4E8', width: '90px', whiteSpace: 'nowrap' },
+  thLabel:  { background: '#5C3D99', color: '#ffffff', fontWeight: 700, padding: '0.35rem 0.6rem', textAlign: 'left', borderBottom: '2px solid #D0C4E8' },
 
   rowEven:  { background: '#ffffff' },
   rowOdd:   { background: '#F7F3FC' },
@@ -78,7 +78,7 @@ const s = {
   sheetBtn: {
     border: '1px solid', borderRadius: '3px', cursor: 'pointer',
     padding: '0.15rem 0.5rem', fontSize: '0.78rem', fontWeight: 700,
-    color: '#2A1A4A', fontFamily: 'monospace', whiteSpace: 'nowrap',
+    color: '#ffffff', fontFamily: 'monospace', whiteSpace: 'nowrap',
     transition: 'filter 0.1s',
   },
 }
