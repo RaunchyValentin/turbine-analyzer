@@ -10,6 +10,7 @@ const S = {
   row:     { display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' },
   col:     { flex: 1 },
   btn:     { padding: '0.4rem 1rem', fontSize: '0.85rem', border: '1px solid #7aaa7a', borderRadius: 3, background: '#d0ecd0', color: '#1a3a1a', cursor: 'pointer', fontWeight: 600 },
+  btnAlt:  { padding: '0.4rem 1rem', fontSize: '0.85rem', border: '2px solid #1a5a9a', borderRadius: 3, background: '#1a5a9a', color: '#ffffff', cursor: 'pointer', fontWeight: 700 },
   btnDis:  { padding: '0.4rem 1rem', fontSize: '0.85rem', border: '1px solid #ccc', borderRadius: 3, background: '#eee', color: '#999', cursor: 'not-allowed' },
   pfxGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.5rem', marginTop: '0.5rem' },
   pfxCard: (sel) => ({ border: `2px solid ${sel ? '#4aaa4a' : '#b0c4b0'}`, borderRadius: 4, padding: '0.5rem 0.75rem', cursor: 'pointer', background: sel ? '#d8f0d8' : '#fff', textAlign: 'center' }),
@@ -204,7 +205,7 @@ export default function Import() {
 
             {prefixes.length > 1 && selPrefix === '' && (
               <button
-                style={canImportAll ? { ...S.btn, background: '#d0ecff', borderColor: '#7aaae0', color: '#0a2a5a' } : S.btnDis}
+                style={canImportAll ? S.btnAlt : S.btnDis}
                 disabled={!canImportAll}
                 onClick={handleImportAll}
                 title={`Import each unit (${prefixes.map(p => p.prefix).join(', ')}) as a separate turbine record`}
