@@ -9,8 +9,8 @@
     "column_label": "FGT, °C",
     "note": "Unloading Polygons initially to be deactivated. In case that activation required start with settings as found for loading unless actual unloading settings were already established.",
     "keys": {
-      "EGTL.X": "EGTL.X",
-      "EGTH.X": "EGTH.X"
+      "EGTL.X": "T.GAS.24",
+      "EGTH.X": "T.GAS.25"
     }
   },
   "sections": [
@@ -21,39 +21,59 @@
       "loading_label": "MSPG.F6L — Loading",
       "unloading_label": "MSPG.F6LE — Unloading",
       "points": [
-        {"xk":"F6L.A1","yk":"F6L.B1"},{"xk":"F6L.A2","yk":"F6L.B2"},
-        {"xk":"F6L.A3","yk":"F6L.B3"},{"xk":"F6L.A4","yk":"F6L.B4"},
-        {"xk":"F6L.A5","yk":"F6L.B5"},{"xk":"F6L.A6","yk":"F6L.B6"},
-        {"xk":"F6L.A7","yk":"F6L.B7"},{"xk":"F6L.A8","yk":"F6L.B8"},
-        {"xk":"F6L.A9","yk":"F6L.B9"},{"xk":"F6L.A10","yk":"F6L.B10"}
+        {"xk":"TT.ATK.199","yk":"F.PILOT.274"},
+        {"xk":"TT.ATK.200","yk":"F.PILOT.275"},
+        {"xk":"TT.ATK.201","yk":"F.PILOT.276"},
+        {"xk":"TT.ATK.202","yk":"F.PILOT.277"},
+        {"xk":"TT.ATK.203","yk":"F.PILOT.278"},
+        {"xk":"TT.ATK.204","yk":"F.PILOT.279"},
+        {"xk":"TT.ATK.205","yk":"F.PILOT.280"},
+        {"xk":"TT.ATK.206","yk":"F.PILOT.281"},
+        {"xk":"TT.ATK.207","yk":"F.PILOT.282"},
+        {"xk":"TT.ATK.208","yk":"F.PILOT.283"}
       ],
       "points_u": [
-        {"xk":"F6LE.A1","yk":"F6LE.B1"},{"xk":"F6LE.A2","yk":"F6LE.B2"},
-        {"xk":"F6LE.A3","yk":"F6LE.B3"},{"xk":"F6LE.A4","yk":"F6LE.B4"},
-        {"xk":"F6LE.A5","yk":"F6LE.B5"},{"xk":"F6LE.A6","yk":"F6LE.B6"},
-        {"xk":"F6LE.A7","yk":"F6LE.B7"},{"xk":"F6LE.A8","yk":"F6LE.B8"},
-        {"xk":"F6LE.A9","yk":"F6LE.B9"},{"xk":"F6LE.A10","yk":"F6LE.B10"}
+        {"xk":"TT.ATK.209","yk":"F.PILOT.284"},
+        {"xk":"TT.ATK.210","yk":"F.PILOT.285"},
+        {"xk":"TT.ATK.211","yk":"F.PILOT.286"},
+        {"xk":"TT.ATK.212","yk":"F.PILOT.287"},
+        {"xk":"TT.ATK.213","yk":"F.PILOT.288"},
+        {"xk":"TT.ATK.214","yk":"F.PILOT.289"},
+        {"xk":"TT.ATK.215","yk":"F.PILOT.290"},
+        {"xk":"TT.ATK.216","yk":"F.PILOT.291"},
+        {"xk":"TT.ATK.217","yk":"F.PILOT.292"},
+        {"xk":"TT.ATK.218","yk":"F.PILOT.293"}
       ]
     },
     {
       "title": "3.2a Pilot Gas as Function of IGV — COLD Fuel Gas",
-      "x_label": "IGV [%]",
-      "y_label": "m PG [kg/s]",
+      "x_label": "IGV [0..1]",
+      "y_label": "Correction Factor",
       "loading_label": "MSPG.F4L — Loading",
       "unloading_label": "MSPG.F4LE — Unloading",
       "points": [
-        {"xk":"F4L.A1","yk":"F4L.B1"},{"xk":"F4L.A2","yk":"F4L.B2"},
-        {"xk":"F4L.A3","yk":"F4L.B3"},{"xk":"F4L.A4","yk":"F4L.B4"},
-        {"xk":"F4L.A5","yk":"F4L.B5"},{"xk":"F4L.A6","yk":"F4L.B6"},
-        {"xk":"F4L.A7","yk":"F4L.B7"},{"xk":"F4L.A8","yk":"F4L.B8"},
-        {"xk":"F4L.A9","yk":"F4L.B9"},{"xk":"F4L.A10","yk":"F4L.B10"}
+        {"xk":"G.VLE0.143","yk":"F.PILOT.234"},
+        {"xk":"G.VLE0.144","yk":"F.PILOT.235"},
+        {"xk":"G.VLE0.145","yk":"F.PILOT.236"},
+        {"xk":"G.VLE0.146","yk":"F.PILOT.237"},
+        {"xk":"G.VLE0.147","yk":"F.PILOT.238"},
+        {"xk":"G.VLE0.148","yk":"F.PILOT.239"},
+        {"xk":"G.VLE0.149","yk":"F.PILOT.240"},
+        {"xk":"G.VLE0.150","yk":"F.PILOT.241"},
+        {"xk":"G.VLE0.151","yk":"F.PILOT.242"},
+        {"xk":"G.VLE0.152","yk":"F.PILOT.243"}
       ],
       "points_u": [
-        {"xk":"F4LE.A1","yk":"F4LE.B1"},{"xk":"F4LE.A2","yk":"F4LE.B2"},
-        {"xk":"F4LE.A3","yk":"F4LE.B3"},{"xk":"F4LE.A4","yk":"F4LE.B4"},
-        {"xk":"F4LE.A5","yk":"F4LE.B5"},{"xk":"F4LE.A6","yk":"F4LE.B6"},
-        {"xk":"F4LE.A7","yk":"F4LE.B7"},{"xk":"F4LE.A8","yk":"F4LE.B8"},
-        {"xk":"F4LE.A9","yk":"F4LE.B9"},{"xk":"F4LE.A10","yk":"F4LE.B10"}
+        {"xk":"G.VLE0.153","yk":"F.PILOT.244"},
+        {"xk":"G.VLE0.154","yk":"F.PILOT.245"},
+        {"xk":"G.VLE0.155","yk":"F.PILOT.246"},
+        {"xk":"G.VLE0.156","yk":"F.PILOT.247"},
+        {"xk":"G.VLE0.157","yk":"F.PILOT.248"},
+        {"xk":"G.VLE0.158","yk":"F.PILOT.249"},
+        {"xk":"G.VLE0.159","yk":"F.PILOT.250"},
+        {"xk":"G.VLE0.160","yk":"F.PILOT.251"},
+        {"xk":"G.VLE0.161","yk":"F.PILOT.252"},
+        {"xk":"G.VLE0.162","yk":"F.PILOT.253"}
       ]
     }
   ]
