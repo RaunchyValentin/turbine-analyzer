@@ -183,6 +183,14 @@ export default function Dashboard() {
     setRows([])
   }
 
+  const handleClearDb = async () => {
+    if (!window.confirm('Clear ENTIRE database? All turbines and parameters will be deleted.')) return
+    await client.delete('/db/reset')
+    setTurbines([])
+    setSelectedId(null)
+    setRows([])
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', height: 'calc(100vh - 72px)' }}>
       {/* Toolbar */}
@@ -262,6 +270,15 @@ export default function Dashboard() {
             Delete turbine
           </button>
         )}
+
+        {/* Clear entire DB */}
+        <button
+          onClick={handleClearDb}
+          title="Wipe entire database — all projects, turbines and parameters"
+          style={{ ...TB, marginLeft: selectedId ? '0' : 'auto', background: '#922', borderColor: '#700', color: '#fff', fontWeight: 700 }}
+        >
+          Clear DB
+        </button>
       </div>
 
       {/* Grid */}
