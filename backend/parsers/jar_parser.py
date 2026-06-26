@@ -364,7 +364,7 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
                 continue
 
             m = _SREL_RE.search(raw_srel)
-            srel_key = m.group(1).strip() if m else raw_srel.strip()
+            srel_key = m.group(1).strip() if m else ""
 
             var_el = port.find("variation")
             settable_ports.append({
@@ -373,6 +373,7 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
                 "param_val": param_val,
                 "raw_srel":  raw_srel,
                 "srel_key":  srel_key,
+                "has_srel":  bool(m),
                 "eu":        var_el.get("engUnit", "") if var_el is not None else "",
             })
 
@@ -381,6 +382,7 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
             param_val = sp["param_val"]
             raw_srel  = sp["raw_srel"]
             srel_key  = sp["srel_key"]
+            has_srel  = sp["has_srel"]
             eu        = sp["eu"]
             port      = sp["port"]
 
@@ -396,7 +398,7 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
                 "Signal Tag Name": sig_tagname,
                 "Signal Item":     sig_signal,
                 "Value":           param_val,
-                "Parameter Key":   raw_srel,
+                "Parameter Key":   raw_srel if has_srel else "",
                 "EU":              eu,
                 "Visible Port":    port.get("isvisible", "false"),
                 "Visible Parameter": port.get("parVisible", "false"),

@@ -138,7 +138,7 @@ export default function Dashboard() {
   const filtered = useMemo(() => {
     let r = rows
     if (srelOnly) {
-      r = r.filter(row => (row._raw?.['Parameter Key'] || '').trim() !== '')
+      r = r.filter(row => /srel:/i.test(row._raw?.['Parameter Key'] || ''))
     }
     if (kksFilter) {
       r = r.filter(row => (row.kks || '').toUpperCase().startsWith(kksFilter.toUpperCase()))
@@ -162,7 +162,7 @@ export default function Dashboard() {
 
   const selected  = turbines.find((t) => t.id === selectedId)
   const mixedData = kksPrefixes.length > 1
-  const srelCount = useMemo(() => rows.filter(r => (r._raw?.['Parameter Key'] || '').trim() !== '').length, [rows])
+  const srelCount = useMemo(() => rows.filter(r => /srel:/i.test(r._raw?.['Parameter Key'] || '')).length, [rows])
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', height: 'calc(100vh - 72px)' }}>
