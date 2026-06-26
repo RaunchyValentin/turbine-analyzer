@@ -189,15 +189,15 @@ function CurvePanel({ turbines, label }) {
 
   const xs = points.map(p => p.x)
   const ys = points.map(p => p.y)
-  const markerColor = points.map((_, i) => i === selIdx ? '#e06010' : '#2a7a4a')
+  const markerColor = points.map((_, i) => i === selIdx ? '#FF6600' : '#8A00E5')
   const markerSize  = points.map((_, i) => i === selIdx ? 13 : 8)
 
   const plotData = [{
     x: xs, y: ys,
     mode: 'lines+markers',
     type: 'scatter',
-    line:   { color: '#4a9a6a', width: 1.5 },
-    marker: { color: markerColor, size: markerSize, line: { color: '#d0ddd0', width: 1.5 } },
+    line:   { color: '#8A00E5', width: 2 },
+    marker: { color: markerColor, size: markerSize, line: { color: '#EDD5FF', width: 1.5 } },
     hovertemplate: 'X: %{x}<br>Y: %{y}<extra></extra>',
   }]
 
@@ -207,18 +207,18 @@ function CurvePanel({ turbines, label }) {
   const plotLayout = {
     uirevision: curveId,
     margin: { l: 72, r: 12, t: 12, b: 58 },
-    paper_bgcolor: '#f5f8f5',
+    paper_bgcolor: '#F8F2FF',
     plot_bgcolor:  '#ffffff',
-    font:  { color: '#4a6a4a', size: 11 },
+    font:  { color: '#7A55AA', size: 11 },
     xaxis: {
-      gridcolor: '#d0e8d0', zerolinecolor: '#b0c4b0', color: '#5a7a5a',
+      gridcolor: '#EDD5FF', zerolinecolor: '#C099FF', color: '#9A80BB',
       autorange: true,
-      title: { text: xTitle, font: { size: 11, color: '#5a7a5a' }, standoff: 8 },
+      title: { text: xTitle, font: { size: 11, color: '#9A80BB' }, standoff: 8 },
     },
     yaxis: {
-      gridcolor: '#d0e8d0', zerolinecolor: '#b0c4b0', color: '#5a7a5a',
+      gridcolor: '#EDD5FF', zerolinecolor: '#C099FF', color: '#9A80BB',
       autorange: true,
-      title: { text: yTitle, font: { size: 11, color: '#5a7a5a' }, standoff: 8 },
+      title: { text: yTitle, font: { size: 11, color: '#9A80BB' }, standoff: 8 },
     },
     showlegend: false,
     dragmode: 'pan',
@@ -250,7 +250,7 @@ function CurvePanel({ turbines, label }) {
   return (
     <div style={PANEL}>
       {/* header label */}
-      <div style={{ fontSize: '0.72rem', color: '#7a9a7a', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+      <div style={{ fontSize: '0.72rem', color: '#9A80BB', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
         {label}
       </div>
 
@@ -276,7 +276,7 @@ function CurvePanel({ turbines, label }) {
           </button>
         )}
         {curveMeta?.description && (
-          <span style={{ fontSize: '0.72rem', color: '#7a9a7a', alignSelf: 'center', flexShrink: 0 }}>
+          <span style={{ fontSize: '0.72rem', color: '#9A80BB', alignSelf: 'center', flexShrink: 0 }}>
             {curveMeta.description}
           </span>
         )}
@@ -303,10 +303,10 @@ function CurvePanel({ turbines, label }) {
       </div>
 
       {/* point table */}
-      <div style={{ flex: '0 0 auto', maxHeight: 160, overflowY: 'auto', borderRadius: 4, border: '1px solid #b0c4b0', isolation: 'isolate' }}>
+      <div style={{ flex: '0 0 auto', maxHeight: 160, overflowY: 'auto', borderRadius: 4, border: '1px solid #DDD0EE', isolation: 'isolate' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.78rem' }}>
           <thead>
-            <tr style={{ position: 'sticky', top: 0, zIndex: 1, borderBottom: '2px solid #b0c4b0' }}>
+            <tr style={{ position: 'sticky', top: 0, zIndex: 1, borderBottom: '2px solid #6B00B3' }}>
               <th style={TH_N}>#</th>
               <th style={TH_X} title={axisInfo.x_label}>
                 {axisInfo.x_label}
@@ -380,7 +380,7 @@ function CurvePanel({ turbines, label }) {
           {resetting ? 'Resetting…' : '↺ Reset'}
         </button>
         <div style={{ flex: 1 }} />
-        <span style={{ fontSize: '0.72rem', color: '#7a9a7a' }}>
+        <span style={{ fontSize: '0.72rem', color: '#9A80BB' }}>
           {points.length} pts{dirty ? ' ●' : ''}
         </span>
         <button
@@ -406,7 +406,7 @@ export default function Curves() {
 
   if (turbines.length === 0) {
     return (
-      <div style={{ color: '#7a9a7a', padding: '2rem', fontSize: '0.9rem' }}>
+      <div style={{ color: '#9A80BB', padding: '2rem', fontSize: '0.9rem' }}>
         No turbines found — import a file first.
       </div>
     )
@@ -415,7 +415,7 @@ export default function Curves() {
   return (
     <div style={{ display: 'flex', gap: '0.75rem', height: 'calc(100vh - 72px)' }}>
       <CurvePanel turbines={turbines} label="Panel A" />
-      <div style={{ width: 1, background: '#b0c4b0', flexShrink: 0 }} />
+      <div style={{ width: 1, background: '#DDD0EE', flexShrink: 0 }} />
       <CurvePanel turbines={turbines} label="Panel B" />
     </div>
   )
@@ -429,58 +429,58 @@ const PANEL = {
 }
 
 const SEL = {
-  background: '#fff', color: '#1a1a1a',
-  border: '1px solid #b0c4b0', borderRadius: 4,
+  background: '#fff', color: '#1A0A2E',
+  border: '1px solid #DDD0EE', borderRadius: 4,
   padding: '0.3rem 0.5rem', fontSize: '0.8rem', minWidth: 120,
 }
 
 const TH_BASE = {
   padding: '0.3rem 0.5rem', textAlign: 'left',
-  color: '#4a6a4a', fontWeight: 700, fontSize: '0.7rem',
+  color: '#ffffff', fontWeight: 700, fontSize: '0.7rem',
   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 0,
-  background: '#d0ddd0',
+  background: '#8A00E5',
 }
 const TH_N = { ...TH_BASE, width: 28, maxWidth: 'none', textAlign: 'center' }
-const TH_X = { ...TH_BASE, width: '45%', borderLeft: '1px solid #b0c4b0' }
+const TH_X = { ...TH_BASE, width: '45%', borderLeft: '1px solid #A033FF' }
 
 const TD_N = {
-  padding: '0.18rem 0.4rem', color: '#7a9a7a',
+  padding: '0.18rem 0.4rem', color: '#9A80BB',
   fontSize: '0.7rem', textAlign: 'center', width: 28,
 }
 const TD_V = {
   padding: '0.1rem 0.5rem',
-  borderLeft: '1px solid #dde8dd',
+  borderLeft: '1px solid #EDD5FF',
 }
 
 const NUM_IN = {
   width: '100%', background: 'transparent', border: 'none',
-  color: '#1a1a1a', fontSize: '0.78rem', padding: '0.1rem 0',
+  color: '#1A0A2E', fontSize: '0.78rem', padding: '0.1rem 0',
   outline: 'none', fontFamily: 'monospace',
 }
 
 const UNIT_BADGE = {
   marginLeft: '0.3rem', fontSize: '0.65rem',
-  color: '#4a7a8a', fontWeight: 400,
+  color: '#B366FF', fontWeight: 400,
 }
 
 const DEL_BTN = {
-  background: 'none', border: 'none', color: '#aaa',
+  background: 'none', border: 'none', color: '#C099FF',
   cursor: 'pointer', fontSize: '0.9rem', padding: '0 2px',
   lineHeight: 1,
 }
 
 const BTN = {
-  background: '#eef3ee', border: '1px solid #b0c4b0', color: '#4a6a4a',
+  background: '#F3EAFF', border: '1px solid #C099FF', color: '#6B00B3',
   borderRadius: 3, cursor: 'pointer', padding: '0.25rem 0.6rem',
   fontSize: '0.75rem',
 }
 
 const BTN_SAVE = {
-  borderColor: '#4a8a4a', color: '#1a5a1a', background: '#d0ecd0',
+  borderColor: '#6B00B3', color: '#ffffff', background: '#8A00E5',
 }
 
 const EMPTY_HINT = {
   position: 'absolute', inset: 0, display: 'flex',
   alignItems: 'center', justifyContent: 'center',
-  color: '#aaa', fontSize: '0.85rem', pointerEvents: 'none', zIndex: 1,
+  color: '#C099FF', fontSize: '0.85rem', pointerEvents: 'none', zIndex: 1,
 }

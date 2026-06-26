@@ -12,43 +12,43 @@ const GRID_CSS = `
   --ag-header-height: 26px;
   --ag-cell-horizontal-padding: 5px;
   --ag-background-color: #ffffff;
-  --ag-odd-row-background-color: #f5f7f5;
-  --ag-header-background-color: #d0ddd0;
-  --ag-header-foreground-color: #1a2a1a;
-  --ag-foreground-color: #1a1a1a;
-  --ag-row-hover-color: #e0eed0;
-  --ag-selected-row-background-color: #c8e6c9;
-  --ag-border-color: #b0c4b0;
-  --ag-row-border-color: #dde8dd;
-  --ag-header-column-separator-color: #a0b4a0;
+  --ag-odd-row-background-color: #F8F2FF;
+  --ag-header-background-color: #8A00E5;
+  --ag-header-foreground-color: #ffffff;
+  --ag-foreground-color: #1A0A2E;
+  --ag-row-hover-color: #EDD5FF;
+  --ag-selected-row-background-color: #D4AAFF;
+  --ag-border-color: #DDD0EE;
+  --ag-row-border-color: #EDD5FF;
+  --ag-header-column-separator-color: #A033FF;
   --ag-header-column-separator-display: block;
   --ag-header-column-separator-height: 60%;
   --ag-cell-widget-spacing: 4px;
-  --ag-secondary-foreground-color: #444;
-  --ag-disabled-foreground-color: #888;
+  --ag-secondary-foreground-color: #5A3A8A;
+  --ag-disabled-foreground-color: #9A80BB;
 }
 .xls-grid .ag-cell {
-  border-right: 1px solid #dde8dd !important;
+  border-right: 1px solid #EDD5FF !important;
   line-height: 21px;
-  color: #1a1a1a;
+  color: #1A0A2E;
 }
 .xls-grid .ag-header-cell {
-  border-right: 1px solid #a0b4a0 !important;
+  border-right: 1px solid #A033FF !important;
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  color: #1a2a1a;
+  color: #ffffff;
 }
 .xls-grid .ag-root-wrapper {
-  border: 1px solid #b0c4b0;
+  border: 1px solid #DDD0EE;
 }
 .xls-grid .ag-paging-panel {
   height: 28px;
   font-size: 11px;
-  border-top: 1px solid #b0c4b0;
-  color: #333;
-  background: #eef3ee;
+  border-top: 1px solid #DDD0EE;
+  color: #5A3A8A;
+  background: #F3EAFF;
 }
 `
 
@@ -86,7 +86,7 @@ function parseRows(raw_rows) {
   })
 }
 
-const TB = { padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#eef3ee', border: '1px solid #b0c4b0', color: '#1a2a1a', borderRadius: 2, cursor: 'pointer' }
+const TB = { padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#F3EAFF', border: '1px solid #C099FF', color: '#3D0070', borderRadius: 2, cursor: 'pointer' }
 
 const NUM_PFX = /^(\d+)/
 
@@ -238,8 +238,8 @@ export default function Dashboard() {
           ))}
         </select>
 
-        {/* Port view toggle: All / With annotation / SREL only */}
-        <div style={{ display: 'flex', border: '1px solid #b0c4b0', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
+        {/* Port view toggle: All / With annotation */}
+        <div style={{ display: 'flex', border: '1px solid #C099FF', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
           {[
             { key: 'all',       label: 'All ports',       count: totalCount },
             { key: 'annotated', label: 'With annotation', count: null       },
@@ -249,9 +249,9 @@ export default function Dashboard() {
               onClick={() => setPortView(key)}
               style={{
                 ...TB, border: 'none', borderRadius: 0,
-                borderLeft: i > 0 ? '1px solid #b0c4b0' : 'none',
-                background: portView === key ? '#b8d4b8' : '#eef3ee',
-                color:      portView === key ? '#1a3a1a' : '#5a7a5a',
+                borderLeft: i > 0 ? '1px solid #C099FF' : 'none',
+                background: portView === key ? '#8A00E5' : '#F3EAFF',
+                color:      portView === key ? '#ffffff'  : '#7A55AA',
                 fontWeight: portView === key ? 600 : 400,
               }}
             >
@@ -266,9 +266,9 @@ export default function Dashboard() {
             value={tagFilter}
             onChange={e => setTagFilter(e.target.value)}
             style={{ ...TB, cursor: 'default', minWidth: 150,
-              background: tagFilter ? '#eef3ee' : '#fdecea',
-              borderColor: tagFilter ? '#7aaa7a' : '#e57373',
-              color: tagFilter ? '#1a2a1a' : '#922' }}
+              background: tagFilter ? '#F3EAFF' : '#fdecea',
+              borderColor: tagFilter ? '#C099FF' : '#e57373',
+              color: tagFilter ? '#3D0070' : '#922' }}
             title="Filter by turbine unit (Tag-Name prefix)"
           >
             <option value="">⚠ Mixed GTs — all</option>
@@ -278,7 +278,7 @@ export default function Dashboard() {
           </select>
         )}
 
-        <span style={{ fontSize: '0.75rem', color: mixedData && !tagFilter ? '#c0392b' : '#3a5a3a' }}>
+        <span style={{ fontSize: '0.75rem', color: mixedData && !tagFilter ? '#c0392b' : '#7A55AA' }}>
           {filtered.length.toLocaleString()}{totalCount > rows.length ? ` / ${totalCount.toLocaleString()} total` : ''} rows
           {mixedData && !tagFilter ? ' ⚠ mixed GTs' : ''}
         </span>
@@ -290,13 +290,13 @@ export default function Dashboard() {
           style={{ ...TB, cursor: 'text', width: 180, outline: 'none' }}
         />
 
-        {loading && <span style={{ fontSize: '0.75rem', color: '#7a9a7a' }}>Loading…</span>}
+        {loading && <span style={{ fontSize: '0.75rem', color: '#9A80BB' }}>Loading…</span>}
 
         {!loading && hasMore && (
           <button
             onClick={handleLoadMore}
             disabled={loadingMore}
-            style={{ ...TB, background: '#e8f4e8', borderColor: '#7aaa7a' }}
+            style={{ ...TB, background: '#EDD5FF', borderColor: '#B366FF' }}
           >
             {loadingMore ? 'Loading…' : `Load more (${(totalCount - offset).toLocaleString()} left)`}
           </button>
