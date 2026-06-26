@@ -98,7 +98,7 @@ export default function Dashboard() {
   const [loading, setLoading]         = useState(false)
   const [kksPrefixes, setKksPrefixes] = useState([])
   const [kksFilter, setKksFilter]     = useState('')
-  const [srelOnly, setSrelOnly]       = useState(true)
+  const [srelOnly, setSrelOnly]       = useState(false)
 
   useEffect(() => {
     const el = document.createElement('style')
@@ -179,19 +179,19 @@ export default function Dashboard() {
           ))}
         </select>
 
-        {/* SREL / All toggle */}
-        <div style={{ display: 'flex', border: '1px solid #2c3c2c', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
-          <button
-            onClick={() => setSrelOnly(true)}
-            style={{ ...TB, border: 'none', borderRadius: 0, background: srelOnly ? '#b8d4b8' : '#eef3ee', color: srelOnly ? '#1a3a1a' : '#5a7a5a', fontWeight: srelOnly ? 600 : 400 }}
-          >
-            SREL ({srelCount.toLocaleString()})
-          </button>
+        {/* All / SREL toggle */}
+        <div style={{ display: 'flex', border: '1px solid #b0c4b0', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
           <button
             onClick={() => setSrelOnly(false)}
-            style={{ ...TB, border: 'none', borderRadius: 0, borderLeft: '1px solid #b0c4b0', background: !srelOnly ? '#b8d4b8' : '#eef3ee', color: !srelOnly ? '#1a3a1a' : '#5a7a5a', fontWeight: !srelOnly ? 600 : 400 }}
+            style={{ ...TB, border: 'none', borderRadius: 0, background: !srelOnly ? '#b8d4b8' : '#eef3ee', color: !srelOnly ? '#1a3a1a' : '#5a7a5a', fontWeight: !srelOnly ? 600 : 400 }}
           >
             All ports ({rows.length.toLocaleString()})
+          </button>
+          <button
+            onClick={() => setSrelOnly(true)}
+            style={{ ...TB, border: 'none', borderRadius: 0, borderLeft: '1px solid #b0c4b0', background: srelOnly ? '#b8d4b8' : '#eef3ee', color: srelOnly ? '#1a3a1a' : '#5a7a5a', fontWeight: srelOnly ? 600 : 400 }}
+          >
+            With SREL key ({srelCount.toLocaleString()})
           </button>
         </div>
 
