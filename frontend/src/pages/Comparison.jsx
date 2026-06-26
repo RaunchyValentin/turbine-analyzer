@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+﻿import React, { useEffect, useState, useMemo } from 'react'
 import client from '../api/client'
 
 const STAT_CARDS = [
@@ -78,7 +78,7 @@ export default function Comparison() {
       {/* Selectors */}
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: '0.75rem', color: '#7A55AA' }}>Before</label>
+          <label style={{ fontSize: '0.75rem', color: '#6A50A0' }}>Before</label>
           <select value={idA} onChange={e => setIdA(e.target.value)} style={SEL_STYLE}>
             <option value="">— select turbine —</option>
             {turbines.map(t => (
@@ -88,7 +88,7 @@ export default function Comparison() {
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <label style={{ fontSize: '0.75rem', color: '#7A55AA' }}>After</label>
+          <label style={{ fontSize: '0.75rem', color: '#6A50A0' }}>After</label>
           <select value={idB} onChange={e => setIdB(e.target.value)} style={SEL_STYLE}>
             <option value="">— select turbine —</option>
             {turbines.map(t => (
@@ -146,9 +146,9 @@ export default function Comparison() {
                   onClick={() => setFilter(f.value)}
                   style={{
                     ...TAB_STYLE,
-                    background: filter === f.value ? '#8A00E5' : '#F3EAFF',
-                    color:      filter === f.value ? '#ffffff'  : '#7A55AA',
-                    borderColor: filter === f.value ? '#6B00B3' : '#DDD0EE',
+                    background: filter === f.value ? '#5C3D99' : '#F4F0FA',
+                    color:      filter === f.value ? '#ffffff'  : '#6A50A0',
+                    borderColor: filter === f.value ? '#3D2270' : '#D0C4E8',
                     fontWeight: filter === f.value ? 600 : 400,
                   }}
                 >
@@ -160,7 +160,7 @@ export default function Comparison() {
               placeholder="Search by Tag / Key / Port / Description…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              style={{ padding: '0.35rem 0.6rem', fontSize: '0.875rem', width: 300, background: '#fff', border: '1px solid #DDD0EE', borderRadius: 4, color: '#1A0A2E' }}
+              style={{ padding: '0.35rem 0.6rem', fontSize: '0.875rem', width: 300, background: '#fff', border: '1px solid #D0C4E8', borderRadius: 4, color: '#2A1A4A' }}
             />
             <button onClick={handleExport} style={{ ...BTN_STYLE }}>
               ↓ Download Excel report
@@ -171,7 +171,7 @@ export default function Comparison() {
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
               <thead>
-                <tr style={{ background: '#8A00E5', color: '#ffffff' }}>
+                <tr style={{ background: '#5C3D99', color: '#ffffff' }}>
                   <Th>#</Th>
                   <Th>Tag-Name</Th>
                   <Th>Parameter Key</Th>
@@ -220,17 +220,17 @@ function Td({ children, style }) {
   return <td style={{ padding: '0.4rem 0.75rem', borderBottom: '1px solid #eee', ...style }}>{children}</td>
 }
 
-const SEL_STYLE = { padding: '0.4rem 0.6rem', fontSize: '0.875rem', minWidth: 280, background: '#fff', border: '1px solid #DDD0EE', borderRadius: 4, color: '#1A0A2E' }
+const SEL_STYLE = { padding: '0.4rem 0.6rem', fontSize: '0.875rem', minWidth: 280, background: '#fff', border: '1px solid #D0C4E8', borderRadius: 4, color: '#2A1A4A' }
 const BTN_STYLE = {
   padding: '0.45rem 1.25rem', fontSize: '0.875rem', fontWeight: 600,
-  background: '#8A00E5', color: '#ffffff', border: '1px solid #6B00B3', borderRadius: 4, cursor: 'pointer',
+  background: '#5C3D99', color: '#ffffff', border: '1px solid #3D2270', borderRadius: 4, cursor: 'pointer',
 }
 const TAB_STYLE = {
-  padding: '0.3rem 0.75rem', fontSize: '0.8rem', border: '1px solid #DDD0EE', borderRadius: 4, cursor: 'pointer',
+  padding: '0.3rem 0.75rem', fontSize: '0.8rem', border: '1px solid #D0C4E8', borderRadius: 4, cursor: 'pointer',
 }
 const CARD_STYLE = {
-  padding: '1rem 1.5rem', background: '#F8F2FF', borderRadius: 8,
-  border: '1px solid #DDD0EE', minWidth: 140, textAlign: 'center',
+  padding: '1rem 1.5rem', background: '#F7F3FC', borderRadius: 8,
+  border: '1px solid #D0C4E8', minWidth: 140, textAlign: 'center',
 }
 const CHANGED_STYLE = { background: '#ffe0b2', fontWeight: 600, color: '#e65100' }
 const ONLY_STYLE_A  = { background: '#e3f2fd', color: '#1565c0', fontStyle: 'italic' }

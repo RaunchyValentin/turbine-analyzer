@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react'
+﻿import React, { useEffect, useState, useMemo } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
@@ -12,28 +12,28 @@ const GRID_CSS = `
   --ag-header-height: 26px;
   --ag-cell-horizontal-padding: 5px;
   --ag-background-color: #ffffff;
-  --ag-odd-row-background-color: #F8F2FF;
-  --ag-header-background-color: #8A00E5;
+  --ag-odd-row-background-color: #F7F3FC;
+  --ag-header-background-color: #5C3D99;
   --ag-header-foreground-color: #ffffff;
-  --ag-foreground-color: #1A0A2E;
-  --ag-row-hover-color: #EDD5FF;
-  --ag-selected-row-background-color: #D4AAFF;
-  --ag-border-color: #DDD0EE;
-  --ag-row-border-color: #EDD5FF;
-  --ag-header-column-separator-color: #A033FF;
+  --ag-foreground-color: #2A1A4A;
+  --ag-row-hover-color: #EDE3F8;
+  --ag-selected-row-background-color: #C8B8E8;
+  --ag-border-color: #D0C4E8;
+  --ag-row-border-color: #EDE3F8;
+  --ag-header-column-separator-color: #7850C0;
   --ag-header-column-separator-display: block;
   --ag-header-column-separator-height: 60%;
   --ag-cell-widget-spacing: 4px;
   --ag-secondary-foreground-color: #5A3A8A;
-  --ag-disabled-foreground-color: #9A80BB;
+  --ag-disabled-foreground-color: #9888B8;
 }
 .xls-grid .ag-cell {
-  border-right: 1px solid #EDD5FF !important;
+  border-right: 1px solid #EDE3F8 !important;
   line-height: 21px;
-  color: #1A0A2E;
+  color: #2A1A4A;
 }
 .xls-grid .ag-header-cell {
-  border-right: 1px solid #A033FF !important;
+  border-right: 1px solid #7850C0 !important;
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
@@ -41,14 +41,14 @@ const GRID_CSS = `
   color: #ffffff;
 }
 .xls-grid .ag-root-wrapper {
-  border: 1px solid #DDD0EE;
+  border: 1px solid #D0C4E8;
 }
 .xls-grid .ag-paging-panel {
   height: 28px;
   font-size: 11px;
-  border-top: 1px solid #DDD0EE;
+  border-top: 1px solid #D0C4E8;
   color: #5A3A8A;
-  background: #F3EAFF;
+  background: #F4F0FA;
 }
 `
 
@@ -86,7 +86,7 @@ function parseRows(raw_rows) {
   })
 }
 
-const TB = { padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#F3EAFF', border: '1px solid #C099FF', color: '#3D0070', borderRadius: 2, cursor: 'pointer' }
+const TB = { padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#F4F0FA', border: '1px solid #B8A8DA', color: '#2A1A4A', borderRadius: 2, cursor: 'pointer' }
 
 const NUM_PFX = /^(\d+)/
 
@@ -239,7 +239,7 @@ export default function Dashboard() {
         </select>
 
         {/* Port view toggle: All / With annotation */}
-        <div style={{ display: 'flex', border: '1px solid #C099FF', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
+        <div style={{ display: 'flex', border: '1px solid #B8A8DA', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
           {[
             { key: 'all',       label: 'All ports',       count: totalCount },
             { key: 'annotated', label: 'With annotation', count: null       },
@@ -249,9 +249,9 @@ export default function Dashboard() {
               onClick={() => setPortView(key)}
               style={{
                 ...TB, border: 'none', borderRadius: 0,
-                borderLeft: i > 0 ? '1px solid #C099FF' : 'none',
-                background: portView === key ? '#8A00E5' : '#F3EAFF',
-                color:      portView === key ? '#ffffff'  : '#7A55AA',
+                borderLeft: i > 0 ? '1px solid #B8A8DA' : 'none',
+                background: portView === key ? '#5C3D99' : '#F4F0FA',
+                color:      portView === key ? '#ffffff'  : '#6A50A0',
                 fontWeight: portView === key ? 600 : 400,
               }}
             >
@@ -266,9 +266,9 @@ export default function Dashboard() {
             value={tagFilter}
             onChange={e => setTagFilter(e.target.value)}
             style={{ ...TB, cursor: 'default', minWidth: 150,
-              background: tagFilter ? '#F3EAFF' : '#fdecea',
-              borderColor: tagFilter ? '#C099FF' : '#e57373',
-              color: tagFilter ? '#3D0070' : '#922' }}
+              background: tagFilter ? '#F4F0FA' : '#fdecea',
+              borderColor: tagFilter ? '#B8A8DA' : '#e57373',
+              color: tagFilter ? '#2A1A4A' : '#922' }}
             title="Filter by turbine unit (Tag-Name prefix)"
           >
             <option value="">⚠ Mixed GTs — all</option>
@@ -278,7 +278,7 @@ export default function Dashboard() {
           </select>
         )}
 
-        <span style={{ fontSize: '0.75rem', color: mixedData && !tagFilter ? '#c0392b' : '#7A55AA' }}>
+        <span style={{ fontSize: '0.75rem', color: mixedData && !tagFilter ? '#c0392b' : '#6A50A0' }}>
           {filtered.length.toLocaleString()}{totalCount > rows.length ? ` / ${totalCount.toLocaleString()} total` : ''} rows
           {mixedData && !tagFilter ? ' ⚠ mixed GTs' : ''}
         </span>
@@ -290,13 +290,13 @@ export default function Dashboard() {
           style={{ ...TB, cursor: 'text', width: 180, outline: 'none' }}
         />
 
-        {loading && <span style={{ fontSize: '0.75rem', color: '#9A80BB' }}>Loading…</span>}
+        {loading && <span style={{ fontSize: '0.75rem', color: '#9888B8' }}>Loading…</span>}
 
         {!loading && hasMore && (
           <button
             onClick={handleLoadMore}
             disabled={loadingMore}
-            style={{ ...TB, background: '#EDD5FF', borderColor: '#B366FF' }}
+            style={{ ...TB, background: '#EDE3F8', borderColor: '#9070C0' }}
           >
             {loadingMore ? 'Loading…' : `Load more (${(totalCount - offset).toLocaleString()} left)`}
           </button>

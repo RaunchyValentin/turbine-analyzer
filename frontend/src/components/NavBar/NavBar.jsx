@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+﻿import React, { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import client from '../../api/client'
 
@@ -48,9 +48,9 @@ const styles = {
     alignItems: 'center',
     gap: '1rem',
     padding: '0.5rem 1.25rem',
-    background: '#8A00E5',
+    background: '#5C3D99',
     color: '#ffffff',
-    borderBottom: '1px solid #6B00B3',
+    borderBottom: '1px solid #3D2270',
   },
   brand: {
     fontWeight: 700,
@@ -80,7 +80,7 @@ const styles = {
     fontSize: '0.875rem',
   },
   active: {
-    background: '#6B00B3',
+    background: '#3D2270',
     color: '#ffffff',
   },
 }

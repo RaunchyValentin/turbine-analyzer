@@ -1,24 +1,24 @@
-import React, { useState, useRef } from 'react'
+﻿import React, { useState, useRef } from 'react'
 import client from '../api/client'
 
 const S = {
   page:    { padding: '1.5rem', maxWidth: 720, fontFamily: 'system-ui, sans-serif' },
-  h1:      { fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.2rem', color: '#1A0A2E' },
-  card:    { background: '#ffffff', border: '1px solid #DDD0EE', borderRadius: 4, padding: '1rem', marginBottom: '1rem' },
-  label:   { display: 'block', fontSize: '0.78rem', color: '#7A55AA', fontWeight: 600, marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' },
-  input:   { width: '100%', padding: '0.35rem 0.5rem', fontSize: '0.875rem', border: '1px solid #DDD0EE', borderRadius: 3, background: '#fff', color: '#1A0A2E', boxSizing: 'border-box' },
+  h1:      { fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.2rem', color: '#2A1A4A' },
+  card:    { background: '#ffffff', border: '1px solid #D0C4E8', borderRadius: 4, padding: '1rem', marginBottom: '1rem' },
+  label:   { display: 'block', fontSize: '0.78rem', color: '#6A50A0', fontWeight: 600, marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.04em' },
+  input:   { width: '100%', padding: '0.35rem 0.5rem', fontSize: '0.875rem', border: '1px solid #D0C4E8', borderRadius: 3, background: '#fff', color: '#2A1A4A', boxSizing: 'border-box' },
   row:     { display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' },
   col:     { flex: 1 },
-  btn:     { padding: '0.4rem 1rem', fontSize: '0.85rem', border: '1px solid #6B00B3', borderRadius: 3, background: '#8A00E5', color: '#ffffff', cursor: 'pointer', fontWeight: 600 },
-  btnAlt:  { padding: '0.4rem 1rem', fontSize: '0.85rem', border: '2px solid #6B00B3', borderRadius: 3, background: '#6B00B3', color: '#ffffff', cursor: 'pointer', fontWeight: 700 },
-  btnDis:  { padding: '0.4rem 1rem', fontSize: '0.85rem', border: '1px solid #DDD0EE', borderRadius: 3, background: '#F3EAFF', color: '#C099FF', cursor: 'not-allowed' },
+  btn:     { padding: '0.4rem 1rem', fontSize: '0.85rem', border: '1px solid #3D2270', borderRadius: 3, background: '#5C3D99', color: '#ffffff', cursor: 'pointer', fontWeight: 600 },
+  btnAlt:  { padding: '0.4rem 1rem', fontSize: '0.85rem', border: '2px solid #3D2270', borderRadius: 3, background: '#3D2270', color: '#ffffff', cursor: 'pointer', fontWeight: 700 },
+  btnDis:  { padding: '0.4rem 1rem', fontSize: '0.85rem', border: '1px solid #D0C4E8', borderRadius: 3, background: '#F4F0FA', color: '#B8A8DA', cursor: 'not-allowed' },
   pfxGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.5rem', marginTop: '0.5rem' },
-  pfxCard: (sel) => ({ border: `2px solid ${sel ? '#8A00E5' : '#DDD0EE'}`, borderRadius: 4, padding: '0.5rem 0.75rem', cursor: 'pointer', background: sel ? '#EDD5FF' : '#fff', textAlign: 'center' }),
-  pfxPfx:  { fontSize: '1.1rem', fontWeight: 700, color: '#3D0070' },
-  pfxCnt:  { fontSize: '0.75rem', color: '#9A80BB' },
-  ok:      { color: '#6B00B3', fontSize: '0.85rem', fontWeight: 600, marginTop: '0.5rem' },
+  pfxCard: (sel) => ({ border: `2px solid ${sel ? '#5C3D99' : '#D0C4E8'}`, borderRadius: 4, padding: '0.5rem 0.75rem', cursor: 'pointer', background: sel ? '#EDE3F8' : '#fff', textAlign: 'center' }),
+  pfxPfx:  { fontSize: '1.1rem', fontWeight: 700, color: '#2A1A4A' },
+  pfxCnt:  { fontSize: '0.75rem', color: '#9888B8' },
+  ok:      { color: '#3D2270', fontSize: '0.85rem', fontWeight: 600, marginTop: '0.5rem' },
   err:     { color: '#c0392b', fontSize: '0.85rem', marginTop: '0.5rem' },
-  drop:    { border: '2px dashed #C099FF', borderRadius: 4, padding: '2rem', textAlign: 'center', color: '#9A80BB', cursor: 'pointer', background: '#F8F2FF' },
+  drop:    { border: '2px dashed #B8A8DA', borderRadius: 4, padding: '2rem', textAlign: 'center', color: '#9888B8', cursor: 'pointer', background: '#F7F3FC' },
 }
 
 export default function Import() {
@@ -123,7 +123,7 @@ export default function Import() {
         onDragOver={e => e.preventDefault()}
       >
         {file ? (
-          <span style={{ color: '#3D0070', fontWeight: 600 }}>{file.name}</span>
+          <span style={{ color: '#2A1A4A', fontWeight: 600 }}>{file.name}</span>
         ) : (
           <span>Drop JAR / SREL / XLSX here, or click to browse</span>
         )}
@@ -147,7 +147,7 @@ export default function Import() {
           )}
           {prefixes.length > 0 && (
             <>
-              <div style={{ fontSize: '0.78rem', color: '#9A80BB', marginBottom: '0.4rem' }}>
+              <div style={{ fontSize: '0.78rem', color: '#9888B8', marginBottom: '0.4rem' }}>
                 Select which unit to import (each unit → separate turbine record):
               </div>
               <div style={S.pfxGrid}>
@@ -189,7 +189,7 @@ export default function Import() {
           </div>
 
           {selPrefix && (
-            <div style={{ fontSize: '0.78rem', color: '#7A55AA', marginBottom: '0.75rem' }}>
+            <div style={{ fontSize: '0.78rem', color: '#6A50A0', marginBottom: '0.75rem' }}>
               Filter: only parameters where Tag-Name starts with <strong>{selPrefix}</strong>
             </div>
           )}

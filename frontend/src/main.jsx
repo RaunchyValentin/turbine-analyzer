@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
 import { ModuleRegistry, ClientSideRowModelModule } from 'ag-grid-community'
@@ -17,7 +17,7 @@ import Settings from './pages/Settings'
 
 function Layout() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#F4EFFE' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#F4F0FA' }}>
       <NavBar />
       <main style={{ flex: 1, padding: '1rem 1.25rem' }}>
         <Outlet />

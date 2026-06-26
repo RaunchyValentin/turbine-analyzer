@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+﻿import React, { useEffect, useRef, useState } from 'react'
 import client from '../api/client'
 
 export default function Export() {
@@ -119,7 +119,7 @@ export default function Export() {
         <div style={FIELD}>
           <label style={LABEL}>Turbine (JAR imports only)</label>
           {turbines.length === 0
-            ? <div style={{ color: '#9A80BB', fontSize: '0.85rem' }}>No JAR imports found — import a .jar file first</div>
+            ? <div style={{ color: '#9888B8', fontSize: '0.85rem' }}>No JAR imports found — import a .jar file first</div>
             : (
               <select value={turbineId} onChange={e => setTurbineId(e.target.value)} style={SELECT}>
                 {turbines.map(t => (
@@ -131,7 +131,7 @@ export default function Export() {
             )
           }
           {selectedTurbine && (
-            <div style={{ fontSize: '0.72rem', color: '#9A80BB', marginTop: 3, fontFamily: 'monospace' }}>
+            <div style={{ fontSize: '0.72rem', color: '#9888B8', marginTop: 3, fontFamily: 'monospace' }}>
               {selectedTurbine.source_file}
             </div>
           )}
@@ -140,7 +140,7 @@ export default function Export() {
         <div style={FIELD}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: 4 }}>
             <label style={LABEL}>Parameter key types</label>
-            {loadingTypes && <span style={{ fontSize: '0.72rem', color: '#9A80BB' }}>loading…</span>}
+            {loadingTypes && <span style={{ fontSize: '0.72rem', color: '#9888B8' }}>loading…</span>}
             {keyTypes.length > 0 && (
               <label style={TOGGLE}>
                 <input type="checkbox" checked={allSelected} onChange={toggleAll} />
@@ -149,19 +149,19 @@ export default function Export() {
             )}
           </div>
           {keyTypes.length === 0 && !loadingTypes && turbineId && (
-            <div style={{ fontSize: '0.8rem', color: '#9A80BB' }}>No keyed parameters found — all params will be exported</div>
+            <div style={{ fontSize: '0.8rem', color: '#9888B8' }}>No keyed parameters found — all params will be exported</div>
           )}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
             {keyTypes.map(({ prefix, count }) => (
               <label key={prefix} style={{
                 ...CHIP,
-                background:  selected.has(prefix) ? '#8A00E5' : '#F3EAFF',
-                borderColor: selected.has(prefix) ? '#6B00B3' : '#DDD0EE',
-                color:       selected.has(prefix) ? '#ffffff'  : '#7A55AA',
+                background:  selected.has(prefix) ? '#5C3D99' : '#F4F0FA',
+                borderColor: selected.has(prefix) ? '#3D2270' : '#D0C4E8',
+                color:       selected.has(prefix) ? '#ffffff'  : '#6A50A0',
               }}>
                 <input type="checkbox" checked={selected.has(prefix)} onChange={() => toggleType(prefix)} style={{ display: 'none' }} />
                 <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>{prefix}:</span>
-                <span style={{ fontSize: '0.7rem', color: selected.has(prefix) ? 'rgba(255,255,255,0.75)' : '#9A80BB' }}>{count.toLocaleString()}</span>
+                <span style={{ fontSize: '0.7rem', color: selected.has(prefix) ? 'rgba(255,255,255,0.75)' : '#9888B8' }}>{count.toLocaleString()}</span>
               </label>
             ))}
           </div>
@@ -178,12 +178,12 @@ export default function Export() {
               ↓ Download Overrides (.xlsx)
             </button>
             {overrideCount !== null && (
-              <span style={{ fontSize: '0.78rem', color: overrideCount > 0 ? '#6B00B3' : '#9A80BB' }}>
+              <span style={{ fontSize: '0.78rem', color: overrideCount > 0 ? '#3D2270' : '#9888B8' }}>
                 {overrideCount > 0 ? `${overrideCount} changed parameter(s)` : 'No overrides yet'}
               </span>
             )}
           </div>
-          <div style={{ fontSize: '0.72rem', color: '#9A80BB', marginTop: 2 }}>
+          <div style={{ fontSize: '0.72rem', color: '#9888B8', marginTop: 2 }}>
             Delta export — only parameters changed vs original JAR values.
           </div>
         </div>
@@ -192,7 +192,7 @@ export default function Export() {
           <button onClick={handleExport} disabled={!canExport} style={{ ...BTN, opacity: canExport ? 1 : 0.4 }}>
             ↓ Download SREL (.xlsx)
           </button>
-          <span style={{ fontSize: '0.78rem', color: '#9A80BB' }}>
+          <span style={{ fontSize: '0.78rem', color: '#9888B8' }}>
             {keyTypes.length > 0
               ? `~${totalFiltered.toLocaleString()} rows`
               : selectedTurbine ? `${(selectedTurbine.param_count || 0).toLocaleString()} rows` : ''}
@@ -203,7 +203,7 @@ export default function Export() {
       {/* ── Work Sessions ────────────────────────────────────────────────── */}
       <section style={SECTION}>
         <h2 style={H2}>Work Sessions</h2>
-        <div style={{ fontSize: '0.8rem', color: '#7A55AA', marginBottom: '0.75rem' }}>
+        <div style={{ fontSize: '0.8rem', color: '#6A50A0', marginBottom: '0.75rem' }}>
           Save all your edits (Settings overrides + curve point changes) to a JSON file.
           Load it back later to continue from where you left off.
         </div>
@@ -211,7 +211,7 @@ export default function Export() {
         <div style={FIELD}>
           <label style={LABEL}>Turbine</label>
           {allTurbines.length === 0
-            ? <div style={{ color: '#9A80BB', fontSize: '0.85rem' }}>No turbines yet</div>
+            ? <div style={{ color: '#9888B8', fontSize: '0.85rem' }}>No turbines yet</div>
             : (
               <select value={snapTurbineId} onChange={e => { setSnapTurbineId(e.target.value); setRestoreResult(null) }} style={SELECT}>
                 {allTurbines.map(t => (
@@ -237,7 +237,7 @@ export default function Export() {
           <button
             onClick={() => snapFileRef.current?.click()}
             disabled={!snapTurbineId || restoring}
-            style={{ ...BTN, background: restoring ? '#F3EAFF' : '#F3EAFF', borderColor: '#C099FF', color: '#6B00B3', opacity: snapTurbineId ? 1 : 0.4 }}
+            style={{ ...BTN, background: restoring ? '#F4F0FA' : '#F4F0FA', borderColor: '#B8A8DA', color: '#3D2270', opacity: snapTurbineId ? 1 : 0.4 }}
             title="Load a previously saved session file and restore all edits"
           >
             {restoring ? 'Restoring…' : '↑ Load session'}
@@ -265,7 +265,7 @@ export default function Export() {
           </div>
         )}
 
-        <div style={{ fontSize: '0.72rem', color: '#9A80BB', marginTop: 4 }}>
+        <div style={{ fontSize: '0.72rem', color: '#9888B8', marginTop: 4 }}>
           The session file does NOT include raw parameter data — only your edits.
           The turbine must already be imported before loading a session.
         </div>
@@ -275,11 +275,11 @@ export default function Export() {
   )
 }
 
-const SECTION = { background: '#ffffff', border: '1px solid #DDD0EE', borderRadius: 6, padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: '1 1 340px', minWidth: 300, maxWidth: 560 }
-const H2     = { margin: 0, fontSize: '0.95rem', color: '#1A0A2E', fontWeight: 700 }
+const SECTION = { background: '#ffffff', border: '1px solid #D0C4E8', borderRadius: 6, padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: '1 1 340px', minWidth: 300, maxWidth: 560 }
+const H2     = { margin: 0, fontSize: '0.95rem', color: '#2A1A4A', fontWeight: 700 }
 const FIELD  = { display: 'flex', flexDirection: 'column', gap: 6 }
-const LABEL  = { fontSize: '0.78rem', color: '#7A55AA', fontWeight: 600, letterSpacing: '0.03em' }
-const SELECT = { background: '#fff', color: '#1A0A2E', border: '1px solid #DDD0EE', borderRadius: 4, padding: '0.4rem 0.6rem', fontSize: '0.875rem' }
-const BTN    = { background: '#8A00E5', border: '1px solid #6B00B3', color: '#ffffff', borderRadius: 4, cursor: 'pointer', padding: '0.5rem 1.5rem', fontSize: '0.875rem', fontWeight: 600 }
+const LABEL  = { fontSize: '0.78rem', color: '#6A50A0', fontWeight: 600, letterSpacing: '0.03em' }
+const SELECT = { background: '#fff', color: '#2A1A4A', border: '1px solid #D0C4E8', borderRadius: 4, padding: '0.4rem 0.6rem', fontSize: '0.875rem' }
+const BTN    = { background: '#5C3D99', border: '1px solid #3D2270', color: '#ffffff', borderRadius: 4, cursor: 'pointer', padding: '0.5rem 1.5rem', fontSize: '0.875rem', fontWeight: 600 }
 const CHIP   = { display: 'flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer', padding: '0.25rem 0.6rem', borderRadius: 4, border: '1px solid', fontSize: '0.8rem', userSelect: 'none', transition: 'all 0.1s' }
-const TOGGLE = { display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: '0.75rem', color: '#7A55AA' }
+const TOGGLE = { display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', fontSize: '0.75rem', color: '#6A50A0' }
