@@ -400,7 +400,7 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
                 "Signal Tag Name": sig_tagname,
                 "Signal Item":     sig_signal,
                 "Value":           param_val,
-                "Parameter Key":   raw_srel if has_srel else "",
+                "Parameter Key":   raw_srel,
                 "EU":              eu,
                 "Visible Port":    port.get("isvisible", "false"),
                 "Visible Parameter": port.get("parVisible", "false"),
