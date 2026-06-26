@@ -90,15 +90,21 @@ function parseRows(raw_rows) {
 
 const TB = { padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#eef3ee', border: '1px solid #b0c4b0', color: '#1a2a1a', borderRadius: 2, cursor: 'pointer' }
 
+const NUM_PFX = /^(\d+)/
+
+function getTagName(row) {
+  const rd = row._raw || {}
+  return rd['Tag-Name'] || rd['TagName'] || ''
+}
+
 export default function Dashboard() {
-  const [turbines, setTurbines]       = useState([])
-  const [selectedId, setSelectedId]   = useState(null)
-  const [rows, setRows]               = useState([])
-  const [search, setSearch]           = useState('')
-  const [loading, setLoading]         = useState(false)
-  const [kksPrefixes, setKksPrefixes] = useState([])
-  const [kksFilter, setKksFilter]     = useState('')
-  const [srelOnly, setSrelOnly]       = useState(false)
+  const [turbines, setTurbines]   = useState([])
+  const [selectedId, setSelectedId] = useState(null)
+  const [rows, setRows]           = useState([])
+  const [search, setSearch]       = useState('')
+  const [loading, setLoading]     = useState(false)
+  const [tagFilter, setTagFilter] = useState('')   // numeric prefix of Tag-Name, e.g. "41"
+  const [srelOnly, setSrelOnly]   = useState(false)
 
   useEffect(() => {
     const el = document.createElement('style')
@@ -117,31 +123,34 @@ export default function Dashboard() {
   useEffect(() => {
     if (!selectedId) return
     setLoading(true)
-    setKksPrefixes([])
-    setKksFilter('')
-    Promise.all([
-      client.get('/parameters', { params: { turbine_id: selectedId } }),
-      client.get('/db/kks-prefixes'),
-    ]).then(([pRes, pfxRes]) => {
-      setRows(parseRows(pRes.data))
-      const turbineStats = pfxRes.data.find(t => t.turbine_id === selectedId)
-      if (turbineStats) {
-        const pfxs = turbineStats.prefixes.filter(p => p.prefix !== 'empty' && p.prefix !== 'other')
-        setKksPrefixes(pfxs)
-        if (pfxs.length === 1 && pfxs[0].count > turbineStats.total * 0.25) {
-          setKksFilter(pfxs[0].prefix)
-        }
-      }
-    }).finally(() => setLoading(false))
+    setTagFilter('')
+    client.get('/parameters', { params: { turbine_id: selectedId } })
+      .then(r => setRows(parseRows(r.data)))
+      .finally(() => setLoading(false))
   }, [selectedId])
+
+  // Detect Tag-Name numeric prefixes from loaded rows (client-side)
+  const tagPrefixes = useMemo(() => {
+    const counts = {}
+    for (const row of rows) {
+      const tag = getTagName(row)
+      const m = NUM_PFX.exec(tag)
+      if (m) counts[m[1]] = (counts[m[1]] || 0) + 1
+    }
+    return Object.entries(counts)
+      .map(([prefix, count]) => ({ prefix, count }))
+      .sort((a, b) => b.count - a.count)
+  }, [rows])
+
+  const mixedData = tagPrefixes.length > 1
 
   const filtered = useMemo(() => {
     let r = rows
     if (srelOnly) {
       r = r.filter(row => /srel:/i.test(row._raw?.['Parameter Key'] || ''))
     }
-    if (kksFilter) {
-      r = r.filter(row => (row.kks || '').toUpperCase().startsWith(kksFilter.toUpperCase()))
+    if (tagFilter) {
+      r = r.filter(row => getTagName(row).startsWith(tagFilter))
     }
     if (search.trim()) {
       const q = search.toLowerCase()
@@ -158,10 +167,9 @@ export default function Dashboard() {
       })
     }
     return r
-  }, [rows, search, kksFilter, srelOnly])
+  }, [rows, search, tagFilter, srelOnly])
 
   const selected  = turbines.find((t) => t.id === selectedId)
-  const mixedData = kksPrefixes.length > 1
   const srelCount = useMemo(() => rows.filter(r => /srel:/i.test(r._raw?.['Parameter Key'] || '')).length, [rows])
 
   return (
@@ -195,24 +203,27 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* KKS prefix filter — shown only when turbine has mixed data */}
-        {kksPrefixes.length > 1 && (
+        {/* Tag-Name prefix filter — shown when turbine has mixed GTs */}
+        {tagPrefixes.length > 1 && (
           <select
-            value={kksFilter}
-            onChange={e => setKksFilter(e.target.value)}
-            style={{ ...TB, cursor: 'default', background: kksFilter ? '#1a2a1a' : '#2a1a1a', borderColor: kksFilter ? '#4caf7d' : '#e57373' }}
-            title="Filter by KKS prefix"
+            value={tagFilter}
+            onChange={e => setTagFilter(e.target.value)}
+            style={{ ...TB, cursor: 'default', minWidth: 150,
+              background: tagFilter ? '#eef3ee' : '#fdecea',
+              borderColor: tagFilter ? '#7aaa7a' : '#e57373',
+              color: tagFilter ? '#1a2a1a' : '#922' }}
+            title="Filter by turbine unit (Tag-Name prefix)"
           >
-            <option value="">⚠ Mixed — all</option>
-            {kksPrefixes.map(({ prefix, count }) => (
+            <option value="">⚠ Mixed GTs — all</option>
+            {tagPrefixes.map(({ prefix, count }) => (
               <option key={prefix} value={prefix}>{prefix}… ({count.toLocaleString()})</option>
             ))}
           </select>
         )}
 
-        <span style={{ fontSize: '0.75rem', color: mixedData && !kksFilter ? '#c0392b' : '#3a5a3a' }}>
+        <span style={{ fontSize: '0.75rem', color: mixedData && !tagFilter ? '#c0392b' : '#3a5a3a' }}>
           {filtered.length.toLocaleString()} rows
-          {mixedData && !kksFilter ? ' ⚠ mixed' : ''}
+          {mixedData && !tagFilter ? ' ⚠ mixed GTs' : ''}
         </span>
 
         <input
