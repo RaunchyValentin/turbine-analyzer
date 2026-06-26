@@ -138,8 +138,10 @@ export default function Dashboard() {
       if (turbineStats) {
         const pfxs = turbineStats.prefixes.filter(p => p.prefix !== 'empty' && p.prefix !== 'other')
         setKksPrefixes(pfxs)
-        // Auto-select if only one numeric prefix
-        if (pfxs.length === 1) setKksFilter(pfxs[0].prefix)
+        // Auto-select only when a single numeric prefix covers most of the data (multi-GT import)
+        if (pfxs.length === 1 && pfxs[0].count > turbineStats.total * 0.25) {
+          setKksFilter(pfxs[0].prefix)
+        }
       }
     }).finally(() => setLoading(false))
   }, [selectedId])
