@@ -346,26 +346,23 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
         if not tag_name:
             continue
 
-        # Collect all settable ports for this AFI block first
+        # Collect ALL ports for this AFI block
         settable_ports = []
         for port in afi.findall("port"):
             param_val = port.get("parameter", "")
-            # "false" means explicitly disabled; skip it
-            if param_val.lower() == "false":
-                continue
 
             port_id_el = port.find("portIdentifier/portId")
             port_id = port_id_el.text.strip() if port_id_el is not None and port_id_el.text else ""
 
+            # Skip ports with no identifier at all
+            if not port_id:
+                continue
+
             ctx_key  = f"@{port_id}"
             raw_srel = ctx.get(ctx_key, "")
 
-            # Skip pure text annotations
+            # Skip pure text annotations (display-only, no engineering value)
             if raw_srel.strip().lower() in ("text:", "text"):
-                continue
-
-            # Skip pure signal connectors — no parameter value and no annotation
-            if not param_val and not raw_srel.strip():
                 continue
 
             m = _SREL_RE.search(raw_srel)
