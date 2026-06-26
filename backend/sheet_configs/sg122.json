@@ -20,6 +20,7 @@
     },
     {
       "name": "MSPG.F5",
+      "no_chart": true,
       "description": "3.4 Pilot Gas as Function of OTC for IGV fully open",
       "x_label": "OTC [°C]",
       "y_label": "m PG [kg/s]",

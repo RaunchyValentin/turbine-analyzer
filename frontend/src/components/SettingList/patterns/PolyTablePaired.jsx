@@ -12,7 +12,7 @@ export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
   const activeBlocks = hasModeToggle && mode === 'split' ? (data.blocks_split || []) : (data.blocks || [])
 
   const chartTraces = useMemo(() => {
-    return activeBlocks.map((block, i) => {
+    return activeBlocks.filter(b => !b.no_chart).map((block, i) => {
       const xs = [], ys = []
       block.points?.forEach(pt => {
         const x = parseFloat(pt.x_value)
