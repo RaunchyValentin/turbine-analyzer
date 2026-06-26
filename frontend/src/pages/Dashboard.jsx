@@ -72,8 +72,6 @@ const COL_DEFS = [
   { headerName: 'Signal Name',   valueGetter: raw('Signal Name', 'Signal-Name', 'SignalName'),                 minWidth: 130, flex: 2, sortable: true, filter: true },
   { field: 'value', headerName: 'Value',                                                                       minWidth: 72,  flex: 1, sortable: true, filter: true },
   { headerName: 'Parameter Key', valueGetter: raw('Parameter Key', 'Parameter-Key', 'ParameterKey'),          minWidth: 120, flex: 1, sortable: true, filter: true },
-  { headerName: 'Var min',       valueGetter: raw('Variation min', 'Variation-Min', 'Variation Min', 'VarMin'), minWidth: 72, flex: 1, sortable: true, filter: true },
-  { headerName: 'Var max',       valueGetter: raw('Variation max', 'Variation-Max', 'Variation Max', 'VarMax'), minWidth: 72, flex: 1, sortable: true, filter: true },
 ]
 
 const DEFAULT_COL = { resizable: true, suppressMovable: false }
