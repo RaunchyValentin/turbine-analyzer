@@ -67,7 +67,7 @@ export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
               <tbody>
                 {block.points?.map((pt, pi) => (
                   <tr key={pi} style={pi % 2 === 0 ? styles.rowEven : styles.rowOdd}>
-                    <td style={styles.tdKey}>{block.static ? (pt.x_label || '◆') : pt.x_srel}</td>
+                    <td style={styles.tdKey}>{block.static ? (pt.x_label || '◆') : (pt.x_label || pt.x_srel)}</td>
                     <td style={styles.tdVal}>
                       {block.static ? (
                         <span style={styles.staticVal}>{pt.x_value ?? '—'}</span>
@@ -84,7 +84,7 @@ export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
                         />
                       )}
                     </td>
-                    <td style={styles.tdKey}>{block.static ? (pt.y_label || '◆') : pt.y_srel}</td>
+                    <td style={styles.tdKey}>{block.static ? (pt.y_label || '◆') : (pt.y_label || pt.y_srel)}</td>
                     <td style={styles.tdVal}>
                       {block.static ? (
                         <span style={styles.staticVal}>{pt.y_value ?? '—'}</span>

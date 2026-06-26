@@ -1,37 +1,35 @@
 {
   "id": "SG122",
-  "title": "3.3 Pilot Gas vs Inlet Temperature",
+  "title": "3.3 Pilot Gas as Function of Inlet Temperature",
   "fuel": "FG",
   "pattern": "C",
   "blocks": [
     {
       "name": "MSPG.TVIK",
-      "static": true,
-      "description": "Inlet temperature correction factor (static reference values)",
-      "x_label": "T_inlet [°C]",
-      "y_label": "Correction [-]",
+      "description": "Pilot gas flow as function of inlet temperature TVI",
+      "x_label": "TVI [°C]",
+      "y_label": "m PG [kg/s]",
       "points": [
-        {"x_label": "-20 °C", "x_value": -20, "y_value": 0.80},
-        {"x_label": "-5 °C",  "x_value": -5,  "y_value": 0.90},
-        {"x_label": "0 °C",   "x_value": 0,   "y_value": 0.95},
-        {"x_label": "5 °C",   "x_value": 5,   "y_value": 1.00},
-        {"x_label": "15 °C",  "x_value": 15,  "y_value": 1.15},
-        {"x_label": "40 °C",  "x_value": 40,  "y_value": 1.25}
+        {"x_srel": "T.VI.26", "x_label": "TVIK.A1", "y_srel": "F.PILOT.92", "y_label": "TVIK.B1"},
+        {"x_srel": "T.VI.27", "x_label": "TVIK.A2", "y_srel": "F.PILOT.93", "y_label": "TVIK.B2"},
+        {"x_srel": "T.VI.28", "x_label": "TVIK.A3", "y_srel": "F.PILOT.94", "y_label": "TVIK.B3"},
+        {"x_srel": "T.VI.29", "x_label": "TVIK.A4", "y_srel": "F.PILOT.95", "y_label": "TVIK.B4"},
+        {"x_srel": "T.VI.30", "x_label": "TVIK.A5", "y_srel": "F.PILOT.96", "y_label": "TVIK.B5"},
+        {"x_srel": "T.VI.31", "x_label": "TVIK.A6", "y_srel": "F.PILOT.97", "y_label": "TVIK.B6"}
       ]
     },
     {
       "name": "MSPG.F5",
-      "static": true,
-      "description": "OTC correction at IGV-open (currently inactive — all zeros)",
-      "x_label": "IGV [%]",
-      "y_label": "Δ m PG [kg/s]",
+      "description": "3.4 Pilot Gas as Function of OTC for IGV fully open",
+      "x_label": "OTC [°C]",
+      "y_label": "m PG [kg/s]",
       "points": [
-        {"x_label": "0 %",   "x_value": 0,   "y_value": 0},
-        {"x_label": "10 %",  "x_value": 10,  "y_value": 0},
-        {"x_label": "40 %",  "x_value": 40,  "y_value": 0},
-        {"x_label": "60 %",  "x_value": 60,  "y_value": 0},
-        {"x_label": "90 %",  "x_value": 90,  "y_value": 0},
-        {"x_label": "100 %", "x_value": 100, "y_value": 0}
+        {"x_srel": "TT.ATK.80", "x_label": "F5.A1", "y_srel": "F.PILOT.77", "y_label": "F5.B1"},
+        {"x_srel": "TT.ATK.81", "x_label": "F5.A2", "y_srel": "F.PILOT.78", "y_label": "F5.B2"},
+        {"x_srel": "TT.ATK.82", "x_label": "F5.A3", "y_srel": "F.PILOT.79", "y_label": "F5.B3"},
+        {"x_srel": "TT.ATK.83", "x_label": "F5.A4", "y_srel": "F.PILOT.80", "y_label": "F5.B4"},
+        {"x_srel": "TT.ATK.84", "x_label": "F5.A5", "y_srel": "F.PILOT.81", "y_label": "F5.B5"},
+        {"x_srel": "TT.ATK.85", "x_label": "F5.A6", "y_srel": "F.PILOT.82", "y_label": "F5.B6"}
       ]
     }
   ]
