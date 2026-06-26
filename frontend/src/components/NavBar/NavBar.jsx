@@ -75,17 +75,15 @@ const styles = {
     flexShrink: 0,
   },
   logoPill: {
-    background: '#ffffff',
-    borderRadius: 4,
-    padding: '3px 8px',
     display: 'flex',
     alignItems: 'center',
     flexShrink: 0,
   },
   logoImg: {
-    height: 22,
+    height: 24,
     width: 'auto',
     display: 'block',
+    filter: 'brightness(0) invert(1)',
   },
   dept: {
     fontSize: '0.62rem',
