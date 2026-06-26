@@ -245,9 +245,79 @@ def _elem_to_param(elem: ET.Element) -> dict:
 
 # ── icdiagram.xml parser (T3000 project JAR) ────────────────────────────────
 
-_NUMERIC_RE = re.compile(r"^-?\d+(\.\d+)?([eE][+-]?\d+)?$")
-_SREL_RE    = re.compile(r"SREL:\s*(.+)", re.IGNORECASE)
-_PLI_TYPES  = {"PLI10", "PLI20", "PLI05", "PLI", "POLY"}
+_NUMERIC_RE   = re.compile(r"^-?\d+(\.\d+)?([eE][+-]?\d+)?$")
+_SREL_RE      = re.compile(r"SREL:\s*(.+)", re.IGNORECASE)
+_XY_SUFFIX_RE = re.compile(r"\.([AB])(\d+)\s*$|\.([XY])(\d+)\s*$", re.IGNORECASE)
+_PAIR_CNT_RE  = re.compile(r"acc.*pair", re.IGNORECASE)
+_FLOAT_RE     = re.compile(r"^-?\d+(\.\d+)?([eE][+-]?\d+)?$")
+# Minimum number of SREL-annotated numeric ports to treat an AFI block as a curve
+_CURVE_MIN_SREL = 4
+
+
+def _try_build_curve(
+    tag_name: str,
+    item_name: str,
+    designation: str,
+    srel_numeric_ports: list[tuple[int, str, float]],
+) -> dict | None:
+    """
+    Build a curve dict from a list of (portId_int, srel_key, float_value) tuples.
+
+    Two patterns:
+      PLI / named — SREL key ends with .X{n} or .A{n} (X axis) / .Y{n} or .B{n} (Y axis)
+      POLY / interleaved — ports alternate X/Y by sorted portId order;
+                           port with 'acc.*pair' annotation is the count port and is skipped
+    """
+    # --- Pattern 1: explicit X/Y or A/B suffix in SREL key ---
+    x_map: dict[int, float] = {}
+    y_map: dict[int, float] = {}
+    for _, srel_key, val in srel_numeric_ports:
+        m = _XY_SUFFIX_RE.search(srel_key)
+        if not m:
+            continue
+        # group 1/2 = A/B, group 3/4 = X/Y
+        axis_letter = (m.group(1) or m.group(3)).upper()
+        idx = int(m.group(2) or m.group(4))
+        if axis_letter in ("X", "A"):
+            x_map[idx] = val
+        else:
+            y_map[idx] = val
+
+    if x_map and y_map:
+        indices = sorted(set(x_map) & set(y_map))
+        points = [{"x": x_map[i], "y": y_map[i]} for i in indices]
+        if len(points) >= 2:
+            return {
+                "name": f"{tag_name}|{item_name}" if item_name else tag_name,
+                "description": designation,
+                "points": points,
+            }
+
+    # --- Pattern 2: interleaved by portId order ---
+    data = [
+        (pid, val) for pid, srel_key, val in srel_numeric_ports
+        if not _PAIR_CNT_RE.search(srel_key)
+    ]
+    # Need an even number ≥ 4
+    if len(data) < 4 or len(data) % 2 != 0:
+        # Try dropping the last element if odd
+        if len(data) >= 4 and len(data) % 2 != 0:
+            data = data[:-1]
+        else:
+            return None
+
+    points = []
+    for i in range(0, len(data) - 1, 2):
+        points.append({"x": data[i][1], "y": data[i + 1][1]})
+
+    if len(points) < 2:
+        return None
+
+    return {
+        "name": f"{tag_name}|{item_name}" if item_name else tag_name,
+        "description": designation,
+        "points": points,
+    }
 
 
 def _extract_node_designation(content: bytes) -> str:
@@ -425,4 +495,27 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
                 "raw_data":    raw_data,
             })
 
-    return {"parameters": parameters, "curves": []}
+        # ── Curve detection ─────────────────────────────────────────
+        # Collect ports that have a SREL annotation AND a numeric parameter value
+        srel_numeric: list[tuple[int, str, float]] = []
+        for sp in settable_ports:
+            if not sp["has_srel"]:
+                continue
+            try:
+                val = float(sp["param_val"])
+            except (ValueError, TypeError):
+                continue
+            try:
+                pid_int = int(sp["port_id"])
+            except (ValueError, TypeError):
+                continue
+            srel_numeric.append((pid_int, sp["srel_key"], val))
+
+        if len(srel_numeric) >= _CURVE_MIN_SREL:
+            srel_numeric.sort(key=lambda t: t[0])
+            curve = _try_build_curve(tag_name, item_name, afi_designation, srel_numeric)
+            if curve:
+                curve_key = f"{tag_name}|{item_name}"
+                curves_acc[curve_key] = curve
+
+    return {"parameters": parameters, "curves": list(curves_acc.values())}
