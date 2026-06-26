@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from 'react'
+﻿import React, { useState, useMemo } from 'react'
 import Plot from 'react-plotly.js'
 import ValueCell from '../ValueCell'
 
-const COLORS = ['#5b9bd5', '#4caf7d', '#e67e22', '#9b59b6', '#e74c3c']
+const COLORS = ['#5C3D99', '#4caf7d', '#e67e22', '#9b59b6', '#e74c3c']
 
 export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
   const [interpolation, setInterpolation] = useState('linear')
@@ -119,12 +119,12 @@ export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
               marker: { size: 5, color: t.color },
             }))}
             layout={{
-              paper_bgcolor: '#0a0a18', plot_bgcolor: '#0d0d1e',
-              font: { color: '#aaa', size: 11 },
-              xaxis: { title: activeBlocks[0]?.x_label, gridcolor: '#1e1e30', zerolinecolor: '#333' },
-              yaxis: { title: activeBlocks[0]?.y_label, gridcolor: '#1e1e30', zerolinecolor: '#333' },
+              paper_bgcolor: '#F7F3FC', plot_bgcolor: '#ffffff',
+              font: { color: '#9888B8', size: 11 },
+              xaxis: { title: activeBlocks[0]?.x_label, gridcolor: '#EDE3F8', zerolinecolor: '#D0C4E8' },
+              yaxis: { title: activeBlocks[0]?.y_label, gridcolor: '#EDE3F8', zerolinecolor: '#D0C4E8' },
               margin: { l: 50, r: 20, t: 20, b: 45 },
-              legend: { bgcolor: '#0d0d1e', bordercolor: '#222', font: { size: 10 } },
+              legend: { bgcolor: '#ffffff', bordercolor: '#222', font: { size: 10 } },
             }}
             config={{ displayModeBar: false, responsive: true }}
             style={{ width: '100%', height: '300px' }}
@@ -137,19 +137,19 @@ export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
 
 const styles = {
   controls:    { display: 'flex', gap: '2px', marginBottom: '0.75rem' },
-  toggleBtn:   { background: '#1e1e2e', border: '1px solid #333', color: '#888', borderRadius: '3px', cursor: 'pointer', padding: '0.1rem 0.5rem', fontSize: '0.72rem' },
-  toggleActive:{ background: '#1a2a3a', borderColor: '#5b9bd5', color: '#5b9bd5' },
+  toggleBtn:   { background: '#F4F0FA', border: '1px solid #D0C4E8', color: '#6A50A0', borderRadius: '3px', cursor: 'pointer', padding: '0.1rem 0.5rem', fontSize: '0.72rem' },
+  toggleActive:{ background: '#EDE3F8', borderColor: '#5C3D99', color: '#5C3D99' },
   modeActive:  { background: '#1a2a1a', borderColor: '#4caf7d', color: '#4caf7d' },
   tablesRow:   { display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'flex-start' },
   staticVal:   { color: '#8899bb', fontVariantNumeric: 'tabular-nums', fontFamily: 'monospace', fontSize: '0.82rem' },
   blockWrap:   { flexShrink: 0 },
   blockHeader: { marginBottom: '0.4rem' },
-  blockName:   { fontFamily: 'monospace', color: '#5b9bd5', fontWeight: 700, fontSize: '0.82rem' },
-  blockDesc:   { color: '#888', fontSize: '0.76rem', marginTop: '0.1rem' },
+  blockName:   { fontFamily: 'monospace', color: '#5C3D99', fontWeight: 700, fontSize: '0.82rem' },
+  blockDesc:   { color: '#6A50A0', fontSize: '0.76rem', marginTop: '0.1rem' },
   table:       { borderCollapse: 'collapse', fontSize: '0.8rem' },
-  th:          { background: '#0d0d20', color: '#666', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #222', whiteSpace: 'nowrap' },
-  rowEven:     { background: '#0a0a18' },
-  rowOdd:      { background: '#0d0d1e' },
-  tdKey:       { padding: '0.2rem 0.5rem', borderBottom: '1px solid #151525', color: '#5b9bd5', fontFamily: 'monospace', fontSize: '0.74rem', whiteSpace: 'nowrap' },
-  tdVal:       { padding: '0.2rem 0.5rem', borderBottom: '1px solid #151525', whiteSpace: 'nowrap' },
+  th:          { background: '#F7F3FC', color: '#9888B8', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
+  rowEven:     { background: '#F7F3FC' },
+  rowOdd:      { background: '#ffffff' },
+  tdKey:       { padding: '0.2rem 0.5rem', borderBottom: '1px solid #D0C4E8', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.74rem', whiteSpace: 'nowrap' },
+  tdVal:       { padding: '0.2rem 0.5rem', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
 }

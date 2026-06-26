@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 
 export default function ReadOnlyCalc({ data }) {
   return (
@@ -39,18 +39,18 @@ export default function ReadOnlyCalc({ data }) {
 
 const styles = {
   wrapper:       { padding: '0.5rem 0' },
-  message:       { color: '#888', fontSize: '0.85rem', padding: '0.5rem 0', marginBottom: '1rem' },
+  message:       { color: '#6A50A0', fontSize: '0.85rem', padding: '0.5rem 0', marginBottom: '1rem' },
   section:       { marginBottom: '1.5rem' },
-  sectionHeader: { background: '#161625', color: '#888', padding: '0.3rem 0.75rem', fontSize: '0.78rem', fontWeight: 600, borderLeft: '3px solid #444', marginBottom: 0 },
+  sectionHeader: { background: '#5C3D99', color: '#6A50A0', padding: '0.3rem 0.75rem', fontSize: '0.78rem', fontWeight: 600, borderLeft: '3px solid #444', marginBottom: 0 },
   table:         { width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' },
-  rowEven:       { background: '#0a0a18' },
-  rowOdd:        { background: '#0d0d1e' },
-  tdKey:         { padding: '0.2rem 0.55rem', borderBottom: '1px solid #151525', color: '#888', fontFamily: 'monospace', fontSize: '0.76rem' },
-  tdVal:         { padding: '0.2rem 0.55rem', borderBottom: '1px solid #151525', color: '#aaa' },
-  tdUnit:        { padding: '0.2rem 0.55rem', borderBottom: '1px solid #151525', color: '#666' },
-  tdDesc:        { padding: '0.2rem 0.55rem', borderBottom: '1px solid #151525', color: '#666' },
-  note:          { color: '#666', fontSize: '0.75rem', fontStyle: 'italic', padding: '0.4rem 0.75rem' },
-  placeholder:   { textAlign: 'center', padding: '3rem', color: '#555' },
+  rowEven:       { background: '#F7F3FC' },
+  rowOdd:        { background: '#ffffff' },
+  tdKey:         { padding: '0.2rem 0.55rem', borderBottom: '1px solid #D0C4E8', color: '#6A50A0', fontFamily: 'monospace', fontSize: '0.76rem' },
+  tdVal:         { padding: '0.2rem 0.55rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8' },
+  tdUnit:        { padding: '0.2rem 0.55rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8' },
+  tdDesc:        { padding: '0.2rem 0.55rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8' },
+  note:          { color: '#9888B8', fontSize: '0.75rem', fontStyle: 'italic', padding: '0.4rem 0.75rem' },
+  placeholder:   { textAlign: 'center', padding: '3rem', color: '#9888B8' },
   icon:          { fontSize: '2rem', marginBottom: '0.75rem' },
-  sub:           { fontSize: '0.8rem', marginTop: '0.4rem', color: '#444' },
+  sub:           { fontSize: '0.8rem', marginTop: '0.4rem', color: '#D0C4E8' },
 }

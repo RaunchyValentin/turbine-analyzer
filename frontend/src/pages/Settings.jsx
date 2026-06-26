@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react'
+﻿import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import client from '../api/client'
 import SettingSidebar from '../components/SettingList/SettingSidebar'
@@ -94,11 +94,11 @@ export default function Settings() {
 
 const styles = {
   root:         { display: 'flex', flexDirection: 'column', height: '100%' },
-  topbar:       { display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: '#111', borderBottom: '1px solid #333' },
-  topbarLabel:  { color: '#aaa', fontSize: '0.8rem' },
-  select:       { background: '#1e1e2e', color: '#e0e0e0', border: '1px solid #444', borderRadius: '4px', padding: '0.2rem 0.5rem', fontSize: '0.85rem' },
+  topbar:       { display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: '#F4F0FA', borderBottom: '1px solid #D0C4E8' },
+  topbarLabel:  { color: '#9888B8', fontSize: '0.8rem' },
+  select:       { background: '#F4F0FA', color: '#2A1A4A', border: '1px solid #D0C4E8', borderRadius: '4px', padding: '0.2rem 0.5rem', fontSize: '0.85rem' },
   body:         { display: 'flex', flex: 1, overflow: 'hidden' },
-  resizeHandle: { width: '4px', background: '#1e1e30', cursor: 'col-resize', flexShrink: 0, transition: 'background 0.15s', ':hover': { background: '#5b9bd5' } },
+  resizeHandle: { width: '4px', background: '#EDE3F8', cursor: 'col-resize', flexShrink: 0, transition: 'background 0.15s', ':hover': { background: '#5C3D99' } },
   main:         { flex: 1, overflow: 'auto', padding: '1.25rem' },
-  placeholder:  { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', fontSize: '0.9rem' },
+  placeholder:  { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9888B8', fontSize: '0.9rem' },
 }

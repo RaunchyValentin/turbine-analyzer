@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+﻿import React, { useMemo } from 'react'
 import Plot from 'react-plotly.js'
 import ValueCell from '../ValueCell'
 
@@ -66,12 +66,12 @@ function SectionChart({ section }) {
   if (loadPts.length > 1) traces.push({
     x: loadPts.map(p => +p.xv), y: loadPts.map(p => +p.yv),
     type: 'scatter', mode: 'lines+markers', name: 'Loading',
-    line: { color: '#5b9bd5', width: 2 }, marker: { size: 4 },
+    line: { color: '#5C3D99', width: 2 }, marker: { size: 4 },
   })
   if (unlPts.length > 1) traces.push({
     x: unlPts.map(p => +p.xv), y: unlPts.map(p => +p.yv),
     type: 'scatter', mode: 'lines+markers', name: 'Unloading',
-    line: { color: '#888', width: 2, dash: 'dash' }, marker: { size: 4 },
+    line: { color: '#6A50A0', width: 2, dash: 'dash' }, marker: { size: 4 },
   })
   if (!traces.length) return null
 
@@ -79,11 +79,11 @@ function SectionChart({ section }) {
     <Plot
       data={traces}
       layout={{
-        paper_bgcolor: '#0a0a18', plot_bgcolor: '#0d0d1e', font: { color: '#aaa', size: 11 },
-        xaxis: { title: section.x_label, gridcolor: '#1e1e30', zerolinecolor: '#333' },
-        yaxis: { title: section.y_label, gridcolor: '#1e1e30', zerolinecolor: '#333' },
+        paper_bgcolor: '#F7F3FC', plot_bgcolor: '#ffffff', font: { color: '#9888B8', size: 11 },
+        xaxis: { title: section.x_label, gridcolor: '#EDE3F8', zerolinecolor: '#D0C4E8' },
+        yaxis: { title: section.y_label, gridcolor: '#EDE3F8', zerolinecolor: '#D0C4E8' },
         margin: { l: 55, r: 20, t: 15, b: 45 },
-        legend: { bgcolor: '#0d0d1e', bordercolor: '#222', font: { size: 10 }, x: 0.01, y: 0.99 },
+        legend: { bgcolor: '#ffffff', bordercolor: '#222', font: { size: 10 }, x: 0.01, y: 0.99 },
       }}
       config={{ displayModeBar: false, responsive: true }}
       style={{ width: '100%', height: '260px' }}
@@ -91,7 +91,7 @@ function SectionChart({ section }) {
   )
 }
 
-function InfoPanel({ panel, color = '#5b9bd5' }) {
+function InfoPanel({ panel, color = '#5C3D99' }) {
   if (!panel) return null
   const vals = panel.values || {}
   return (
@@ -165,23 +165,23 @@ export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
 }
 
 const S = {
-  section:          { marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid #1a1a2e' },
-  sectionTitle:     { fontSize: '0.88rem', fontWeight: 700, color: '#c0c8d8', marginBottom: '0.35rem', letterSpacing: '0.02em' },
+  section:          { marginBottom: '2rem', paddingBottom: '1rem', borderBottom: '1px solid #2A1A4A' },
+  sectionTitle:     { fontSize: '0.88rem', fontWeight: 700, color: '#2A1A4A', marginBottom: '0.35rem', letterSpacing: '0.02em' },
   staticNote:       { fontSize: '0.72rem', color: '#667788', marginBottom: '0.4rem', fontStyle: 'italic' },
   pairRow:          { display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' },
   tableWrap:        { flexShrink: 0 },
   tableHdr:         { display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' },
-  tableLabel:       { fontFamily: 'monospace', color: '#5b9bd5', fontWeight: 700, fontSize: '0.8rem' },
+  tableLabel:       { fontFamily: 'monospace', color: '#5C3D99', fontWeight: 700, fontSize: '0.8rem' },
   tableLabelDim:    { color: '#445566' },
   deactivatedBadge: { fontSize: '0.62rem', color: '#aa7700', background: '#1a1200', border: '1px solid #443300', borderRadius: '3px', padding: '0.05rem 0.35rem' },
   unloadingBanner:  { fontSize: '0.72rem', color: '#aa7700', background: '#1a1200', border: '1px solid #332200', borderRadius: '3px', padding: '0.25rem 0.5rem', marginBottom: '0.3rem', maxWidth: '320px' },
   table:            { borderCollapse: 'collapse', fontSize: '0.78rem' },
-  th:               { background: '#0d0d20', color: '#556', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #222', whiteSpace: 'nowrap', fontWeight: 600 },
-  rowEven:          { background: '#0a0a18' },
-  rowOdd:           { background: '#0d0d1e' },
-  tdKey:            { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', color: '#5b9bd5', fontFamily: 'monospace', fontSize: '0.72rem', whiteSpace: 'nowrap' },
+  th:               { background: '#F7F3FC', color: '#556', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap', fontWeight: 600 },
+  rowEven:          { background: '#F7F3FC' },
+  rowOdd:           { background: '#ffffff' },
+  tdKey:            { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.72rem', whiteSpace: 'nowrap' },
   tdVal:            { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', whiteSpace: 'nowrap', textAlign: 'right', minWidth: '64px' },
-  tdDesc:           { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', color: '#aaa', fontSize: '0.75rem' },
+  tdDesc:           { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', color: '#9888B8', fontSize: '0.75rem' },
   staticVal:        { color: '#7799bb', fontVariantNumeric: 'tabular-nums', fontSize: '0.82rem' },
   infoPanel:        { margin: '0 0 1.5rem', padding: '0.5rem 0.75rem', border: '1px solid #1e3a5a', borderRadius: '4px', background: '#060610' },
   infoPanelTitle:   { fontWeight: 700, fontSize: '0.8rem', marginBottom: '0.25rem' },

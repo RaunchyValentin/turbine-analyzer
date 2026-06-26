@@ -7,7 +7,7 @@ const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '
 const links = [
   { to: '/', label: 'Dashboard' },
   { to: '/turbines', label: 'Turbines' },
-  // { to: '/settings', label: 'Setting List' },  // hidden — WIP
+  { to: '/settings', label: 'Settings' },
   { to: '/comparison', label: 'Comparison' },
   { to: '/curves', label: 'Curves' },
   { to: '/export', label: 'Export' },

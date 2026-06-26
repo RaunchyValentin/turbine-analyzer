@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+﻿import React, { useState, useMemo } from 'react'
 import Plot from 'react-plotly.js'
 import ValueCell from '../ValueCell'
 
@@ -51,14 +51,14 @@ function TimingDiagramSection({ section }) {
               y: pts.map(p => p.flow),
               type: 'scatter',
               mode: 'lines',
-              line: { shape: 'hv', color: '#5b9bd5', width: 2 },
+              line: { shape: 'hv', color: '#5C3D99', width: 2 },
               name: 'FPG, kg/s',
             }]}
             layout={{
-              paper_bgcolor: '#0a0a18', plot_bgcolor: '#0d0d1e',
-              font: { color: '#aaa', size: 10 },
-              xaxis: { title: section.x_label || 'Zeit [sec]', gridcolor: '#1e1e30', zerolinecolor: '#333', dtick: 1 },
-              yaxis: { title: section.y_label || 'FPG [kg/s]', gridcolor: '#1e1e30', zerolinecolor: '#333' },
+              paper_bgcolor: '#F7F3FC', plot_bgcolor: '#ffffff',
+              font: { color: '#9888B8', size: 10 },
+              xaxis: { title: section.x_label || 'Zeit [sec]', gridcolor: '#EDE3F8', zerolinecolor: '#D0C4E8', dtick: 1 },
+              yaxis: { title: section.y_label || 'FPG [kg/s]', gridcolor: '#EDE3F8', zerolinecolor: '#D0C4E8' },
               margin: { l: 55, r: 15, t: 10, b: 45 },
               showlegend: false,
               shapes: [{
@@ -80,13 +80,13 @@ function TimingDiagramSection({ section }) {
 }
 
 const tdStyles = {
-  th:      { background: '#0d0d20', color: '#666', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #222', whiteSpace: 'nowrap' },
-  rowEven: { background: '#0a0a18' },
-  rowOdd:  { background: '#0d0d1e' },
-  tdKey:   { padding: '0.2rem 0.5rem', borderBottom: '1px solid #151525', color: '#c0c8d8', fontWeight: 600, fontSize: '0.76rem' },
-  tdMono:  { padding: '0.2rem 0.5rem', borderBottom: '1px solid #151525', color: '#5b9bd5', fontFamily: 'monospace', fontSize: '0.74rem' },
-  tdUnit:  { padding: '0.2rem 0.5rem', borderBottom: '1px solid #151525', color: '#668', fontSize: '0.74rem' },
-  tdVal:   { padding: '0.2rem 0.5rem', borderBottom: '1px solid #151525', textAlign: 'right', fontVariantNumeric: 'tabular-nums' },
+  th:      { background: '#F7F3FC', color: '#9888B8', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
+  rowEven: { background: '#F7F3FC' },
+  rowOdd:  { background: '#ffffff' },
+  tdKey:   { padding: '0.2rem 0.5rem', borderBottom: '1px solid #D0C4E8', color: '#2A1A4A', fontWeight: 600, fontSize: '0.76rem' },
+  tdMono:  { padding: '0.2rem 0.5rem', borderBottom: '1px solid #D0C4E8', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.74rem' },
+  tdUnit:  { padding: '0.2rem 0.5rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8', fontSize: '0.74rem' },
+  tdVal:   { padding: '0.2rem 0.5rem', borderBottom: '1px solid #D0C4E8', textAlign: 'right', fontVariantNumeric: 'tabular-nums' },
 }
 
 export default function MixedSection({ data, turbineId, onOverrideSaved }) {
@@ -212,11 +212,11 @@ function PolyRows({ section, turbineId, sheetId, interpolation, onInterpolationC
         {chartData.xs.length > 1 && (
           <Plot
             data={[{ x: chartData.xs, y: chartData.ys, type: 'scatter', mode: 'lines+markers',
-              line: { shape: interpolation, color: '#5b9bd5', width: 2 }, marker: { size: 5, color: '#4caf7d' } }]}
+              line: { shape: interpolation, color: '#5C3D99', width: 2 }, marker: { size: 5, color: '#4caf7d' } }]}
             layout={{
-              paper_bgcolor: '#0a0a18', plot_bgcolor: '#0d0d1e', font: { color: '#aaa', size: 11 },
-              xaxis: { title: section.x_label, gridcolor: '#1e1e30' },
-              yaxis: { title: section.y_label, gridcolor: '#1e1e30' },
+              paper_bgcolor: '#F7F3FC', plot_bgcolor: '#ffffff', font: { color: '#9888B8', size: 11 },
+              xaxis: { title: section.x_label, gridcolor: '#EDE3F8' },
+              yaxis: { title: section.y_label, gridcolor: '#EDE3F8' },
               margin: { l: 50, r: 20, t: 20, b: 45 }, showlegend: false,
             }}
             config={{ displayModeBar: false, responsive: true }}
@@ -230,20 +230,20 @@ function PolyRows({ section, turbineId, sheetId, interpolation, onInterpolationC
 
 const styles = {
   section:      { marginBottom: '1.5rem' },
-  sectionHeader:{ background: '#161630', color: '#c0c0e0', padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 600, borderLeft: '3px solid #5b9bd5', marginBottom: '0' },
+  sectionHeader:{ background: '#EDE3F8', color: '#2A1A4A', padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 600, borderLeft: '3px solid #5C3D99', marginBottom: '0' },
   table:        { width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' },
-  th:           { background: '#0d0d20', color: '#666', padding: '0.25rem 0.55rem', textAlign: 'left', borderBottom: '1px solid #222', whiteSpace: 'nowrap' },
-  rowEven:      { background: '#0a0a18' },
-  rowOdd:       { background: '#0d0d1e' },
-  tdKey:        { padding: '0.22rem 0.55rem', borderBottom: '1px solid #151525', color: '#5b9bd5', fontFamily: 'monospace', fontSize: '0.78rem', whiteSpace: 'nowrap' },
-  tdVal:        { padding: '0.22rem 0.55rem', borderBottom: '1px solid #151525', whiteSpace: 'nowrap' },
-  tdUnit:       { padding: '0.22rem 0.55rem', borderBottom: '1px solid #151525', color: '#777', whiteSpace: 'nowrap' },
-  tdDesc:       { padding: '0.22rem 0.55rem', borderBottom: '1px solid #151525', color: '#aaa' },
+  th:           { background: '#F7F3FC', color: '#9888B8', padding: '0.25rem 0.55rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
+  rowEven:      { background: '#F7F3FC' },
+  rowOdd:       { background: '#ffffff' },
+  tdKey:        { padding: '0.22rem 0.55rem', borderBottom: '1px solid #D0C4E8', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.78rem', whiteSpace: 'nowrap' },
+  tdVal:        { padding: '0.22rem 0.55rem', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
+  tdUnit:       { padding: '0.22rem 0.55rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8', whiteSpace: 'nowrap' },
+  tdDesc:       { padding: '0.22rem 0.55rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8' },
   polyHeader:   { display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' },
-  blockName:    { fontFamily: 'monospace', color: '#5b9bd5', fontWeight: 700, fontSize: '0.82rem' },
-  blockDesc:    { color: '#888', fontSize: '0.78rem' },
+  blockName:    { fontFamily: 'monospace', color: '#5C3D99', fontWeight: 700, fontSize: '0.82rem' },
+  blockDesc:    { color: '#6A50A0', fontSize: '0.78rem' },
   toggleGroup:  { marginLeft: 'auto', display: 'flex', gap: '2px' },
-  toggleBtn:    { background: '#1e1e2e', border: '1px solid #333', color: '#888', borderRadius: '3px', cursor: 'pointer', padding: '0.1rem 0.5rem', fontSize: '0.72rem' },
-  toggleActive: { background: '#1a2a3a', borderColor: '#5b9bd5', color: '#5b9bd5' },
+  toggleBtn:    { background: '#F4F0FA', border: '1px solid #D0C4E8', color: '#6A50A0', borderRadius: '3px', cursor: 'pointer', padding: '0.1rem 0.5rem', fontSize: '0.72rem' },
+  toggleActive: { background: '#EDE3F8', borderColor: '#5C3D99', color: '#5C3D99' },
   polyLayout:   { display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap' },
 }

@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+﻿import React, { useMemo } from 'react'
 import Plot from 'react-plotly.js'
 import ValueCell from '../ValueCell'
 
@@ -171,13 +171,13 @@ export default function RunUpController({ data, turbineId, onOverrideSaved }) {
                 x: combinedChart.filter(d => d.mNG != null).map(d => d.n),
                 y: combinedChart.filter(d => d.mNG != null).map(d => d.mNG),
                 type: 'scatter', mode: 'lines+markers', name: 'NG mass flow',
-                line: { color: '#5b9bd5', width: 2 }, marker: { size: 4 },
+                line: { color: '#5C3D99', width: 2 }, marker: { size: 4 },
               },
               {
                 x: combinedChart.filter(d => d.mVB != null).map(d => d.n),
                 y: combinedChart.filter(d => d.mVB != null).map(d => d.mVB),
                 type: 'scatter', mode: 'lines+markers', name: 'Premix Gas mass flow',
-                line: { color: '#888', width: 2, dash: 'dash' }, marker: { size: 4 },
+                line: { color: '#6A50A0', width: 2, dash: 'dash' }, marker: { size: 4 },
               },
               {
                 x: combinedChart.filter(d => d.mPG != null).map(d => d.n),
@@ -187,12 +187,12 @@ export default function RunUpController({ data, turbineId, onOverrideSaved }) {
               },
             ]}
             layout={{
-              paper_bgcolor: '#0a0a18', plot_bgcolor: '#0d0d1e',
-              font: { color: '#aaa', size: 11 },
-              xaxis: { title: 'n, Hz',              gridcolor: '#1e1e30', zerolinecolor: '#333' },
-              yaxis: { title: 'gas mass flow, kg/s', gridcolor: '#1e1e30', zerolinecolor: '#333' },
+              paper_bgcolor: '#F7F3FC', plot_bgcolor: '#ffffff',
+              font: { color: '#9888B8', size: 11 },
+              xaxis: { title: 'n, Hz',              gridcolor: '#EDE3F8', zerolinecolor: '#D0C4E8' },
+              yaxis: { title: 'gas mass flow, kg/s', gridcolor: '#EDE3F8', zerolinecolor: '#D0C4E8' },
               margin: { l: 60, r: 20, t: 20, b: 45 },
-              legend: { bgcolor: '#0d0d1e', bordercolor: '#222', font: { size: 10 }, x: 0.01, y: 0.99 },
+              legend: { bgcolor: '#ffffff', bordercolor: '#222', font: { size: 10 }, x: 0.01, y: 0.99 },
             }}
             config={{ displayModeBar: false, responsive: true }}
             style={{ width: '100%', height: '300px' }}
@@ -212,15 +212,15 @@ const S = {
   tablesRow:  { display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' },
   tableWrap:  { flexShrink: 0 },
   blockHdr:   { marginBottom: '0.4rem' },
-  blockName:  { fontFamily: 'monospace', color: '#5b9bd5', fontWeight: 700, fontSize: '0.82rem' },
+  blockName:  { fontFamily: 'monospace', color: '#5C3D99', fontWeight: 700, fontSize: '0.82rem' },
   blockDesc:  { color: '#778', fontSize: '0.74rem', marginTop: '0.1rem' },
   table:      { borderCollapse: 'collapse', fontSize: '0.78rem' },
-  th:         { background: '#0d0d20', color: '#556', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #222', whiteSpace: 'nowrap', fontWeight: 600, verticalAlign: 'bottom' },
-  rowEven:    { background: '#0a0a18' },
-  rowOdd:     { background: '#0d0d1e' },
-  tdKey:      { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', color: '#5b9bd5', fontFamily: 'monospace', fontSize: '0.72rem', whiteSpace: 'nowrap' },
+  th:         { background: '#F7F3FC', color: '#556', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap', fontWeight: 600, verticalAlign: 'bottom' },
+  rowEven:    { background: '#F7F3FC' },
+  rowOdd:     { background: '#ffffff' },
+  tdKey:      { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.72rem', whiteSpace: 'nowrap' },
   tdVal:      { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', whiteSpace: 'nowrap', textAlign: 'right', minWidth: '64px' },
   tdNum:      { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', textAlign: 'right', fontVariantNumeric: 'tabular-nums', color: '#c8c8d8', fontSize: '0.78rem' },
-  chartTitle: { fontSize: '0.82rem', fontWeight: 700, color: '#c0c8d8', textAlign: 'center', marginBottom: '0.4rem', letterSpacing: '0.05em' },
-  noData:     { height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', background: '#0a0a14', border: '1px solid #1e1e2e', color: '#663', fontSize: '0.78rem', lineHeight: 1.6 },
+  chartTitle: { fontSize: '0.82rem', fontWeight: 700, color: '#2A1A4A', textAlign: 'center', marginBottom: '0.4rem', letterSpacing: '0.05em' },
+  noData:     { height: '240px', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', background: '#ffffff', border: '1px solid #F4F0FA', color: '#663', fontSize: '0.78rem', lineHeight: 1.6 },
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+﻿import React, { useEffect, useState, useCallback } from 'react'
 import client from '../../api/client'
 import ScalarTable from './patterns/ScalarTable'
 import PolyTable from './patterns/PolyTable'
@@ -71,12 +71,12 @@ export default function SheetRenderer({ turbineId, sheetId }) {
 }
 
 const styles = {
-  status:     { padding: '2rem', color: '#888', fontSize: '0.9rem' },
+  status:     { padding: '2rem', color: '#6A50A0', fontSize: '0.9rem' },
   stub:       { padding: '2rem', textAlign: 'center' },
-  stubTitle:  { fontSize: '1.2rem', color: '#5b9bd5', marginBottom: '0.5rem' },
-  stubMsg:    { color: '#555', fontSize: '0.85rem' },
-  header:     { display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1rem', borderBottom: '1px solid #222', paddingBottom: '0.5rem' },
-  sheetId:    { color: '#5b9bd5', fontWeight: 700, fontSize: '0.85rem', flexShrink: 0 },
+  stubTitle:  { fontSize: '1.2rem', color: '#5C3D99', marginBottom: '0.5rem' },
+  stubMsg:    { color: '#9888B8', fontSize: '0.85rem' },
+  header:     { display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1rem', borderBottom: '1px solid #D0C4E8', paddingBottom: '0.5rem' },
+  sheetId:    { color: '#5C3D99', fontWeight: 700, fontSize: '0.85rem', flexShrink: 0 },
   title:      { margin: 0, fontSize: '1.1rem', color: '#111111', fontWeight: 700 },
-  fuelBadge:  { marginLeft: 'auto', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '3px', background: '#1e2a3a', color: '#5b9bd5' },
+  fuelBadge:  { marginLeft: 'auto', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '3px', background: '#F4F0FA', color: '#5C3D99' },
 }

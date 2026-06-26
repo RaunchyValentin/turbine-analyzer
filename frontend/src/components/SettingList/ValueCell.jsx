@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+﻿import React, { useState, useRef, useEffect } from 'react'
 import client from '../../api/client'
 
 export default function ValueCell({ srelKey, value, originalValue, overridden, manual, editable, turbineId, sheetId, onSaved }) {
@@ -79,14 +79,14 @@ export default function ValueCell({ srelKey, value, originalValue, overridden, m
 
 const styles = {
   wrapper:     { display: 'inline-flex', alignItems: 'center', gap: '3px', cursor: 'text', minWidth: '60px' },
-  val:         { color: '#e0e0e0' },
-  overridden:  { color: '#f0c060', borderBottom: '1px dashed #f0c06080' },
-  empty:       { color: '#444' },
-  badge:       { fontSize: '0.65rem', color: '#f0c060', verticalAlign: 'super' },
-  resetBtn:    { background: 'none', border: 'none', cursor: 'pointer', color: '#888', fontSize: '0.8rem', padding: '0', lineHeight: 1 },
-  readonly:    { color: '#aaa' },
+  val:         { color: '#2A1A4A' },
+  overridden:  { color: '#B06000', borderBottom: '1px dashed #B0600080' },
+  empty:       { color: '#D0C4E8' },
+  badge:       { fontSize: '0.65rem', color: '#B06000', verticalAlign: 'super' },
+  resetBtn:    { background: 'none', border: 'none', cursor: 'pointer', color: '#6A50A0', fontSize: '0.8rem', padding: '0', lineHeight: 1 },
+  readonly:    { color: '#9888B8' },
   editWrapper: { display: 'inline-flex', alignItems: 'center', gap: '2px' },
-  input:       { background: '#1e1e2e', color: '#e0e0e0', border: '1px solid #5b9bd5', borderRadius: '3px', padding: '1px 4px', fontSize: '0.82rem', width: '90px' },
-  btnOk:       { background: '#1a3a2a', border: '1px solid #4caf7d', color: '#4caf7d', borderRadius: '3px', cursor: 'pointer', padding: '0 4px', fontSize: '0.75rem' },
-  btnCancel:   { background: 'none', border: '1px solid #444', color: '#888', borderRadius: '3px', cursor: 'pointer', padding: '0 4px', fontSize: '0.75rem' },
+  input:       { background: '#F4F0FA', color: '#2A1A4A', border: '1px solid #5C3D99', borderRadius: '3px', padding: '1px 4px', fontSize: '0.82rem', width: '90px' },
+  btnOk:       { background: '#e8f5e9', border: '1px solid #4caf7d', color: '#4caf7d', borderRadius: '3px', cursor: 'pointer', padding: '0 4px', fontSize: '0.75rem' },
+  btnCancel:   { background: 'none', border: '1px solid #D0C4E8', color: '#6A50A0', borderRadius: '3px', cursor: 'pointer', padding: '0 4px', fontSize: '0.75rem' },
 }

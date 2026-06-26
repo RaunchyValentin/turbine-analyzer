@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import ValueCell from '../ValueCell'
 
 export default function ScalarTable({ data, turbineId, onOverrideSaved }) {
@@ -55,15 +55,15 @@ export default function ScalarTable({ data, turbineId, onOverrideSaved }) {
 
 const styles = {
   section:       { marginBottom: '1.5rem' },
-  sectionHeader: { background: '#161630', color: '#c0c0e0', padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 600, borderLeft: '3px solid #5b9bd5', marginBottom: '0' },
+  sectionHeader: { background: '#EDE3F8', color: '#2A1A4A', padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 600, borderLeft: '3px solid #5C3D99', marginBottom: '0' },
   table:         { width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' },
-  th:            { background: '#0d0d20', color: '#666', fontWeight: 600, padding: '0.3rem 0.6rem', textAlign: 'left', borderBottom: '1px solid #222', whiteSpace: 'nowrap' },
-  rowEven:       { background: '#0a0a18' },
-  rowOdd:        { background: '#0d0d1e' },
-  td:            { padding: '0.25rem 0.6rem', borderBottom: '1px solid #151525', whiteSpace: 'nowrap' },
-  tdValue:       { padding: '0.25rem 0.6rem', borderBottom: '1px solid #151525', whiteSpace: 'nowrap' },
-  tdUnit:        { padding: '0.25rem 0.6rem', borderBottom: '1px solid #151525', color: '#777', whiteSpace: 'nowrap' },
-  tdDesc:        { padding: '0.25rem 0.6rem', borderBottom: '1px solid #151525', color: '#aaa' },
-  srelKey:       { color: '#5b9bd5', fontFamily: 'monospace', fontSize: '0.8rem' },
-  manualKey:     { color: '#888', fontStyle: 'italic', fontSize: '0.75rem' },
+  th:            { background: '#F7F3FC', color: '#9888B8', fontWeight: 600, padding: '0.3rem 0.6rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
+  rowEven:       { background: '#F7F3FC' },
+  rowOdd:        { background: '#ffffff' },
+  td:            { padding: '0.25rem 0.6rem', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
+  tdValue:       { padding: '0.25rem 0.6rem', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
+  tdUnit:        { padding: '0.25rem 0.6rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8', whiteSpace: 'nowrap' },
+  tdDesc:        { padding: '0.25rem 0.6rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8' },
+  srelKey:       { color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.8rem' },
+  manualKey:     { color: '#6A50A0', fontStyle: 'italic', fontSize: '0.75rem' },
 }

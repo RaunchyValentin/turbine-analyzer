@@ -1,4 +1,4 @@
-import React from 'react'
+﻿import React from 'react'
 import ValueCell from '../ValueCell'
 
 export default function SequenceTable({ data, turbineId, onOverrideSaved }) {
@@ -53,7 +53,7 @@ export default function SequenceTable({ data, turbineId, onOverrideSaved }) {
 
 const styles = {
   section:      { marginBottom: '0' },
-  sectionBanner:{ background: '#161630', color: '#c0c0e0', padding: '0.4rem 0.75rem', fontSize: '0.8rem', fontWeight: 600, borderLeft: '3px solid #e67e22', marginBottom: 0 },
+  sectionBanner:{ background: '#EDE3F8', color: '#2A1A4A', padding: '0.4rem 0.75rem', fontSize: '0.8rem', fontWeight: 600, borderLeft: '3px solid #e67e22', marginBottom: 0 },
   table:        { width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' },
   th:           { background: '#0d0d22', color: '#556', padding: '0.3rem 0.55rem', textAlign: 'left', borderBottom: '2px solid #222', whiteSpace: 'nowrap', fontWeight: 600 },
   thTag:        { minWidth: '100px', color: '#667' },
@@ -65,10 +65,10 @@ const styles = {
   rowEven:      { background: '#09090f' },
   rowOdd:       { background: '#0c0c18' },
 
-  tdTag:        { padding: '0.2rem 0.55rem', borderBottom: '1px solid #141420', color: '#5b9bd5', fontFamily: 'monospace', fontSize: '0.78rem', whiteSpace: 'nowrap', minWidth: '100px' },
+  tdTag:        { padding: '0.2rem 0.55rem', borderBottom: '1px solid #141420', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.78rem', whiteSpace: 'nowrap', minWidth: '100px' },
   tdNum:        { padding: '0.2rem 0.55rem', borderBottom: '1px solid #141420', color: '#c8c8d8', textAlign: 'right', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap', width: '72px' },
-  tdDesc:       { padding: '0.2rem 0.75rem', borderBottom: '1px solid #141420', color: '#aaa', lineHeight: 1.4 },
+  tdDesc:       { padding: '0.2rem 0.75rem', borderBottom: '1px solid #141420', color: '#9888B8', lineHeight: 1.4 },
   tdEmphasis:   { color: '#ddd', fontWeight: 600 },
 
-  notImpl:      { color: '#555', fontSize: '0.85rem', padding: '2rem', textAlign: 'center' },
+  notImpl:      { color: '#9888B8', fontSize: '0.85rem', padding: '2rem', textAlign: 'center' },
 }
