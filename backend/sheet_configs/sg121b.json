@@ -3,8 +3,15 @@
   "title": "3. Pilot Gas Flow (HOT Fuel Gas)",
   "fuel": "FG",
   "pattern": "H",
-  "show_gas_temp": true,
-  "unloading_disabled": true,
+  "gas_temp": {
+    "title": "Definition of Gas Temperature",
+    "column_label": "FGT, °C",
+    "note": "Unloading Polygons initially to be deactivated. In case that activation required start with settings as found for loading unless actual unloading settings were already established.",
+    "keys": {
+      "EGTL.X": "T.GAS.24",
+      "EGTH.X": "T.GAS.25"
+    }
+  },
   "sections": [
     {
       "title": "3.1b Pilot Gas as Function of OTC — HOT Fuel Gas",
@@ -13,39 +20,59 @@
       "loading_label": "MSPG.F6H — Loading",
       "unloading_label": "MSPG.F6HE — Unloading",
       "points": [
-        {"xk":"F6H.A1","yk":"F6H.B1"},{"xk":"F6H.A2","yk":"F6H.B2"},
-        {"xk":"F6H.A3","yk":"F6H.B3"},{"xk":"F6H.A4","yk":"F6H.B4"},
-        {"xk":"F6H.A5","yk":"F6H.B5"},{"xk":"F6H.A6","yk":"F6H.B6"},
-        {"xk":"F6H.A7","yk":"F6H.B7"},{"xk":"F6H.A8","yk":"F6H.B8"},
-        {"xk":"F6H.A9","yk":"F6H.B9"},{"xk":"F6H.A10","yk":"F6H.B10"}
+        {"xk":"TT.ATK.179","yk":"F.PILOT.254"},
+        {"xk":"TT.ATK.180","yk":"F.PILOT.255"},
+        {"xk":"TT.ATK.181","yk":"F.PILOT.256"},
+        {"xk":"TT.ATK.182","yk":"F.PILOT.257"},
+        {"xk":"TT.ATK.183","yk":"F.PILOT.258"},
+        {"xk":"TT.ATK.184","yk":"F.PILOT.259"},
+        {"xk":"TT.ATK.185","yk":"F.PILOT.260"},
+        {"xk":"TT.ATK.186","yk":"F.PILOT.261"},
+        {"xk":"TT.ATK.187","yk":"F.PILOT.262"},
+        {"xk":"TT.ATK.188","yk":"F.PILOT.263"}
       ],
       "points_u": [
-        {"xk":"F6HE.A1","yk":"F6HE.B1"},{"xk":"F6HE.A2","yk":"F6HE.B2"},
-        {"xk":"F6HE.A3","yk":"F6HE.B3"},{"xk":"F6HE.A4","yk":"F6HE.B4"},
-        {"xk":"F6HE.A5","yk":"F6HE.B5"},{"xk":"F6HE.A6","yk":"F6HE.B6"},
-        {"xk":"F6HE.A7","yk":"F6HE.B7"},{"xk":"F6HE.A8","yk":"F6HE.B8"},
-        {"xk":"F6HE.A9","yk":"F6HE.B9"},{"xk":"F6HE.A10","yk":"F6HE.B10"}
+        {"xk":"TT.ATK.189","yk":"F.PILOT.264"},
+        {"xk":"TT.ATK.190","yk":"F.PILOT.265"},
+        {"xk":"TT.ATK.191","yk":"F.PILOT.266"},
+        {"xk":"TT.ATK.192","yk":"F.PILOT.267"},
+        {"xk":"TT.ATK.193","yk":"F.PILOT.268"},
+        {"xk":"TT.ATK.194","yk":"F.PILOT.269"},
+        {"xk":"TT.ATK.195","yk":"F.PILOT.270"},
+        {"xk":"TT.ATK.196","yk":"F.PILOT.271"},
+        {"xk":"TT.ATK.197","yk":"F.PILOT.272"},
+        {"xk":"TT.ATK.198","yk":"F.PILOT.273"}
       ]
     },
     {
       "title": "3.2b Pilot Gas as Function of IGV — HOT Fuel Gas",
-      "x_label": "IGV [%]",
-      "y_label": "m PG [kg/s]",
+      "x_label": "IGV [0..1]",
+      "y_label": "Correction Factor",
       "loading_label": "MSPG.F4H — Loading",
       "unloading_label": "MSPG.F4HE — Unloading",
       "points": [
-        {"xk":"F4H.A1","yk":"F4H.B1"},{"xk":"F4H.A2","yk":"F4H.B2"},
-        {"xk":"F4H.A3","yk":"F4H.B3"},{"xk":"F4H.A4","yk":"F4H.B4"},
-        {"xk":"F4H.A5","yk":"F4H.B5"},{"xk":"F4H.A6","yk":"F4H.B6"},
-        {"xk":"F4H.A7","yk":"F4H.B7"},{"xk":"F4H.A8","yk":"F4H.B8"},
-        {"xk":"F4H.A9","yk":"F4H.B9"},{"xk":"F4H.A10","yk":"F4H.B10"}
+        {"xk":"G.VLE0.123","yk":"F.PILOT.214"},
+        {"xk":"G.VLE0.124","yk":"F.PILOT.215"},
+        {"xk":"G.VLE0.125","yk":"F.PILOT.216"},
+        {"xk":"G.VLE0.126","yk":"F.PILOT.217"},
+        {"xk":"G.VLE0.127","yk":"F.PILOT.218"},
+        {"xk":"G.VLE0.128","yk":"F.PILOT.219"},
+        {"xk":"G.VLE0.129","yk":"F.PILOT.220"},
+        {"xk":"G.VLE0.130","yk":"F.PILOT.221"},
+        {"xk":"G.VLE0.131","yk":"F.PILOT.222"},
+        {"xk":"G.VLE0.132","yk":"F.PILOT.223"}
       ],
       "points_u": [
-        {"xk":"F4HE.A1","yk":"F4HE.B1"},{"xk":"F4HE.A2","yk":"F4HE.B2"},
-        {"xk":"F4HE.A3","yk":"F4HE.B3"},{"xk":"F4HE.A4","yk":"F4HE.B4"},
-        {"xk":"F4HE.A5","yk":"F4HE.B5"},{"xk":"F4HE.A6","yk":"F4HE.B6"},
-        {"xk":"F4HE.A7","yk":"F4HE.B7"},{"xk":"F4HE.A8","yk":"F4HE.B8"},
-        {"xk":"F4HE.A9","yk":"F4HE.B9"},{"xk":"F4HE.A10","yk":"F4HE.B10"}
+        {"xk":"G.VLE0.133","yk":"F.PILOT.224"},
+        {"xk":"G.VLE0.134","yk":"F.PILOT.225"},
+        {"xk":"G.VLE0.135","yk":"F.PILOT.226"},
+        {"xk":"G.VLE0.136","yk":"F.PILOT.227"},
+        {"xk":"G.VLE0.137","yk":"F.PILOT.228"},
+        {"xk":"G.VLE0.138","yk":"F.PILOT.229"},
+        {"xk":"G.VLE0.139","yk":"F.PILOT.230"},
+        {"xk":"G.VLE0.140","yk":"F.PILOT.231"},
+        {"xk":"G.VLE0.141","yk":"F.PILOT.232"},
+        {"xk":"G.VLE0.142","yk":"F.PILOT.233"}
       ]
     }
   ]
