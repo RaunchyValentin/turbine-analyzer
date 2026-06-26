@@ -350,7 +350,8 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
         settable_ports = []
         for port in afi.findall("port"):
             param_val = port.get("parameter", "")
-            if not param_val or param_val.lower() == "false":
+            # "false" means explicitly disabled; skip it
+            if param_val.lower() == "false":
                 continue
 
             port_id_el = port.find("portIdentifier/portId")
@@ -359,8 +360,12 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
             ctx_key  = f"@{port_id}"
             raw_srel = ctx.get(ctx_key, "")
 
-            # Skip pure text annotations — they carry no parameter value
+            # Skip pure text annotations
             if raw_srel.strip().lower() in ("text:", "text"):
+                continue
+
+            # Skip pure signal connectors — no parameter value and no annotation
+            if not param_val and not raw_srel.strip():
                 continue
 
             m = _SREL_RE.search(raw_srel)

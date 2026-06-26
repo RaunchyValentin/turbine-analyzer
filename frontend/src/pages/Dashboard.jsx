@@ -104,7 +104,7 @@ export default function Dashboard() {
   const [search, setSearch]       = useState('')
   const [loading, setLoading]     = useState(false)
   const [tagFilter, setTagFilter] = useState('')   // numeric prefix of Tag-Name, e.g. "41"
-  const [srelOnly, setSrelOnly]   = useState(false)
+  const [portView, setPortView]   = useState('all') // 'all' | 'annotated' | 'srel'
 
   useEffect(() => {
     const el = document.createElement('style')
@@ -146,7 +146,9 @@ export default function Dashboard() {
 
   const filtered = useMemo(() => {
     let r = rows
-    if (srelOnly) {
+    if (portView === 'annotated') {
+      r = r.filter(row => (row._raw?.['Parameter Key'] || '').trim() !== '')
+    } else if (portView === 'srel') {
       r = r.filter(row => /srel:/i.test(row._raw?.['Parameter Key'] || ''))
     }
     if (tagFilter) {
@@ -167,10 +169,11 @@ export default function Dashboard() {
       })
     }
     return r
-  }, [rows, search, tagFilter, srelOnly])
+  }, [rows, search, tagFilter, portView])
 
-  const selected  = turbines.find((t) => t.id === selectedId)
-  const srelCount = useMemo(() => rows.filter(r => /srel:/i.test(r._raw?.['Parameter Key'] || '')).length, [rows])
+  const selected     = turbines.find((t) => t.id === selectedId)
+  const annotCount   = useMemo(() => rows.filter(r => (r._raw?.['Parameter Key'] || '').trim() !== '').length, [rows])
+  const srelCount    = useMemo(() => rows.filter(r => /srel:/i.test(r._raw?.['Parameter Key'] || '')).length, [rows])
 
   const handleDeleteTurbine = async () => {
     if (!selectedId) return
@@ -198,20 +201,27 @@ export default function Dashboard() {
           ))}
         </select>
 
-        {/* All / SREL toggle */}
+        {/* Port view toggle: All / With annotation / SREL only */}
         <div style={{ display: 'flex', border: '1px solid #b0c4b0', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
-          <button
-            onClick={() => setSrelOnly(false)}
-            style={{ ...TB, border: 'none', borderRadius: 0, background: !srelOnly ? '#b8d4b8' : '#eef3ee', color: !srelOnly ? '#1a3a1a' : '#5a7a5a', fontWeight: !srelOnly ? 600 : 400 }}
-          >
-            All ports ({rows.length.toLocaleString()})
-          </button>
-          <button
-            onClick={() => setSrelOnly(true)}
-            style={{ ...TB, border: 'none', borderRadius: 0, borderLeft: '1px solid #b0c4b0', background: srelOnly ? '#b8d4b8' : '#eef3ee', color: srelOnly ? '#1a3a1a' : '#5a7a5a', fontWeight: srelOnly ? 600 : 400 }}
-          >
-            With SREL key ({srelCount.toLocaleString()})
-          </button>
+          {[
+            { key: 'all',       label: 'All ports',       count: rows.length },
+            { key: 'annotated', label: 'With annotation', count: annotCount  },
+            { key: 'srel',      label: 'SREL only',       count: srelCount   },
+          ].map(({ key, label, count }, i) => (
+            <button
+              key={key}
+              onClick={() => setPortView(key)}
+              style={{
+                ...TB, border: 'none', borderRadius: 0,
+                borderLeft: i > 0 ? '1px solid #b0c4b0' : 'none',
+                background: portView === key ? '#b8d4b8' : '#eef3ee',
+                color:      portView === key ? '#1a3a1a' : '#5a7a5a',
+                fontWeight: portView === key ? 600 : 400,
+              }}
+            >
+              {label} ({count.toLocaleString()})
+            </button>
+          ))}
         </div>
 
         {/* Tag-Name prefix filter — shown when turbine has mixed GTs */}
