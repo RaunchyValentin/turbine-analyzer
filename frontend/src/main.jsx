@@ -5,6 +5,7 @@ import { ModuleRegistry, ClientSideRowModelModule } from 'ag-grid-community'
 
 ModuleRegistry.registerModules([ClientSideRowModelModule])
 
+import './print.css'
 import NavBar from './components/NavBar/NavBar'
 import Dashboard from './pages/Dashboard'
 import Parameters from './pages/Parameters'

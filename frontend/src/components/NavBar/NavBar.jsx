@@ -17,7 +17,7 @@ export default function NavBar() {
   const year = new Date().getFullYear()
 
   return (
-    <nav style={styles.nav}>
+    <nav style={styles.nav} className="no-print">
       {/* Official SE logo */}
       <div style={styles.logoPill}>
         <img src="/se-logo.svg" alt="Siemens Energy" style={styles.logoImg} />

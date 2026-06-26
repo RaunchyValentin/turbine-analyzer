@@ -59,7 +59,7 @@ export default function Settings() {
 
   return (
     <div style={styles.root}>
-      <div style={styles.topbar}>
+      <div style={styles.topbar} className="no-print">
         <span style={styles.topbarLabel}>Turbine:</span>
         <select value={turbineId || ''} onChange={handleTurbineChange} style={styles.select}>
           <option value=''>— select —</option>
@@ -69,12 +69,12 @@ export default function Settings() {
         </select>
       </div>
 
-      <div style={styles.body}>
+      <div style={styles.body} className="settings-body">
         {turbineId ? (
           <>
             <SettingSidebar turbineId={turbineId} activeSheet={sheetId} width={sidebarWidth} />
-            <div style={styles.resizeHandle} onMouseDown={onMouseDown} />
-            <main style={styles.main}>
+            <div style={styles.resizeHandle} onMouseDown={onMouseDown} className="no-print" />
+            <main style={styles.main} className="settings-main">
               {!sheetId ? (
                 <div style={styles.placeholder}>Select a sheet from the sidebar</div>
               ) : nav?.tracks?.find(t => t.id === sheetId) ? (

@@ -35,10 +35,10 @@ export default function SettingSidebar({ turbineId, activeSheet, width }) {
 
   const sidebarStyle = { ...styles.sidebar, width: width ?? 260 }
 
-  if (!nav) return <div style={sidebarStyle}><span style={{ color: '#9888B8', fontSize: '0.8rem', padding: '1rem' }}>Loading…</span></div>
+  if (!nav) return <div style={sidebarStyle} className="no-print"><span style={{ color: '#9888B8', fontSize: '0.8rem', padding: '1rem' }}>Loading…</span></div>
 
   return (
-    <aside style={sidebarStyle}>
+    <aside style={sidebarStyle} className="no-print">
       {nav.tracks?.map(track => (
         <div key={track.id}>
           <button style={{ ...styles.trackBtn, ...(activeSheet === track.id ? styles.trackActive : {}) }}

@@ -56,10 +56,24 @@ export default function SheetRenderer({ turbineId, sheetId }) {
 
   return (
     <div>
+      {/* Print-only header */}
+      <div className="print-only" style={styles.printHeader}>
+        <span style={styles.printBrand}>Siemens Energy · SE GS ME SO FST CFF</span>
+        <span style={styles.printDate}>{new Date().toLocaleDateString('de-DE')}</span>
+      </div>
+
       <div style={styles.header}>
         <span style={styles.sheetId}>{data.id}</span>
         <h2 style={styles.title}>{data.title}</h2>
         {data.fuel && <span style={styles.fuelBadge}>{data.fuel}</span>}
+        <button
+          className="no-print"
+          onClick={() => window.print()}
+          style={styles.printBtn}
+          title="Print / Save as PDF"
+        >
+          ⎙ Print
+        </button>
       </div>
       <Component
         data={data}
@@ -71,12 +85,16 @@ export default function SheetRenderer({ turbineId, sheetId }) {
 }
 
 const styles = {
-  status:     { padding: '2rem', color: '#6A50A0', fontSize: '0.9rem' },
-  stub:       { padding: '2rem', textAlign: 'center' },
-  stubTitle:  { fontSize: '1.2rem', color: '#5C3D99', marginBottom: '0.5rem' },
-  stubMsg:    { color: '#9888B8', fontSize: '0.85rem' },
-  header:     { display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1rem', borderBottom: '1px solid #D0C4E8', paddingBottom: '0.5rem' },
-  sheetId:    { color: '#5C3D99', fontWeight: 700, fontSize: '0.85rem', flexShrink: 0 },
-  title:      { margin: 0, fontSize: '1.1rem', color: '#111111', fontWeight: 700 },
-  fuelBadge:  { marginLeft: 'auto', fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '3px', background: '#F4F0FA', color: '#5C3D99' },
+  status:      { padding: '2rem', color: '#6A50A0', fontSize: '0.9rem' },
+  stub:        { padding: '2rem', textAlign: 'center' },
+  stubTitle:   { fontSize: '1.2rem', color: '#5C3D99', marginBottom: '0.5rem' },
+  stubMsg:     { color: '#9888B8', fontSize: '0.85rem' },
+  header:      { display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '1rem', borderBottom: '1px solid #D0C4E8', paddingBottom: '0.5rem' },
+  sheetId:     { color: '#5C3D99', fontWeight: 700, fontSize: '0.85rem', flexShrink: 0 },
+  title:       { margin: 0, fontSize: '1.1rem', color: '#111111', fontWeight: 700 },
+  fuelBadge:   { fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '3px', background: '#F4F0FA', color: '#5C3D99' },
+  printBtn:    { marginLeft: 'auto', padding: '0.25rem 0.75rem', fontSize: '0.78rem', background: '#F4F0FA', border: '1px solid #D0C4E8', borderRadius: 3, color: '#5C3D99', cursor: 'pointer', fontWeight: 600 },
+  printHeader: { display: 'none', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', paddingBottom: '0.4rem', borderBottom: '1px solid #D0C4E8' },
+  printBrand:  { fontSize: '0.75rem', color: '#6A50A0', fontWeight: 600 },
+  printDate:   { fontSize: '0.72rem', color: '#9888B8' },
 }

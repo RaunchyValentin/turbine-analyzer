@@ -1,0 +1,31 @@
+@media print {
+  /* Hide all navigation and chrome */
+  .no-print { display: none !important; }
+
+  /* Show print-only elements */
+  .print-only { display: block !important; }
+
+  /* Reset page background */
+  body, #root { background: #fff !important; }
+
+  /* Settings layout: sidebar hidden → main takes full width */
+  .settings-body { display: block !important; }
+  .settings-main { overflow: visible !important; padding: 0 !important; width: 100% !important; }
+
+  /* Avoid page break inside a table row or block */
+  tr, .no-break { page-break-inside: avoid; break-inside: avoid; }
+
+  /* Page break before each settings block section */
+  .print-block { page-break-inside: avoid; break-inside: avoid; }
+
+  /* Remove box shadows, adjust fonts */
+  * { box-shadow: none !important; }
+
+  /* Plotly chart: fixed size for print */
+  .js-plotly-plot { max-width: 600px !important; }
+
+  @page {
+    size: A4 landscape;
+    margin: 15mm 12mm;
+  }
+}
