@@ -3,7 +3,6 @@
   "title": "3. Pilot Gas Flow",
   "fuel": "FG",
   "pattern": "H",
-  "unloading_disabled": true,
   "gas_temp": {
     "title": "Definition of Gas Temperature",
     "column_label": "FGT, °C",
