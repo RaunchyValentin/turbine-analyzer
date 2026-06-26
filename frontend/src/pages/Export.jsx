@@ -110,7 +110,7 @@ export default function Export() {
   }
 
   return (
-    <div style={{ maxWidth: 620, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.25rem', alignItems: 'flex-start' }}>
 
       {/* ── SREL Export ───────────────────────────────────────────────────── */}
       <section style={SECTION}>
@@ -275,7 +275,7 @@ export default function Export() {
   )
 }
 
-const SECTION = { background: '#f5f8f5', border: '1px solid #b0c4b0', borderRadius: 6, padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }
+const SECTION = { background: '#f5f8f5', border: '1px solid #b0c4b0', borderRadius: 6, padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem', flex: '1 1 340px', minWidth: 300, maxWidth: 560 }
 const H2     = { margin: 0, fontSize: '0.95rem', color: '#1a2a1a', fontWeight: 700 }
 const FIELD  = { display: 'flex', flexDirection: 'column', gap: 6 }
 const LABEL  = { fontSize: '0.78rem', color: '#5a7a5a', fontWeight: 600, letterSpacing: '0.03em' }
