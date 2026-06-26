@@ -11,7 +11,7 @@ export default function ValueCell({ srelKey, value, originalValue, overridden, m
   useEffect(() => { if (editing) inputRef.current?.focus() }, [editing])
 
   if (!editable) {
-    return <span style={styles.readonly}>{value || '—'}</span>
+    return <span style={styles.readonly}>{value != null ? value : '—'}</span>
   }
 
   const save = async () => {
@@ -63,7 +63,7 @@ export default function ValueCell({ srelKey, value, originalValue, overridden, m
   return (
     <span style={styles.wrapper} onClick={() => setEditing(true)} title={overridden ? `Original: ${originalValue}` : undefined}>
       <span style={{ ...styles.val, ...(overridden ? styles.overridden : {}) }}>
-        {value || <span style={styles.empty}>—</span>}
+        {value != null ? value : <span style={styles.empty}>—</span>}
       </span>
       {overridden && (
         <button
