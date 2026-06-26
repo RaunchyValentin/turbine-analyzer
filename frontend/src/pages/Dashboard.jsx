@@ -141,7 +141,7 @@ export default function Dashboard() {
     setOffset(0)
     setTotalCount(0)
     Promise.all([
-      client.get('/parameters/count', { params: { turbine_id: selectedId } }),
+      client.get('/parameters/count', { params: { turbine_id: selectedId, annotated_only: portView === 'annotated' } }),
       client.get('/parameters', { params: apiParams({ offset: 0 }) }),
     ]).then(([cntRes, parRes]) => {
       setTotalCount(cntRes.data.count)

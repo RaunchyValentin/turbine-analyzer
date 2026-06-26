@@ -24,12 +24,19 @@ _MAX_ROWS = 50_000
 
 
 @router.get("/parameters/count")
-async def count_parameters(turbine_id: int, db: AsyncSession = Depends(get_db)):
-    from sqlalchemy import func, text
-    r = await db.execute(
-        text("SELECT COUNT(*) FROM parameters WHERE turbine_id = :tid"),
-        {"tid": turbine_id},
-    )
+async def count_parameters(
+    turbine_id: int,
+    annotated_only: bool = Query(False),
+    db: AsyncSession = Depends(get_db),
+):
+    from sqlalchemy import func
+    q = select(func.count(Parameter.id)).where(Parameter.turbine_id == turbine_id)
+    if annotated_only:
+        q = q.where(
+            Parameter.raw_data.like('%"Parameter Key": "§%') |
+            Parameter.raw_data.like('%"Parameter Key": "#%')
+        )
+    r = await db.execute(q)
     return {"count": r.scalar()}
 
 
