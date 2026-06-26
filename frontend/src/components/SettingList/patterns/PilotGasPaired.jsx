@@ -91,6 +91,42 @@ function SectionChart({ section }) {
   )
 }
 
+function GasTemp({ panel }) {
+  if (!panel) return null
+  const vals = Object.entries(panel.values || {})
+  return (
+    <div style={S.gasTempWrap}>
+      <div style={S.gasTempTable}>
+        <div style={S.gasTempTitle}>{panel.title}</div>
+        <table style={{ ...S.table, borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th colSpan={2} style={{ ...S.gasTempThGroup, textAlign: 'center' }}>MSPG</th>
+            </tr>
+            <tr>
+              <th style={S.gasTempThKey} />
+              <th style={S.gasTempThVal}>{panel.column_label}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {vals.map(([name, item], i) => (
+              <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+                <td style={S.gasTempTdKey}><strong>{name}</strong></td>
+                <td style={S.gasTempTdVal}>
+                  {item.value != null ? item.value : <span style={{ color: '#aa4444' }}>#N/A</span>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {panel.note && (
+        <div style={S.gasTempNote}>{panel.note}</div>
+      )}
+    </div>
+  )
+}
+
 function InfoPanel({ panel, color = '#5C3D99' }) {
   if (!panel) return null
   const vals = panel.values || {}
@@ -121,6 +157,9 @@ export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
 
   return (
     <div>
+      {/* Gas Temperature definition block (SG121) */}
+      {data.gas_temp && <GasTemp panel={data.gas_temp} />}
+
       {/* Optional gas index panel (SG123) */}
       {data.gas_index && <InfoPanel panel={data.gas_index} color="#4caf7d" />}
 
@@ -183,6 +222,15 @@ const S = {
   tdVal:            { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', whiteSpace: 'nowrap', textAlign: 'right', minWidth: '64px' },
   tdDesc:           { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', color: '#9888B8', fontSize: '0.75rem' },
   staticVal:        { color: '#7799bb', fontVariantNumeric: 'tabular-nums', fontSize: '0.82rem' },
+  gasTempWrap:      { display: 'flex', alignItems: 'flex-start', gap: '2rem', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #D0C4E8' },
+  gasTempTable:     { flexShrink: 0 },
+  gasTempTitle:     { fontSize: '0.82rem', fontWeight: 700, color: '#2A1A4A', marginBottom: '0.4rem' },
+  gasTempThGroup:   { background: '#5C3D99', color: '#fff', fontWeight: 700, padding: '0.2rem 0.5rem', border: '1px solid #D0C4E8', fontSize: '0.78rem' },
+  gasTempThKey:     { background: '#EDE3F8', color: '#5C3D99', padding: '0.2rem 0.6rem', border: '1px solid #D0C4E8', fontSize: '0.75rem', minWidth: '80px' },
+  gasTempThVal:     { background: '#EDE3F8', color: '#5C3D99', padding: '0.2rem 0.6rem', border: '1px solid #D0C4E8', fontSize: '0.75rem', textAlign: 'right', minWidth: '60px', fontWeight: 600 },
+  gasTempTdKey:     { padding: '0.2rem 0.6rem', border: '1px solid #D0C4E8', color: '#2A1A4A', fontSize: '0.8rem', fontFamily: 'monospace', whiteSpace: 'nowrap' },
+  gasTempTdVal:     { padding: '0.2rem 0.6rem', border: '1px solid #D0C4E8', textAlign: 'right', fontVariantNumeric: 'tabular-nums', fontSize: '0.82rem', color: '#2A1A4A', fontWeight: 700 },
+  gasTempNote:      { fontSize: '0.8rem', color: '#2A1A4A', lineHeight: 1.55, maxWidth: '380px', paddingTop: '1.4rem' },
   infoPanel:        { margin: '0 0 1.5rem', padding: '0.5rem 0.75rem', border: '1px solid #1e3a5a', borderRadius: '4px', background: '#060610' },
   infoPanelTitle:   { fontWeight: 700, fontSize: '0.8rem', marginBottom: '0.25rem' },
   infoPanelNote:    { fontSize: '0.72rem', color: '#667', marginBottom: '0.5rem', fontStyle: 'italic' },

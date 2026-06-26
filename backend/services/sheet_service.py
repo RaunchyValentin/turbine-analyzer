@@ -174,6 +174,13 @@ def _enrich_h(config: dict, srel: dict, overrides: dict) -> None:
             name: {"key": k, "value": _safe_float(overrides.get(k) or srel.get(k))}
             for name, k in lp.get("keys", {}).items()
         }
+    # Optional gas_temp panel (Definition of Gas Temperature)
+    gt = config.get("gas_temp")
+    if gt:
+        gt["values"] = {
+            name: {"key": k, "value": _safe_float(overrides.get(k) or srel.get(k))}
+            for name, k in gt.get("keys", {}).items()
+        }
 
 
 def _enrich_b(config: dict, srel: dict, overrides: dict) -> None:

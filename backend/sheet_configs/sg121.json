@@ -3,8 +3,16 @@
   "title": "3. Pilot Gas Flow",
   "fuel": "FG",
   "pattern": "H",
-  "show_gas_temp": true,
   "unloading_disabled": true,
+  "gas_temp": {
+    "title": "Definition of Gas Temperature",
+    "column_label": "FGT, °C",
+    "note": "Unloading Polygons initially to be deactivated. In case that activation required start with settings as found for loading unless actual unloading settings were already established.",
+    "keys": {
+      "EGTL.X": "EGTL.X",
+      "EGTH.X": "EGTH.X"
+    }
+  },
   "sections": [
     {
       "title": "3.1a Pilot Gas as Function of OTC — COLD Fuel Gas",
