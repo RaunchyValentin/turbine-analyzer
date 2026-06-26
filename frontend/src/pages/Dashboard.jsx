@@ -4,7 +4,47 @@ import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import client from '../api/client'
 
-// Extract a field from the pre-parsed _raw object, trying multiple key variants
+const GRID_CSS = `
+.xls-grid.ag-theme-alpine {
+  --ag-font-size: 12px;
+  --ag-font-family: Consolas, 'Courier New', monospace;
+  --ag-row-height: 22px;
+  --ag-header-height: 26px;
+  --ag-cell-horizontal-padding: 5px;
+  --ag-background-color: #161c16;
+  --ag-odd-row-background-color: #1a221a;
+  --ag-header-background-color: #1e2e1e;
+  --ag-header-foreground-color: #b0c8b0;
+  --ag-row-hover-color: #223322;
+  --ag-selected-row-background-color: #1e3d2a;
+  --ag-border-color: #2c3c2c;
+  --ag-row-border-color: #252e25;
+  --ag-header-column-separator-color: #2c3c2c;
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-height: 60%;
+  --ag-cell-widget-spacing: 4px;
+}
+.xls-grid .ag-cell {
+  border-right: 1px solid #252e25 !important;
+  line-height: 21px;
+}
+.xls-grid .ag-header-cell {
+  border-right: 1px solid #2c3c2c !important;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.xls-grid .ag-root-wrapper {
+  border: 1px solid #2c3c2c;
+}
+.xls-grid .ag-paging-panel {
+  height: 28px;
+  font-size: 11px;
+  border-top: 1px solid #2c3c2c;
+}
+`
+
 function raw(...keys) {
   return (p) => {
     const r = p.data?._raw
@@ -18,104 +58,48 @@ function raw(...keys) {
 }
 
 const COL_DEFS = [
-  {
-    headerName: 'Tag-Name',
-    valueGetter: raw('Tag-Name', 'TagName'),
-    minWidth: 140,
-    flex: 2,
-    sortable: true,
-    filter: true,
-  },
-  {
-    headerName: 'Port-Name',
-    valueGetter: raw('Port-Name', 'PortName'),
-    minWidth: 90,
-    flex: 1,
-    sortable: true,
-    filter: true,
-  },
-  {
-    headerName: 'Port-ID',
-    valueGetter: raw('Port-ID', 'PortID'),
-    minWidth: 70,
-    width: 70,
-    sortable: true,
-    filter: true,
-  },
-  {
-    headerName: 'Designation',
-    valueGetter: raw('Designation'),
-    minWidth: 120,
-    flex: 2,
-    sortable: true,
-    filter: true,
-  },
-  {
-    headerName: 'Signal Name',
-    valueGetter: raw('Signal Name', 'Signal-Name', 'SignalName'),
-    minWidth: 120,
-    flex: 2,
-    sortable: true,
-    filter: true,
-  },
-  {
-    field: 'value',
-    headerName: 'Value',
-    minWidth: 80,
-    flex: 1,
-    sortable: true,
-    filter: true,
-  },
-  {
-    headerName: 'Parameter Key',
-    valueGetter: raw('Parameter Key', 'Parameter-Key', 'ParameterKey', 'Param-Key'),
-    minWidth: 110,
-    flex: 1,
-    sortable: true,
-    filter: true,
-  },
-  {
-    headerName: 'Variation min',
-    valueGetter: raw('Variation min', 'Variation-Min', 'Variation Min', 'Var-Min', 'VarMin'),
-    minWidth: 100,
-    flex: 1,
-    sortable: true,
-    filter: true,
-  },
-  {
-    headerName: 'Variation max',
-    valueGetter: raw('Variation max', 'Variation-Max', 'Variation Max', 'Var-Max', 'VarMax'),
-    minWidth: 100,
-    flex: 1,
-    sortable: true,
-    filter: true,
-  },
+  { headerName: 'Tag-Name',      valueGetter: raw('Tag-Name', 'TagName'),                                      minWidth: 140, flex: 2, sortable: true, filter: true },
+  { headerName: 'Port-Name',     valueGetter: raw('Port-Name', 'PortName'),                                    minWidth: 90,  flex: 1, sortable: true, filter: true },
+  { headerName: 'Port-ID',       valueGetter: raw('Port-ID', 'PortID'),                                        minWidth: 58,  width: 58, sortable: true, filter: true },
+  { headerName: 'Designation',   valueGetter: raw('Designation'),                                              minWidth: 130, flex: 2, sortable: true, filter: true },
+  { headerName: 'Signal Name',   valueGetter: raw('Signal Name', 'Signal-Name', 'SignalName'),                 minWidth: 130, flex: 2, sortable: true, filter: true },
+  { field: 'value', headerName: 'Value',                                                                       minWidth: 72,  flex: 1, sortable: true, filter: true },
+  { headerName: 'Parameter Key', valueGetter: raw('Parameter Key', 'Parameter-Key', 'ParameterKey'),          minWidth: 120, flex: 1, sortable: true, filter: true },
+  { headerName: 'Var min',       valueGetter: raw('Variation min', 'Variation-Min', 'Variation Min', 'VarMin'), minWidth: 72, flex: 1, sortable: true, filter: true },
+  { headerName: 'Var max',       valueGetter: raw('Variation max', 'Variation-Max', 'Variation Max', 'VarMax'), minWidth: 72, flex: 1, sortable: true, filter: true },
 ]
 
-const DEFAULT_COL = { resizable: true }
+const DEFAULT_COL = { resizable: true, suppressMovable: false }
 
 function parseRows(raw_rows) {
   return raw_rows.map((r) => {
     let parsed = {}
     if (r.raw_data) {
-      try {
-        parsed = typeof r.raw_data === 'object' ? r.raw_data : JSON.parse(r.raw_data)
-      } catch (_) {}
+      try { parsed = typeof r.raw_data === 'object' ? r.raw_data : JSON.parse(r.raw_data) } catch (_) {}
     }
     return { ...r, _raw: parsed }
   })
 }
 
-export default function Dashboard() {
-  const [turbines, setTurbines]     = useState([])
-  const [selectedId, setSelectedId] = useState(null)
-  const [rows, setRows]             = useState([])
-  const [search, setSearch]         = useState('')
-  const [loading, setLoading]       = useState(false)
-  const [kksPrefixes, setKksPrefixes] = useState([])  // [{prefix,count}] detected in current turbine
-  const [kksFilter, setKksFilter]   = useState('')    // selected prefix filter
+const TB = { padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#1a221a', border: '1px solid #2c3c2c', color: '#c0d8c0', borderRadius: 2, cursor: 'pointer' }
 
-  // Load turbine list once
+export default function Dashboard() {
+  const [turbines, setTurbines]       = useState([])
+  const [selectedId, setSelectedId]   = useState(null)
+  const [rows, setRows]               = useState([])
+  const [search, setSearch]           = useState('')
+  const [loading, setLoading]         = useState(false)
+  const [kksPrefixes, setKksPrefixes] = useState([])
+  const [kksFilter, setKksFilter]     = useState('')
+  const [srelOnly, setSrelOnly]       = useState(true)
+
+  useEffect(() => {
+    const el = document.createElement('style')
+    el.textContent = GRID_CSS
+    document.head.appendChild(el)
+    return () => document.head.removeChild(el)
+  }, [])
+
   useEffect(() => {
     client.get('/turbines/list').then((r) => {
       setTurbines(r.data)
@@ -123,7 +107,6 @@ export default function Dashboard() {
     })
   }, [])
 
-  // Load parameters + prefix stats when turbine changes
   useEffect(() => {
     if (!selectedId) return
     setLoading(true)
@@ -138,7 +121,6 @@ export default function Dashboard() {
       if (turbineStats) {
         const pfxs = turbineStats.prefixes.filter(p => p.prefix !== 'empty' && p.prefix !== 'other')
         setKksPrefixes(pfxs)
-        // Auto-select only when a single numeric prefix covers most of the data (multi-GT import)
         if (pfxs.length === 1 && pfxs[0].count > turbineStats.total * 0.25) {
           setKksFilter(pfxs[0].prefix)
         }
@@ -146,9 +128,11 @@ export default function Dashboard() {
     }).finally(() => setLoading(false))
   }, [selectedId])
 
-  // Client-side filter: KKS prefix + search
   const filtered = useMemo(() => {
     let r = rows
+    if (srelOnly) {
+      r = r.filter(row => (row._raw?.['Parameter Key'] || '').trim() !== '')
+    }
     if (kksFilter) {
       r = r.filter(row => (row.kks || '').toUpperCase().startsWith(kksFilter.toUpperCase()))
     }
@@ -156,81 +140,96 @@ export default function Dashboard() {
       const q = search.toLowerCase()
       r = r.filter((row) => {
         const rd = row._raw || {}
-        const tag  = (rd['Tag-Name'] || rd['TagName'] || '').toLowerCase()
-        const port = (rd['Port-Name'] || rd['PortName'] || '').toLowerCase()
-        const desg = (rd['Designation'] || '').toLowerCase()
-        const sig  = (rd['Signal Name'] || rd['Signal-Name'] || '').toLowerCase()
-        const val  = (row.value || '').toLowerCase()
-        const key  = (rd['Parameter Key'] || rd['Parameter-Key'] || '').toLowerCase()
-        return tag.includes(q) || port.includes(q) || desg.includes(q) || sig.includes(q) || val.includes(q) || key.includes(q)
+        return (
+          (rd['Tag-Name'] || rd['TagName'] || '').toLowerCase().includes(q) ||
+          (rd['Port-Name'] || rd['PortName'] || '').toLowerCase().includes(q) ||
+          (rd['Designation'] || '').toLowerCase().includes(q) ||
+          (rd['Signal Name'] || rd['Signal-Name'] || '').toLowerCase().includes(q) ||
+          (row.value || '').toLowerCase().includes(q) ||
+          (rd['Parameter Key'] || rd['Parameter-Key'] || '').toLowerCase().includes(q)
+        )
       })
     }
     return r
-  }, [rows, search, kksFilter])
+  }, [rows, search, kksFilter, srelOnly])
 
-  const selected = turbines.find((t) => t.id === selectedId)
+  const selected  = turbines.find((t) => t.id === selectedId)
   const mixedData = kksPrefixes.length > 1
+  const srelCount = useMemo(() => rows.filter(r => (r._raw?.['Parameter Key'] || '').trim() !== '').length, [rows])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', height: 'calc(100vh - 72px)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', height: 'calc(100vh - 72px)' }}>
       {/* Toolbar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', padding: '0.25rem 0' }}>
         <select
           value={selectedId ?? ''}
           onChange={(e) => setSelectedId(Number(e.target.value))}
-          style={{ padding: '0.35rem 0.6rem', fontSize: '0.875rem', minWidth: 260 }}
+          style={{ ...TB, cursor: 'default', minWidth: 240 }}
         >
           {turbines.length === 0 && <option value="">No turbines — import a file first</option>}
           {turbines.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.project_name} / {t.name}
-            </option>
+            <option key={t.id} value={t.id}>{t.project_name} / {t.name}</option>
           ))}
         </select>
+
+        {/* SREL / All toggle */}
+        <div style={{ display: 'flex', border: '1px solid #2c3c2c', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
+          <button
+            onClick={() => setSrelOnly(true)}
+            style={{ ...TB, border: 'none', borderRadius: 0, background: srelOnly ? '#2a4a2a' : '#161c16', color: srelOnly ? '#7ec87e' : '#607060', fontWeight: srelOnly ? 600 : 400 }}
+          >
+            SREL ({srelCount.toLocaleString()})
+          </button>
+          <button
+            onClick={() => setSrelOnly(false)}
+            style={{ ...TB, border: 'none', borderRadius: 0, borderLeft: '1px solid #2c3c2c', background: !srelOnly ? '#2a4a2a' : '#161c16', color: !srelOnly ? '#7ec87e' : '#607060', fontWeight: !srelOnly ? 600 : 400 }}
+          >
+            All ports ({rows.length.toLocaleString()})
+          </button>
+        </div>
 
         {/* KKS prefix filter — shown only when turbine has mixed data */}
         {kksPrefixes.length > 1 && (
           <select
             value={kksFilter}
             onChange={e => setKksFilter(e.target.value)}
-            style={{ padding: '0.35rem 0.6rem', fontSize: '0.875rem', background: kksFilter ? '#1a2a1a' : '#2a1a1a', borderColor: kksFilter ? '#4caf7d' : '#e57373', border: '1px solid', borderRadius: 3, color: '#e0e0e0' }}
-            title="Filter by KKS prefix (turbine unit number)"
+            style={{ ...TB, cursor: 'default', background: kksFilter ? '#1a2a1a' : '#2a1a1a', borderColor: kksFilter ? '#4caf7d' : '#e57373' }}
+            title="Filter by KKS prefix"
           >
-            <option value="">⚠ Mixed data — all {rows.length.toLocaleString()} params</option>
+            <option value="">⚠ Mixed — all</option>
             {kksPrefixes.map(({ prefix, count }) => (
-              <option key={prefix} value={prefix}>
-                {prefix}… — {count.toLocaleString()} params
-              </option>
+              <option key={prefix} value={prefix}>{prefix}… ({count.toLocaleString()})</option>
             ))}
           </select>
         )}
 
-        {selected && (
-          <span style={{ fontSize: '0.8rem', color: mixedData && !kksFilter ? '#e57373' : '#666' }}>
-            {kksFilter ? filtered.length.toLocaleString() : selected.param_count.toLocaleString()} parameters
-            {mixedData && !kksFilter ? ' ⚠ mixed' : ''}
-          </span>
-        )}
+        <span style={{ fontSize: '0.75rem', color: mixedData && !kksFilter ? '#e57373' : '#4a6a4a' }}>
+          {filtered.length.toLocaleString()} rows
+          {mixedData && !kksFilter ? ' ⚠ mixed' : ''}
+        </span>
 
         <input
-          placeholder="Search tag / port / value…"
+          placeholder="Search…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: '0.35rem 0.6rem', fontSize: '0.875rem', width: 220 }}
+          style={{ ...TB, cursor: 'text', width: 180, outline: 'none' }}
         />
 
-        {loading && <span style={{ fontSize: '0.8rem', color: '#888' }}>Loading…</span>}
+        {loading && <span style={{ fontSize: '0.75rem', color: '#607060' }}>Loading…</span>}
       </div>
 
-      {/* Table */}
-      <div className="ag-theme-alpine" style={{ flex: 1, width: '100%' }}>
+      {/* Grid */}
+      <div className="ag-theme-alpine xls-grid" style={{ flex: 1, width: '100%' }}>
         <AgGridReact
           rowData={filtered}
           columnDefs={COL_DEFS}
           defaultColDef={DEFAULT_COL}
+          rowHeight={22}
+          headerHeight={26}
           pagination
-          paginationPageSize={200}
+          paginationPageSize={500}
           suppressCellFocus
+          enableCellTextSelection
         />
       </div>
     </div>
