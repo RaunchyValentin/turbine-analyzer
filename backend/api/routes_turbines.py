@@ -42,8 +42,33 @@ async def delete_project(project_id: int, db: AsyncSession = Depends(get_db)):
     project = await db.get(Project, project_id)
     if not project:
         raise HTTPException(404)
+    # Explicit cascade
+    await db.execute(text(
+        "DELETE FROM parameters WHERE turbine_id IN (SELECT id FROM turbines WHERE project_id = :id)"
+    ), {"id": project_id})
+    await db.execute(text(
+        "DELETE FROM curve_points WHERE curve_id IN "
+        "(SELECT c.id FROM curves c JOIN turbines t ON c.turbine_id=t.id WHERE t.project_id = :id)"
+    ), {"id": project_id})
+    await db.execute(text(
+        "DELETE FROM curves WHERE turbine_id IN (SELECT id FROM turbines WHERE project_id = :id)"
+    ), {"id": project_id})
+    await db.execute(text("DELETE FROM turbines WHERE project_id = :id"), {"id": project_id})
     await db.delete(project)
     await db.commit()
+
+
+@router.delete("/db/reset", status_code=200)
+async def reset_db(db: AsyncSession = Depends(get_db)):
+    """Delete ALL data — full DB wipe."""
+    await db.execute(text("DELETE FROM parameters"))
+    await db.execute(text("DELETE FROM curve_points"))
+    await db.execute(text("DELETE FROM curves"))
+    await db.execute(text("DELETE FROM turbines"))
+    await db.execute(text("DELETE FROM projects"))
+    await db.execute(text("VACUUM"))
+    await db.commit()
+    return {"status": "ok"}
 
 
 @router.get("/turbines")
@@ -69,6 +94,12 @@ async def delete_turbine(turbine_id: int, db: AsyncSession = Depends(get_db)):
     turbine = await db.get(Turbine, turbine_id)
     if not turbine:
         raise HTTPException(404)
+    # Explicit cascade — SQLite FK not enabled by default
+    await db.execute(text("DELETE FROM parameters WHERE turbine_id = :id"), {"id": turbine_id})
+    await db.execute(text(
+        "DELETE FROM curve_points WHERE curve_id IN (SELECT id FROM curves WHERE turbine_id = :id)"
+    ), {"id": turbine_id})
+    await db.execute(text("DELETE FROM curves WHERE turbine_id = :id"), {"id": turbine_id})
     await db.delete(turbine)
     await db.commit()
 

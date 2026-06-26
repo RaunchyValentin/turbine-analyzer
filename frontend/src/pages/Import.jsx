@@ -60,18 +60,23 @@ export default function Import() {
     if (f) handleFile(f)
   }
 
+  const doImportOne = async (prefix, unitName) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('project_name', projectName.trim())
+    fd.append('turbine_name', unitName.trim())
+    fd.append('kks_prefix', prefix)
+    const r = await client.post('/import/create', fd)
+    return r.data
+  }
+
   const handleImport = async () => {
     if (!file || !projectName.trim() || !turbineName.trim()) return
     setImporting(true)
     setResult(null)
-    const fd = new FormData()
-    fd.append('file', file)
-    fd.append('project_name', projectName.trim())
-    fd.append('turbine_name', turbineName.trim())
-    fd.append('kks_prefix', selPrefix)
     try {
-      const r = await client.post('/import/create', fd)
-      setResult({ ok: true, msg: `Imported: ${r.data.parameters} parameters → ${r.data.project_name} / ${r.data.turbine_name}` })
+      const r = await doImportOne(selPrefix, turbineName)
+      setResult({ ok: true, msg: `Imported: ${r.parameters} parameters → ${r.project_name} / ${r.turbine_name}` })
     } catch (e) {
       const msg = e.response?.data?.detail || e.message
       setResult({ ok: false, msg })
@@ -80,7 +85,30 @@ export default function Import() {
     }
   }
 
-  const canImport = file && projectName.trim() && turbineName.trim() && !importing
+  const handleImportAll = async () => {
+    if (!file || !projectName.trim() || prefixes.length === 0) return
+    setImporting(true)
+    setResult(null)
+    const results = []
+    const errors = []
+    for (const { prefix } of prefixes) {
+      try {
+        const r = await doImportOne(prefix, prefix)
+        results.push(`${r.turbine_name}: ${r.parameters} params`)
+      } catch (e) {
+        errors.push(`${prefix}: ${e.response?.data?.detail || e.message}`)
+      }
+    }
+    setImporting(false)
+    if (errors.length === 0) {
+      setResult({ ok: true, msg: `Imported ${results.length} units: ${results.join(', ')}` })
+    } else {
+      setResult({ ok: false, msg: `Errors: ${errors.join('; ')}. Done: ${results.join(', ')}` })
+    }
+  }
+
+  const canImport    = file && projectName.trim() && turbineName.trim() && !importing
+  const canImportAll = file && projectName.trim() && prefixes.length > 1 && selPrefix === '' && !importing
 
   return (
     <div style={S.page}>
@@ -165,13 +193,26 @@ export default function Import() {
             </div>
           )}
 
-          <button
-            style={canImport ? S.btn : S.btnDis}
-            disabled={!canImport}
-            onClick={handleImport}
-          >
-            {importing ? 'Importing…' : 'Import'}
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              style={canImport ? S.btn : S.btnDis}
+              disabled={!canImport}
+              onClick={handleImport}
+            >
+              {importing ? 'Importing…' : selPrefix ? `Import ${selPrefix}…` : 'Import (all mixed)'}
+            </button>
+
+            {prefixes.length > 1 && selPrefix === '' && (
+              <button
+                style={canImportAll ? { ...S.btn, background: '#d0ecff', borderColor: '#7aaae0', color: '#0a2a5a' } : S.btnDis}
+                disabled={!canImportAll}
+                onClick={handleImportAll}
+                title={`Import each unit (${prefixes.map(p => p.prefix).join(', ')}) as a separate turbine record`}
+              >
+                {importing ? 'Importing…' : `Import each unit separately (${prefixes.length})`}
+              </button>
+            )}
+          </div>
 
           {result && (
             <div style={result.ok ? S.ok : S.err}>{result.msg}</div>

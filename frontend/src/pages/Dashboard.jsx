@@ -172,6 +172,17 @@ export default function Dashboard() {
   const selected  = turbines.find((t) => t.id === selectedId)
   const srelCount = useMemo(() => rows.filter(r => /srel:/i.test(r._raw?.['Parameter Key'] || '')).length, [rows])
 
+  const handleDeleteTurbine = async () => {
+    if (!selectedId) return
+    const t = turbines.find(x => x.id === selectedId)
+    if (!window.confirm(`Delete "${t?.project_name} / ${t?.name}" and all its ${rows.length.toLocaleString()} parameters?`)) return
+    await client.delete(`/turbines/${selectedId}`)
+    const updated = turbines.filter(x => x.id !== selectedId)
+    setTurbines(updated)
+    setSelectedId(updated.length > 0 ? updated[0].id : null)
+    setRows([])
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', height: 'calc(100vh - 72px)' }}>
       {/* Toolbar */}
@@ -234,6 +245,17 @@ export default function Dashboard() {
         />
 
         {loading && <span style={{ fontSize: '0.75rem', color: '#7a9a7a' }}>Loading…</span>}
+
+        {/* Delete current turbine */}
+        {selectedId && (
+          <button
+            onClick={handleDeleteTurbine}
+            title="Delete this turbine record and all its parameters"
+            style={{ ...TB, marginLeft: 'auto', background: '#fdecea', borderColor: '#e57373', color: '#922' }}
+          >
+            Delete turbine
+          </button>
+        )}
       </div>
 
       {/* Grid */}
