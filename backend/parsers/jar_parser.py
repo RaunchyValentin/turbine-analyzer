@@ -359,8 +359,8 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
             ctx_key  = f"@{port_id}"
             raw_srel = ctx.get(ctx_key, "")
 
-            # Skip ports with no context key — only import SREL-referenced params
-            if not raw_srel.strip() or raw_srel.strip().lower() in ("text:", "text"):
+            # Skip pure text annotations — they carry no parameter value
+            if raw_srel.strip().lower() in ("text:", "text"):
                 continue
 
             m = _SREL_RE.search(raw_srel)
@@ -404,8 +404,11 @@ def _parse_icdiagram(content: bytes, filepath: str = "", page_description: str =
                 "Diagram-Name":    diagram_name,
             }
 
-            # kks: SREL key if present, else Tag|Port.PortID for uniqueness
-            kks_port = f"{port_name}.{port_id}" if port_name and port_id else (port_name or port_id)
+            # kks: SREL key if present, else Tag|Item.PortID for uniqueness
+            kks_port = (
+                f"{item_name}.{port_id}" if item_name and port_id and item_name != port_id
+                else (item_name or port_id)
+            )
             kks = srel_key if srel_key else (f"{tag_name}|{kks_port}" if kks_port else tag_name)
             parameters.append({
                 "kks":         kks,
