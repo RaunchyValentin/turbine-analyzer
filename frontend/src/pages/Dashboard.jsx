@@ -11,37 +11,44 @@ const GRID_CSS = `
   --ag-row-height: 22px;
   --ag-header-height: 26px;
   --ag-cell-horizontal-padding: 5px;
-  --ag-background-color: #161c16;
-  --ag-odd-row-background-color: #1a221a;
-  --ag-header-background-color: #1e2e1e;
-  --ag-header-foreground-color: #b0c8b0;
-  --ag-row-hover-color: #223322;
-  --ag-selected-row-background-color: #1e3d2a;
-  --ag-border-color: #2c3c2c;
-  --ag-row-border-color: #252e25;
-  --ag-header-column-separator-color: #2c3c2c;
+  --ag-background-color: #ffffff;
+  --ag-odd-row-background-color: #f5f7f5;
+  --ag-header-background-color: #d0ddd0;
+  --ag-header-foreground-color: #1a2a1a;
+  --ag-foreground-color: #1a1a1a;
+  --ag-row-hover-color: #e0eed0;
+  --ag-selected-row-background-color: #c8e6c9;
+  --ag-border-color: #b0c4b0;
+  --ag-row-border-color: #dde8dd;
+  --ag-header-column-separator-color: #a0b4a0;
   --ag-header-column-separator-display: block;
   --ag-header-column-separator-height: 60%;
   --ag-cell-widget-spacing: 4px;
+  --ag-secondary-foreground-color: #444;
+  --ag-disabled-foreground-color: #888;
 }
 .xls-grid .ag-cell {
-  border-right: 1px solid #252e25 !important;
+  border-right: 1px solid #dde8dd !important;
   line-height: 21px;
+  color: #1a1a1a;
 }
 .xls-grid .ag-header-cell {
-  border-right: 1px solid #2c3c2c !important;
+  border-right: 1px solid #a0b4a0 !important;
   font-weight: 600;
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  color: #1a2a1a;
 }
 .xls-grid .ag-root-wrapper {
-  border: 1px solid #2c3c2c;
+  border: 1px solid #b0c4b0;
 }
 .xls-grid .ag-paging-panel {
   height: 28px;
   font-size: 11px;
-  border-top: 1px solid #2c3c2c;
+  border-top: 1px solid #b0c4b0;
+  color: #333;
+  background: #eef3ee;
 }
 `
 
@@ -81,7 +88,7 @@ function parseRows(raw_rows) {
   })
 }
 
-const TB = { padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#1a221a', border: '1px solid #2c3c2c', color: '#c0d8c0', borderRadius: 2, cursor: 'pointer' }
+const TB = { padding: '0.25rem 0.5rem', fontSize: '0.8rem', background: '#eef3ee', border: '1px solid #b0c4b0', color: '#1a2a1a', borderRadius: 2, cursor: 'pointer' }
 
 export default function Dashboard() {
   const [turbines, setTurbines]       = useState([])
@@ -176,13 +183,13 @@ export default function Dashboard() {
         <div style={{ display: 'flex', border: '1px solid #2c3c2c', borderRadius: 2, overflow: 'hidden', fontSize: '0.78rem' }}>
           <button
             onClick={() => setSrelOnly(true)}
-            style={{ ...TB, border: 'none', borderRadius: 0, background: srelOnly ? '#2a4a2a' : '#161c16', color: srelOnly ? '#7ec87e' : '#607060', fontWeight: srelOnly ? 600 : 400 }}
+            style={{ ...TB, border: 'none', borderRadius: 0, background: srelOnly ? '#b8d4b8' : '#eef3ee', color: srelOnly ? '#1a3a1a' : '#5a7a5a', fontWeight: srelOnly ? 600 : 400 }}
           >
             SREL ({srelCount.toLocaleString()})
           </button>
           <button
             onClick={() => setSrelOnly(false)}
-            style={{ ...TB, border: 'none', borderRadius: 0, borderLeft: '1px solid #2c3c2c', background: !srelOnly ? '#2a4a2a' : '#161c16', color: !srelOnly ? '#7ec87e' : '#607060', fontWeight: !srelOnly ? 600 : 400 }}
+            style={{ ...TB, border: 'none', borderRadius: 0, borderLeft: '1px solid #b0c4b0', background: !srelOnly ? '#b8d4b8' : '#eef3ee', color: !srelOnly ? '#1a3a1a' : '#5a7a5a', fontWeight: !srelOnly ? 600 : 400 }}
           >
             All ports ({rows.length.toLocaleString()})
           </button>
@@ -203,7 +210,7 @@ export default function Dashboard() {
           </select>
         )}
 
-        <span style={{ fontSize: '0.75rem', color: mixedData && !kksFilter ? '#e57373' : '#4a6a4a' }}>
+        <span style={{ fontSize: '0.75rem', color: mixedData && !kksFilter ? '#c0392b' : '#3a5a3a' }}>
           {filtered.length.toLocaleString()} rows
           {mixedData && !kksFilter ? ' ⚠ mixed' : ''}
         </span>
@@ -215,7 +222,7 @@ export default function Dashboard() {
           style={{ ...TB, cursor: 'text', width: 180, outline: 'none' }}
         />
 
-        {loading && <span style={{ fontSize: '0.75rem', color: '#607060' }}>Loading…</span>}
+        {loading && <span style={{ fontSize: '0.75rem', color: '#7a9a7a' }}>Loading…</span>}
       </div>
 
       {/* Grid */}
