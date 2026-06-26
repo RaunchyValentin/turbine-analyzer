@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
-import client from '../../api/client'
+
+/* global __APP_VERSION__ */
+const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : ''
 
 const links = [
   { to: '/', label: 'Dashboard' },
@@ -12,11 +14,6 @@ const links = [
 ]
 
 export default function NavBar() {
-  const [version, setVersion] = useState('')
-  useEffect(() => {
-    client.get('/version').then(r => setVersion(r.data.version)).catch(() => {})
-  }, [])
-
   const year = new Date().getFullYear()
 
   return (
@@ -36,7 +33,7 @@ export default function NavBar() {
       <div style={styles.appBlock}>
         <span style={styles.appName}>Turbine Analyzer</span>
         <span style={styles.ver}>
-          {version ? `v${version}  ·  ` : ''}{year}
+          {APP_VERSION ? `v${APP_VERSION}  ·  ` : ''}{year}
         </span>
       </div>
 
@@ -112,9 +109,9 @@ const styles = {
     color: '#ffffff',
   },
   ver: {
-    fontSize: '0.6rem',
-    color: 'rgba(255,255,255,0.5)',
-    letterSpacing: '0.04em',
+    fontSize: '0.68rem',
+    color: 'rgba(255,255,255,0.65)',
+    letterSpacing: '0.03em',
   },
   links: {
     display: 'flex',
