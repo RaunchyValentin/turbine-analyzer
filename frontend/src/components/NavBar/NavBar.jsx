@@ -21,9 +21,9 @@ export default function NavBar() {
 
   return (
     <nav style={styles.nav}>
-      {/* Official SE logo on white pill */}
+      {/* Official SE logo */}
       <div style={styles.logoPill}>
-        <img src="/se-logo.svg" alt="Siemens Energy" style={styles.logoImg} />
+        <img src="/se-logo.png" alt="Siemens Energy" style={styles.logoImg} />
       </div>
 
       {/* Department */}
