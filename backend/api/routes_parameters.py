@@ -47,7 +47,7 @@ async def list_parameters(
     search: str | None = Query(None),
     tag_prefix: str | None = Query(None),
     annotated_only: bool = Query(False),
-    limit: int = Query(100, le=_MAX_ROWS),
+    limit: int = Query(1000, le=_MAX_ROWS),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
 ):

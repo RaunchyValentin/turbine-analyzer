@@ -97,7 +97,7 @@ function getTagName(row) {
   return rd['Tag-Name'] || rd['TagName'] || ''
 }
 
-const PAGE_SIZE = 100
+const PAGE_SIZE = 1000
 
 export default function Dashboard() {
   const [turbines, setTurbines]     = useState([])
