@@ -1,3 +1,8 @@
+/* Spinner for PrintAllSheets loading indicator */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @media print {
   /* Hide all navigation and chrome */
   .no-print { display: none !important; }
