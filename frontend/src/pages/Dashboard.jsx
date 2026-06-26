@@ -148,8 +148,6 @@ export default function Dashboard() {
     let r = rows
     if (portView === 'annotated') {
       r = r.filter(row => (row._raw?.['Parameter Key'] || '').trim() !== '')
-    } else if (portView === 'srel') {
-      r = r.filter(row => /srel:/i.test(row._raw?.['Parameter Key'] || ''))
     }
     if (tagFilter) {
       r = r.filter(row => getTagName(row).startsWith(tagFilter))
@@ -173,7 +171,6 @@ export default function Dashboard() {
 
   const selected     = turbines.find((t) => t.id === selectedId)
   const annotCount   = useMemo(() => rows.filter(r => (r._raw?.['Parameter Key'] || '').trim() !== '').length, [rows])
-  const srelCount    = useMemo(() => rows.filter(r => /srel:/i.test(r._raw?.['Parameter Key'] || '')).length, [rows])
 
   const handleDeleteTurbine = async () => {
     if (!selectedId) return
@@ -206,7 +203,6 @@ export default function Dashboard() {
           {[
             { key: 'all',       label: 'All ports',       count: rows.length },
             { key: 'annotated', label: 'With annotation', count: annotCount  },
-            { key: 'srel',      label: 'SREL only',       count: srelCount   },
           ].map(({ key, label, count }, i) => (
             <button
               key={key}
