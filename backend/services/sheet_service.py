@@ -91,7 +91,11 @@ async def save_override(turbine_id: int, sheet_id: str, srel_key: str,
 # ── helpers ─────────────────────────────────────────────────────────────────
 
 async def _build_srel_lookup(turbine_id: int, db: AsyncSession) -> dict[str, str]:
-    """Build {kks -> value} index, preferring the N10 port for multi-port tags."""
+    """Build {kks -> value} index, preferring the N10 port for multi-port tags.
+    Also adds {srel_short -> value} entries (part after '|') so sheet configs
+    can reference parameters by SREL name (e.g. 'F6F.30') independently of
+    the turbine-specific kks numbering.
+    """
     result = await db.execute(
         select(Parameter).where(Parameter.turbine_id == turbine_id)
     )
@@ -106,6 +110,11 @@ async def _build_srel_lookup(turbine_id: int, db: AsyncSession) -> dict[str, str
     for kks, plist in bucket.items():
         chosen = next((p for p in plist if p.name and "|N10" in p.name), plist[0])
         lookup[kks] = chosen.value or ""
+        # Secondary index by SREL short name (after '|'), kks takes priority
+        if chosen.name and "|" in chosen.name:
+            short = chosen.name.split("|", 1)[1]
+            if short and short not in lookup:
+                lookup[short] = chosen.value or ""
     return lookup
 
 

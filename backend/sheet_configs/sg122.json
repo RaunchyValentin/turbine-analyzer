@@ -6,7 +6,7 @@
   "blocks": [
     {
       "name": "MSPG.TVIK",
-      "description": "Pilot gas flow as function of inlet temperature TVI",
+      "description": "3.3 Pilot Gas as Function of Inlet Temperature",
       "x_label": "TVI [°C]",
       "y_label": "m PG [kg/s]",
       "points": [

@@ -3,8 +3,15 @@
   "title": "3. Pilot Gas Flow (Split Controller)",
   "fuel": "FG",
   "pattern": "H",
-  "show_gas_temp": true,
-  "unloading_disabled": true,
+  "gas_temp": {
+    "title": "Definition of Gas Temperature",
+    "column_label": "FGT, °C",
+    "note": "Unloading Polygons initially to be deactivated. In case that activation required start with settings as found for loading unless actual unloading settings were already established.",
+    "keys": {
+      "EGTL.X": "T.GAS.24",
+      "EGTH.X": "T.GAS.25"
+    }
+  },
   "gas_index": {
     "title": "Gas Index (reference parameters)",
     "keys": {
@@ -21,39 +28,59 @@
       "loading_label": "MSPG.F6F — Loading",
       "unloading_label": "MSPG.F6FE — Unloading",
       "points": [
-        {"xk":"F6F.A1","yk":"F6F.B1"},{"xk":"F6F.A2","yk":"F6F.B2"},
-        {"xk":"F6F.A3","yk":"F6F.B3"},{"xk":"F6F.A4","yk":"F6F.B4"},
-        {"xk":"F6F.A5","yk":"F6F.B5"},{"xk":"F6F.A6","yk":"F6F.B6"},
-        {"xk":"F6F.A7","yk":"F6F.B7"},{"xk":"F6F.A8","yk":"F6F.B8"},
-        {"xk":"F6F.A9","yk":"F6F.B9"},{"xk":"F6F.A10","yk":"F6F.B10"}
+        {"xk":"F6F.20","yk":"F6F.30"},
+        {"xk":"F6F.40","yk":"F6F.50"},
+        {"xk":"F6F.60","yk":"F6F.70"},
+        {"xk":"F6F.80","yk":"F6F.90"},
+        {"xk":"F6F.100","yk":"F6F.110"},
+        {"xk":"F6F.120","yk":"F6F.130"},
+        {"xk":"F6F.140","yk":"F6F.150"},
+        {"xk":"F6F.160","yk":"F6F.170"},
+        {"xk":"F6F.180","yk":"F6F.190"},
+        {"xk":"F6F.200","yk":"F6F.210"}
       ],
       "points_u": [
-        {"xk":"F6FE.A1","yk":"F6FE.B1"},{"xk":"F6FE.A2","yk":"F6FE.B2"},
-        {"xk":"F6FE.A3","yk":"F6FE.B3"},{"xk":"F6FE.A4","yk":"F6FE.B4"},
-        {"xk":"F6FE.A5","yk":"F6FE.B5"},{"xk":"F6FE.A6","yk":"F6FE.B6"},
-        {"xk":"F6FE.A7","yk":"F6FE.B7"},{"xk":"F6FE.A8","yk":"F6FE.B8"},
-        {"xk":"F6FE.A9","yk":"F6FE.B9"},{"xk":"F6FE.A10","yk":"F6FE.B10"}
+        {"xk":"F6FE.20","yk":"F6FE.30"},
+        {"xk":"F6FE.40","yk":"F6FE.50"},
+        {"xk":"F6FE.60","yk":"F6FE.70"},
+        {"xk":"F6FE.80","yk":"F6FE.90"},
+        {"xk":"F6FE.100","yk":"F6FE.110"},
+        {"xk":"F6FE.120","yk":"F6FE.130"},
+        {"xk":"F6FE.140","yk":"F6FE.150"},
+        {"xk":"F6FE.160","yk":"F6FE.170"},
+        {"xk":"F6FE.180","yk":"F6FE.190"},
+        {"xk":"F6FE.200","yk":"F6FE.210"}
       ]
     },
     {
       "title": "3.2c Pilot Gas as Function of IGV — Split Controller",
-      "x_label": "IGV [%]",
-      "y_label": "m PG [kg/s]",
+      "x_label": "IGV [0..1]",
+      "y_label": "Correction Factor",
       "loading_label": "MSPG.F4F — Loading",
       "unloading_label": "MSPG.F4FE — Unloading",
       "points": [
-        {"xk":"F4F.A1","yk":"F4F.B1"},{"xk":"F4F.A2","yk":"F4F.B2"},
-        {"xk":"F4F.A3","yk":"F4F.B3"},{"xk":"F4F.A4","yk":"F4F.B4"},
-        {"xk":"F4F.A5","yk":"F4F.B5"},{"xk":"F4F.A6","yk":"F4F.B6"},
-        {"xk":"F4F.A7","yk":"F4F.B7"},{"xk":"F4F.A8","yk":"F4F.B8"},
-        {"xk":"F4F.A9","yk":"F4F.B9"},{"xk":"F4F.A10","yk":"F4F.B10"}
+        {"xk":"F4F.20","yk":"F4F.30"},
+        {"xk":"F4F.40","yk":"F4F.50"},
+        {"xk":"F4F.60","yk":"F4F.70"},
+        {"xk":"F4F.80","yk":"F4F.90"},
+        {"xk":"F4F.100","yk":"F4F.110"},
+        {"xk":"F4F.120","yk":"F4F.130"},
+        {"xk":"F4F.140","yk":"F4F.150"},
+        {"xk":"F4F.160","yk":"F4F.170"},
+        {"xk":"F4F.180","yk":"F4F.190"},
+        {"xk":"F4F.200","yk":"F4F.210"}
       ],
       "points_u": [
-        {"xk":"F4FE.A1","yk":"F4FE.B1"},{"xk":"F4FE.A2","yk":"F4FE.B2"},
-        {"xk":"F4FE.A3","yk":"F4FE.B3"},{"xk":"F4FE.A4","yk":"F4FE.B4"},
-        {"xk":"F4FE.A5","yk":"F4FE.B5"},{"xk":"F4FE.A6","yk":"F4FE.B6"},
-        {"xk":"F4FE.A7","yk":"F4FE.B7"},{"xk":"F4FE.A8","yk":"F4FE.B8"},
-        {"xk":"F4FE.A9","yk":"F4FE.B9"},{"xk":"F4FE.A10","yk":"F4FE.B10"}
+        {"xk":"F4FE.20","yk":"F4FE.30"},
+        {"xk":"F4FE.40","yk":"F4FE.50"},
+        {"xk":"F4FE.60","yk":"F4FE.70"},
+        {"xk":"F4FE.80","yk":"F4FE.90"},
+        {"xk":"F4FE.100","yk":"F4FE.110"},
+        {"xk":"F4FE.120","yk":"F4FE.130"},
+        {"xk":"F4FE.140","yk":"F4FE.150"},
+        {"xk":"F4FE.160","yk":"F4FE.170"},
+        {"xk":"F4FE.180","yk":"F4FE.190"},
+        {"xk":"F4FE.200","yk":"F4FE.210"}
       ]
     }
   ]
