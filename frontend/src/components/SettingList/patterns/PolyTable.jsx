@@ -25,6 +25,8 @@ export default function PolyTable({ data, turbineId, onOverrideSaved }) {
 }
 
 function BlockSection({ block, turbineId, sheetId, interpolation, onInterpolationChange, onOverrideSaved, showToggle }) {
+  const [showSrel, setShowSrel] = useState(false)
+
   const chartData = useMemo(() => {
     const xs = [], ys = []
     block.points?.forEach(pt => {
@@ -59,43 +61,42 @@ function BlockSection({ block, turbineId, sheetId, interpolation, onInterpolatio
         <table style={styles.table}>
           <thead>
             <tr>
-              <th style={styles.th}>X key</th>
+              <th style={styles.th}>
+                <span>Port</span>
+                <button style={styles.srelToggle} onClick={() => setShowSrel(v => !v)} title="Show/hide SREL key">
+                  {showSrel ? '−' : '+'}
+                </button>
+              </th>
+              {showSrel && <th style={styles.thSrel}>SREL</th>}
               <th style={styles.th}>{block.x_label || 'X'}</th>
-              <th style={styles.th}>Y key</th>
+              <th style={styles.th}>Port</th>
+              {showSrel && <th style={styles.thSrel}>SREL</th>}
               <th style={styles.th}>{block.y_label || 'Y'}</th>
             </tr>
           </thead>
           <tbody>
-            {block.points?.map((pt, pi) => (
-              <tr key={pi} style={pi % 2 === 0 ? styles.rowEven : styles.rowOdd}>
-                <td style={styles.tdKey}>{pt.x_srel}</td>
-                <td style={styles.tdVal}>
-                  <ValueCell
-                    srelKey={pt.x_srel}
-                    value={pt.x_value}
-                    originalValue={pt.x_original}
-                    overridden={pt.x_overridden}
-                    editable={true}
-                    turbineId={turbineId}
-                    sheetId={sheetId}
-                    onSaved={onOverrideSaved}
-                  />
-                </td>
-                <td style={styles.tdKey}>{pt.y_srel}</td>
-                <td style={styles.tdVal}>
-                  <ValueCell
-                    srelKey={pt.y_srel}
-                    value={pt.y_value}
-                    originalValue={pt.y_original}
-                    overridden={pt.y_overridden}
-                    editable={true}
-                    turbineId={turbineId}
-                    sheetId={sheetId}
-                    onSaved={onOverrideSaved}
-                  />
-                </td>
-              </tr>
-            ))}
+            {block.points?.map((pt, pi) => {
+              const xPort = pt.x_label || pt.x_srel
+              const yPort = pt.y_label || pt.y_srel
+              const xSrel = pt.x_label ? (pt.x_kks || pt.x_srel) : pt.x_kks
+              const ySrel = pt.y_label ? (pt.y_kks || pt.y_srel) : pt.y_kks
+              return (
+                <tr key={pi} style={pi % 2 === 0 ? styles.rowEven : styles.rowOdd}>
+                  <td style={styles.tdKey}>{xPort}</td>
+                  {showSrel && <td style={styles.tdSrel}>{xSrel || '—'}</td>}
+                  <td style={styles.tdVal}>
+                    <ValueCell srelKey={pt.x_srel} value={pt.x_value} originalValue={pt.x_original}
+                      overridden={pt.x_overridden} editable turbineId={turbineId} sheetId={sheetId} onSaved={onOverrideSaved} />
+                  </td>
+                  <td style={styles.tdKey}>{yPort}</td>
+                  {showSrel && <td style={styles.tdSrel}>{ySrel || '—'}</td>}
+                  <td style={styles.tdVal}>
+                    <ValueCell srelKey={pt.y_srel} value={pt.y_value} originalValue={pt.y_original}
+                      overridden={pt.y_overridden} editable turbineId={turbineId} sheetId={sheetId} onSaved={onOverrideSaved} />
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
 
@@ -143,6 +144,9 @@ const styles = {
   layout:      { display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'nowrap' },
   table:       { borderCollapse: 'collapse', fontSize: '0.8rem', flexShrink: 0 },
   th:          { background: '#F7F3FC', color: '#9888B8', padding: '0.25rem 0.55rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
+  thSrel:      { background: '#F0EBF8', color: '#9888B8', padding: '0.25rem 0.4rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap', fontSize: '0.72rem', fontStyle: 'italic' },
+  tdSrel:      { padding: '0.22rem 0.4rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8', fontFamily: 'monospace', fontSize: '0.72rem', whiteSpace: 'nowrap' },
+  srelToggle:  { marginLeft: '0.35rem', background: 'none', border: '1px solid #C4B0E0', borderRadius: '3px', color: '#9888B8', cursor: 'pointer', fontSize: '0.7rem', lineHeight: 1, padding: '0 0.2rem', verticalAlign: 'middle' },
   rowEven:     { background: '#F7F3FC' },
   rowOdd:      { background: '#ffffff' },
   tdKey:       { padding: '0.22rem 0.55rem', borderBottom: '1px solid #D0C4E8', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.76rem', whiteSpace: 'nowrap' },

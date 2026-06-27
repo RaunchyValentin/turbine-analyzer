@@ -30,7 +30,7 @@ async def get_sheet(turbine_id: int, sheet_id: str, db: AsyncSession) -> dict:
     with open(config_path, encoding="utf-8") as f:
         config = json.load(f)
 
-    srel_lookup = await _build_srel_lookup(turbine_id, db)
+    srel_lookup, name_map = await _build_srel_lookup(turbine_id, db)
     overrides = await _load_overrides(turbine_id, sheet_id, db)
 
     pattern = config.get("pattern", "A")
@@ -39,12 +39,12 @@ async def get_sheet(turbine_id: int, sheet_id: str, db: AsyncSession) -> dict:
     if pattern == "A":
         _enrich_a(enriched, srel_lookup, overrides)
     elif pattern == "B":
-        _enrich_b(enriched, srel_lookup, overrides)
+        _enrich_b(enriched, srel_lookup, overrides, name_map)
     elif pattern == "C":
         if enriched.get("id", "").upper() == "SG111C":
             _enrich_sg111c(enriched, srel_lookup, overrides)
         else:
-            _enrich_b(enriched, srel_lookup, overrides)
+            _enrich_b(enriched, srel_lookup, overrides, name_map)
     elif pattern == "D":
         _enrich_d(enriched, srel_lookup, overrides)
     elif pattern == "G":
@@ -90,11 +90,12 @@ async def save_override(turbine_id: int, sheet_id: str, srel_key: str,
 
 # ── helpers ─────────────────────────────────────────────────────────────────
 
-async def _build_srel_lookup(turbine_id: int, db: AsyncSession) -> dict[str, str]:
-    """Build {kks -> value} index, preferring the N10 port for multi-port tags.
-    Also adds {srel_short -> value} entries (part after '|') so sheet configs
-    can reference parameters by SREL name (e.g. 'F6F.30') independently of
-    the turbine-specific kks numbering.
+async def _build_srel_lookup(
+    turbine_id: int, db: AsyncSession
+) -> tuple[dict[str, str], dict[str, str]]:
+    """Returns (value_lookup, name_map).
+    value_lookup: {kks|srel_short -> value}
+    name_map:     {srel_short -> kks}  — lets callers resolve port names to actual SREL keys.
     """
     result = await db.execute(
         select(Parameter).where(Parameter.turbine_id == turbine_id)
@@ -107,15 +108,17 @@ async def _build_srel_lookup(turbine_id: int, db: AsyncSession) -> dict[str, str
             bucket.setdefault(p.kks, []).append(p)
 
     lookup: dict[str, str] = {}
+    name_map: dict[str, str] = {}
     for kks, plist in bucket.items():
         chosen = next((p for p in plist if p.name and "|N10" in p.name), plist[0])
         lookup[kks] = chosen.value or ""
-        # Secondary index by SREL short name (after '|'), kks takes priority
         if chosen.name and "|" in chosen.name:
             short = chosen.name.split("|", 1)[1]
             if short and short not in lookup:
                 lookup[short] = chosen.value or ""
-    return lookup
+            if short and short not in name_map:
+                name_map[short] = kks
+    return lookup, name_map
 
 
 async def _load_overrides(turbine_id: int, sheet_id: str,
@@ -196,7 +199,8 @@ def _enrich_h(config: dict, srel: dict, overrides: dict) -> None:
         }
 
 
-def _enrich_b(config: dict, srel: dict, overrides: dict) -> None:
+def _enrich_b(config: dict, srel: dict, overrides: dict,
+              name_map: dict | None = None) -> None:
     for block_key in ("blocks", "blocks_split"):
         for block in config.get(block_key, []):
             for pt in block.get("points", []):
@@ -209,6 +213,9 @@ def _enrich_b(config: dict, srel: dict, overrides: dict) -> None:
                     pt[f"{axis}_value"] = ov if ov is not None else original
                     pt[f"{axis}_original"] = original
                     pt[f"{axis}_overridden"] = ov is not None
+                    if name_map is not None:
+                        resolved = name_map.get(key)
+                        pt[f"{axis}_kks"] = resolved if resolved and resolved != key else None
 
 
 def _safe_float(v) -> float | None:
