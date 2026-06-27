@@ -1,14 +1,14 @@
 {
   "id": "SG126",
-  "title": "3.3a Pilot Gas vs Inlet Temperature (10 pt)",
+  "title": "3. Pilot Gas Flow - Continuation",
   "fuel": "FG",
   "pattern": "B",
   "blocks": [
     {
-      "name": "MBP03DU010C|ATK",
-      "description": "Pilot gas correction vs compressor inlet temperature",
-      "x_label": "T inlet, °C",
-      "y_label": "mPG correction, kg/s",
+      "name": "MSPG.TVIK",
+      "description": "3.3a Pilot Gas Mass Flow as Function of Inlet Temperature",
+      "x_label": "T inlet [°C]",
+      "y_label": "mPG correction [kg/s]",
       "points": [
         {"x_srel": "TT.ATK.11", "y_srel": "G.VLE0.32"},
         {"x_srel": "TT.ATK.12", "y_srel": "G.VLE0.33"},
@@ -20,6 +20,24 @@
         {"x_srel": "TT.ATK.18", "y_srel": "G.VLE0.39"},
         {"x_srel": "TT.ATK.19", "y_srel": "G.VLE0.40"},
         {"x_srel": "TT.ATK.20", "y_srel": "G.VLE0.41"}
+      ]
+    },
+    {
+      "name": "MSPG.TVIF1",
+      "description": "3.3b Pilot Gas Split as Function of Inlet Temperature",
+      "x_label": "T [°C]",
+      "y_label": "TC1 [-]",
+      "points": [
+        {"x_srel": "TVIF1.20", "y_srel": "TVIF1.30"},
+        {"x_srel": "TVIF1.40", "y_srel": "TVIF1.50"},
+        {"x_srel": "TVIF1.60", "y_srel": "TVIF1.70"},
+        {"x_srel": "TVIF1.80", "y_srel": "TVIF1.90"},
+        {"x_srel": "TVIF1.100", "y_srel": "TVIF1.110"},
+        {"x_srel": "TVIF1.120", "y_srel": "TVIF1.130"},
+        {"x_srel": "TVIF1.140", "y_srel": "TVIF1.150"},
+        {"x_srel": "TVIF1.160", "y_srel": "TVIF1.170"},
+        {"x_srel": "TVIF1.180", "y_srel": "TVIF1.190"},
+        {"x_srel": "TVIF1.200", "y_srel": "TVIF1.210"}
       ]
     }
   ]
