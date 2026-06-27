@@ -10,16 +10,12 @@
       "x_label": "T inlet [°C]",
       "y_label": "mPG correction [kg/s]",
       "points": [
-        {"x_srel": "TT.ATK.11", "y_srel": "G.VLE0.32"},
-        {"x_srel": "TT.ATK.12", "y_srel": "G.VLE0.33"},
-        {"x_srel": "TT.ATK.13", "y_srel": "G.VLE0.34"},
-        {"x_srel": "TT.ATK.14", "y_srel": "G.VLE0.35"},
-        {"x_srel": "TT.ATK.15", "y_srel": "G.VLE0.36"},
-        {"x_srel": "TT.ATK.16", "y_srel": "G.VLE0.37"},
-        {"x_srel": "TT.ATK.17", "y_srel": "G.VLE0.38"},
-        {"x_srel": "TT.ATK.18", "y_srel": "G.VLE0.39"},
-        {"x_srel": "TT.ATK.19", "y_srel": "G.VLE0.40"},
-        {"x_srel": "TT.ATK.20", "y_srel": "G.VLE0.41"}
+        {"x_srel": "TVIK.20",  "y_srel": "TVIK.30"},
+        {"x_srel": "TVIK.40",  "y_srel": "TVIK.50"},
+        {"x_srel": "TVIK.60",  "y_srel": "TVIK.70"},
+        {"x_srel": "TVIK.80",  "y_srel": "TVIK.90"},
+        {"x_srel": "TVIK.100", "y_srel": "TVIK.110"},
+        {"x_srel": "TVIK.120", "y_srel": "TVIK.130"}
       ]
     },
     {
