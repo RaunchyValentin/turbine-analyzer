@@ -7,6 +7,7 @@ const COLORS = ['#5C3D99', '#4caf7d', '#e67e22', '#9b59b6', '#e74c3c']
 export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
   const [interpolation, setInterpolation] = useState('linear')
   const [mode, setMode] = useState('standard')
+  const [showSrel, setShowSrel] = useState(false)
   const sheetId = data.id
   const hasModeToggle = !!data.mode_toggle
   const activeBlocks = hasModeToggle && mode === 'split' ? (data.blocks_split || []) : (data.blocks || [])
@@ -46,6 +47,11 @@ export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
             onClick={() => setInterpolation(m)}
           >{m}</button>
         ))}
+        <button
+          style={{ ...styles.toggleBtn, marginLeft: '0.5rem', ...(showSrel ? styles.toggleActive : {}) }}
+          onClick={() => setShowSrel(v => !v)}
+          title="Show/hide SREL keys"
+        >{showSrel ? '− SREL' : '+ SREL'}</button>
       </div>
 
       <div style={styles.tablesRow}>
@@ -58,51 +64,45 @@ export default function PolyTablePaired({ data, turbineId, onOverrideSaved }) {
             <table style={styles.table}>
               <thead>
                 <tr>
-                  <th style={styles.th}>{block.x_label || 'X key'}</th>
+                  <th style={styles.th}>{block.x_label || 'Port'}</th>
+                  {showSrel && <th style={styles.thSrel}>SREL</th>}
                   <th style={styles.th}>X</th>
-                  <th style={styles.th}>{block.y_label || 'Y key'}</th>
+                  <th style={styles.th}>{block.y_label || 'Port'}</th>
+                  {showSrel && <th style={styles.thSrel}>SREL</th>}
                   <th style={styles.th}>Y</th>
                 </tr>
               </thead>
               <tbody>
-                {block.points?.map((pt, pi) => (
-                  <tr key={pi} style={pi % 2 === 0 ? styles.rowEven : styles.rowOdd}>
-                    <td style={styles.tdKey}>{block.static ? (pt.x_label || '◆') : (pt.x_label || pt.x_srel)}</td>
-                    <td style={styles.tdVal}>
-                      {block.static ? (
-                        <span style={styles.staticVal}>{pt.x_value ?? '—'}</span>
-                      ) : (
-                        <ValueCell
-                          srelKey={pt.x_srel}
-                          value={pt.x_value}
-                          originalValue={pt.x_original}
-                          overridden={pt.x_overridden}
-                          editable={true}
-                          turbineId={turbineId}
-                          sheetId={sheetId}
-                          onSaved={onOverrideSaved}
-                        />
-                      )}
-                    </td>
-                    <td style={styles.tdKey}>{block.static ? (pt.y_label || '◆') : (pt.y_label || pt.y_srel)}</td>
-                    <td style={styles.tdVal}>
-                      {block.static ? (
-                        <span style={styles.staticVal}>{pt.y_value ?? '—'}</span>
-                      ) : (
-                        <ValueCell
-                          srelKey={pt.y_srel}
-                          value={pt.y_value}
-                          originalValue={pt.y_original}
-                          overridden={pt.y_overridden}
-                          editable={true}
-                          turbineId={turbineId}
-                          sheetId={sheetId}
-                          onSaved={onOverrideSaved}
-                        />
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {block.points?.map((pt, pi) => {
+                  const xPort = block.static ? (pt.x_label || '◆') : (pt.x_label || pt.x_port || pt.x_srel)
+                  const yPort = block.static ? (pt.y_label || '◆') : (pt.y_label || pt.y_port || pt.y_srel)
+                  const xSrel = pt.x_label ? (pt.x_kks || pt.x_srel) : pt.x_kks
+                  const ySrel = pt.y_label ? (pt.y_kks || pt.y_srel) : pt.y_kks
+                  return (
+                    <tr key={pi} style={pi % 2 === 0 ? styles.rowEven : styles.rowOdd}>
+                      <td style={styles.tdKey}>{xPort}</td>
+                      {showSrel && <td style={styles.tdSrel}>{xSrel || '—'}</td>}
+                      <td style={styles.tdVal}>
+                        {block.static ? (
+                          <span style={styles.staticVal}>{pt.x_value ?? '—'}</span>
+                        ) : (
+                          <ValueCell srelKey={pt.x_srel} value={pt.x_value} originalValue={pt.x_original}
+                            overridden={pt.x_overridden} editable turbineId={turbineId} sheetId={sheetId} onSaved={onOverrideSaved} />
+                        )}
+                      </td>
+                      <td style={styles.tdKey}>{yPort}</td>
+                      {showSrel && <td style={styles.tdSrel}>{ySrel || '—'}</td>}
+                      <td style={styles.tdVal}>
+                        {block.static ? (
+                          <span style={styles.staticVal}>{pt.y_value ?? '—'}</span>
+                        ) : (
+                          <ValueCell srelKey={pt.y_srel} value={pt.y_value} originalValue={pt.y_original}
+                            overridden={pt.y_overridden} editable turbineId={turbineId} sheetId={sheetId} onSaved={onOverrideSaved} />
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -148,6 +148,8 @@ const styles = {
   blockDesc:   { color: '#6A50A0', fontSize: '0.76rem', marginTop: '0.1rem' },
   table:       { borderCollapse: 'collapse', fontSize: '0.8rem' },
   th:          { background: '#F7F3FC', color: '#9888B8', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
+  thSrel:      { background: '#F0EBF8', color: '#9888B8', padding: '0.25rem 0.4rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap', fontSize: '0.72rem', fontStyle: 'italic' },
+  tdSrel:      { padding: '0.2rem 0.4rem', borderBottom: '1px solid #D0C4E8', color: '#9888B8', fontFamily: 'monospace', fontSize: '0.72rem', whiteSpace: 'nowrap' },
   rowEven:     { background: '#F7F3FC' },
   rowOdd:      { background: '#ffffff' },
   tdKey:       { padding: '0.2rem 0.5rem', borderBottom: '1px solid #D0C4E8', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.74rem', whiteSpace: 'nowrap' },
