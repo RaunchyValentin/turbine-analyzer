@@ -8,6 +8,7 @@ import SequenceTable from './patterns/SequenceTable'
 import ReadOnlyCalc from './patterns/ReadOnlyCalc'
 import RunUpController from './patterns/RunUpController'
 import PilotGasPaired from './patterns/PilotGasPaired'
+import SmcpPage from './patterns/SmcpPage'
 
 const PATTERNS = {
   A: ScalarTable,
@@ -18,6 +19,7 @@ const PATTERNS = {
   F: ReadOnlyCalc,
   G: RunUpController,
   H: PilotGasPaired,
+  I: SmcpPage,
 }
 
 export default function SheetRenderer({ turbineId, sheetId }) {

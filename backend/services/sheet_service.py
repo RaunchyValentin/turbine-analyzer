@@ -51,6 +51,8 @@ async def get_sheet(turbine_id: int, sheet_id: str, db: AsyncSession) -> dict:
         _enrich_sg111c(enriched, srel_lookup, overrides)
     elif pattern == "H":
         _enrich_h(enriched, srel_lookup, overrides, name_map, port_map)
+    elif pattern == "I":
+        _enrich_i(enriched, srel_lookup, overrides)
     # E, F — config returned as-is (no live values needed for now)
 
     return enriched
@@ -380,6 +382,21 @@ def _enrich_d(config: dict, srel: dict, overrides: dict) -> None:
                     for name, key in keys.items()}
             section["computed_values"] = vals
             section["chart_points"] = _compute_ignition_diagram(vals)
+
+
+def _enrich_i(enriched: dict, srel_lookup: dict, overrides: dict) -> None:
+    """Pattern I: SMCP page — builds data.srel flat dict from srel_keys list."""
+    keys = enriched.get("srel_keys", [])
+    srel: dict[str, dict] = {}
+    for key in keys:
+        raw = srel_lookup.get(key)
+        original = raw if raw and raw != "" else None
+        override = overrides.get(key)
+        if override is not None:
+            srel[key] = {"value": override, "original": original, "overridden": True}
+        else:
+            srel[key] = {"value": original, "overridden": False}
+    enriched["srel"] = srel
 
 
 def _stub(sheet_id: str) -> dict:

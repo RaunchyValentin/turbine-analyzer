@@ -2,18 +2,29 @@
   "id": "SG124",
   "title": "3.3 Advanced SMCP",
   "fuel": "FG",
-  "pattern": "F",
-  "message": "Advanced SMCP (Sequential Motive Control Protection) — calculated parameters. Values are derived from TOTC and pilot gas polynomials.",
-  "sections": [
-    {
-      "header": "SMCP Parameters",
-      "rows": [
-        {"label": "Pilot gas split ratio at idle",  "srel": "SMCP.01", "unit": "%", "desc": "Pilot gas split ratio at idle"},
-        {"label": "Pilot gas split ratio at BL",    "srel": "SMCP.02", "unit": "%", "desc": "Pilot gas split ratio at BL"},
-        {"label": "SMCP activation threshold",      "srel": "SMCP.03", "unit": "-", "desc": "SMCP activation threshold"},
-        {"label": "SMCP transition time",           "srel": "SMCP.04", "unit": "s", "desc": "SMCP transition time"}
-      ],
-      "note": "These values are computed by the T3000 controller from the polynomials on sheets SG121 and SG122."
-    }
+  "pattern": "I",
+  "srel_keys": [
+    "SMPVSUP.X", "SMPSUP.X", "SMPFUP.X", "SMPSDOWN.X", "SMPFDOWN.X", "SMPVFDOWN.X", "SMPFLT.X",
+    "DY1LV1.X", "DY1HY1.X", "AC6LV1.X", "AC6HY1.X", "AC7LV1.X", "AC7HY1.X",
+    "AC6HY2.X", "AC6LV2.X", "AC7HY2.X", "AC7LV2.X",
+    "AC6LV0.X", "AC6HY0.X", "AC7LV0.X", "AC7HY0.X",
+    "SMPLU1.X", "SMPT04.X", "SMPLU2AC.X", "TACLU2.X", "TPACLU2.X", "SMPLU2.X",
+    "TAC6LU1.X", "TAC7LU1.X", "SMPLL0AC.X", "TAC6LL0.X", "TAC7LL0.X",
+    "DY2PLV2.X", "DY2PHY2.X", "DY2PLV1.X", "DY2PHY1.X", "ACPLV1.X", "ACPHY1.X",
+    "TDY2PLU1.X", "DY2PLV0.X", "DY2PHY0.X", "NOXLV1.X", "NOXHY1.X", "TDY2PLL0.X",
+    "DY2BLV2.X", "DY2BHY2.X", "DY2BLV1.X", "DY2BHY1.X", "ACBLV1.X", "ACBHY1.X",
+    "TDY2BLU1.X", "DY2BLV0.X", "DY2BHY0.X", "SMPBLU2.X", "SMPBLU1.X", "SMPBLL0.X",
+    "SMPPLU2.A1", "SMPPLU2.B1", "SMPPLU2.A2", "SMPPLU2.B2", "SMPPLU2.A3", "SMPPLU2.B3",
+    "SMPPLU2.A4", "SMPPLU2.B4", "SMPPLU2.A5", "SMPPLU2.B5", "SMPPLU2.A6", "SMPPLU2.B6",
+    "SMPPLU2.A7", "SMPPLU2.B7", "SMPPLU2.A8", "SMPPLU2.B8", "SMPPLU2.A9", "SMPPLU2.B9",
+    "SMPPLU2.A10", "SMPPLU2.B10",
+    "SMPPLU1.A1", "SMPPLU1.B1", "SMPPLU1.A2", "SMPPLU1.B2", "SMPPLU1.A3", "SMPPLU1.B3",
+    "SMPPLU1.A4", "SMPPLU1.B4", "SMPPLU1.A5", "SMPPLU1.B5", "SMPPLU1.A6", "SMPPLU1.B6",
+    "SMPPLU1.A7", "SMPPLU1.B7", "SMPPLU1.A8", "SMPPLU1.B8", "SMPPLU1.A9", "SMPPLU1.B9",
+    "SMPPLU1.A10", "SMPPLU1.B10",
+    "SMPPLL0.A1", "SMPPLL0.B1", "SMPPLL0.A2", "SMPPLL0.B2", "SMPPLL0.A3", "SMPPLL0.B3",
+    "SMPPLL0.A4", "SMPPLL0.B4", "SMPPLL0.A5", "SMPPLL0.B5", "SMPPLL0.A6", "SMPPLL0.B6",
+    "SMPPLL0.A7", "SMPPLL0.B7", "SMPPLL0.A8", "SMPPLL0.B8", "SMPPLL0.A9", "SMPPLL0.B9",
+    "SMPPLL0.A10", "SMPPLL0.B10"
   ]
 }
