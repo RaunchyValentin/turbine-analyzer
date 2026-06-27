@@ -30,7 +30,7 @@ async def get_sheet(turbine_id: int, sheet_id: str, db: AsyncSession) -> dict:
     with open(config_path, encoding="utf-8") as f:
         config = json.load(f)
 
-    srel_lookup, name_map = await _build_srel_lookup(turbine_id, db)
+    srel_lookup, name_map, port_map = await _build_srel_lookup(turbine_id, db)
     overrides = await _load_overrides(turbine_id, sheet_id, db)
 
     pattern = config.get("pattern", "A")
@@ -50,7 +50,7 @@ async def get_sheet(turbine_id: int, sheet_id: str, db: AsyncSession) -> dict:
     elif pattern == "G":
         _enrich_sg111c(enriched, srel_lookup, overrides)
     elif pattern == "H":
-        _enrich_h(enriched, srel_lookup, overrides)
+        _enrich_h(enriched, srel_lookup, overrides, name_map, port_map)
     # E, F — config returned as-is (no live values needed for now)
 
     return enriched
@@ -92,10 +92,11 @@ async def save_override(turbine_id: int, sheet_id: str, srel_key: str,
 
 async def _build_srel_lookup(
     turbine_id: int, db: AsyncSession
-) -> tuple[dict[str, str], dict[str, str]]:
-    """Returns (value_lookup, name_map).
+) -> tuple[dict[str, str], dict[str, str], dict[str, str]]:
+    """Returns (value_lookup, name_map, port_map).
     value_lookup: {kks|srel_short -> value}
-    name_map:     {srel_short -> kks}  — lets callers resolve port names to actual SREL keys.
+    name_map:     {srel_short -> kks}   — resolve port SREL-short to actual kks
+    port_map:     {kks -> srel_short}   — reverse: resolve kks to SREL-short for port labels
     """
     result = await db.execute(
         select(Parameter).where(Parameter.turbine_id == turbine_id)
@@ -107,8 +108,9 @@ async def _build_srel_lookup(
         if p.kks:
             bucket.setdefault(p.kks, []).append(p)
 
-    lookup: dict[str, str] = {}
+    lookup:   dict[str, str] = {}
     name_map: dict[str, str] = {}
+    port_map: dict[str, str] = {}
     for kks, plist in bucket.items():
         chosen = next((p for p in plist if p.name and "|N10" in p.name), plist[0])
         lookup[kks] = chosen.value or ""
@@ -118,7 +120,9 @@ async def _build_srel_lookup(
                 lookup[short] = chosen.value or ""
             if short and short not in name_map:
                 name_map[short] = kks
-    return lookup, name_map
+            if short and kks not in port_map:
+                port_map[kks] = short
+    return lookup, name_map, port_map
 
 
 async def _load_overrides(turbine_id: int, sheet_id: str,
@@ -149,7 +153,8 @@ def _enrich_a(config: dict, srel: dict, overrides: dict) -> None:
                 row["overridden"] = ov is not None
 
 
-def _ep(pt: dict, srel: dict, overrides: dict) -> None:
+def _ep(pt: dict, srel: dict, overrides: dict,
+        name_map: dict | None = None, port_map: dict | None = None) -> None:
     """Enrich a single H-pattern point in-place. sx/sy = static override."""
     for axis, sk, sv in (("x", "xk", "sx"), ("y", "yk", "sy")):
         if sv in pt:
@@ -160,22 +165,36 @@ def _ep(pt: dict, srel: dict, overrides: dict) -> None:
             if k:
                 ov   = overrides.get(k)
                 orig = _safe_float(srel.get(k))
-                pt[f"{axis}v"]          = _safe_float(ov) if ov is not None else orig
-                pt[f"{axis}o"]          = orig
+                pt[f"{axis}v"]           = _safe_float(ov) if ov is not None else orig
+                pt[f"{axis}o"]           = orig
                 pt[f"{axis}_overridden"] = k in overrides
+                # Derive port label (e.g. "F6L.A1") and actual kks for SREL column
+                if name_map is not None and port_map is not None:
+                    if k in name_map:           # k is a SREL-short name
+                        short = k
+                        actual_kks = name_map[k]
+                    elif k in port_map:         # k is a kks
+                        short = port_map[k]
+                        actual_kks = k
+                    else:
+                        short = None
+                        actual_kks = k
+                    pt[f"{axis}_port"] = _srel_port_label(short) if short else None
+                    pt[f"{axis}_kks"]  = actual_kks if actual_kks != k else None
             pt[f"{axis}s"] = "srel"
 
 
-def _enrich_h(config: dict, srel: dict, overrides: dict) -> None:
+def _enrich_h(config: dict, srel: dict, overrides: dict,
+              name_map: dict | None = None, port_map: dict | None = None) -> None:
     """Enrich pattern H (PilotGasPaired): sections with points / points_u / side_table."""
     for section in config.get("sections", []):
         for key in ("points", "points_u"):
             for pt in section.get(key, []):
-                _ep(pt, srel, overrides)
+                _ep(pt, srel, overrides, name_map, port_map)
         st = section.get("side_table")
         if st:
             for pt in st.get("points", []):
-                _ep(pt, srel, overrides)
+                _ep(pt, srel, overrides, name_map, port_map)
     # Optional gas_index panel
     gi = config.get("gas_index")
     if gi:

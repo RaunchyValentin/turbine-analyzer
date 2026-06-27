@@ -6,7 +6,7 @@ function StaticVal({ value }) {
   return <span style={S.staticVal}>◆ {value ?? '—'}</span>
 }
 
-function SideTable({ st, turbineId, sheetId, onOverrideSaved }) {
+function SideTable({ st, showSrel, turbineId, sheetId, onOverrideSaved }) {
   if (!st) return null
   return (
     <div style={S.tableWrap}>
@@ -16,18 +16,26 @@ function SideTable({ st, turbineId, sheetId, onOverrideSaved }) {
       <table style={S.table}>
         <thead>
           <tr>
+            <th style={S.th}>Port</th>
+            {showSrel && <th style={S.thSrel}>SREL</th>}
             <th style={{ ...S.th, textAlign: 'right' }}>{st.x_label}</th>
+            <th style={S.th}>Port</th>
+            {showSrel && <th style={S.thSrel}>SREL</th>}
             <th style={{ ...S.th, textAlign: 'right' }}>{st.y_label}</th>
           </tr>
         </thead>
         <tbody>
           {(st.points || []).map((pt, i) => (
             <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+              <td style={S.tdKey}>{pt.x_port || pt.xk}</td>
+              {showSrel && <td style={S.tdSrel}>{pt.x_kks || pt.xk}</td>}
               <td style={S.tdVal}>
                 <ValueCell srelKey={pt.xk} value={pt.xv} originalValue={pt.xo}
                   overridden={pt.x_overridden} editable
                   turbineId={turbineId} sheetId={sheetId} onSaved={onOverrideSaved} />
               </td>
+              <td style={S.tdKey}>{pt.y_port || pt.yk}</td>
+              {showSrel && <td style={S.tdSrel}>{pt.y_kks || pt.yk}</td>}
               <td style={S.tdVal}>
                 <ValueCell srelKey={pt.yk} value={pt.yv} originalValue={pt.yo}
                   overridden={pt.y_overridden} editable
@@ -41,7 +49,7 @@ function SideTable({ st, turbineId, sheetId, onOverrideSaved }) {
   )
 }
 
-function PairedTable({ section, pts, label, disabled, turbineId, sheetId, onOverrideSaved }) {
+function PairedTable({ section, pts, label, disabled, showSrel, turbineId, sheetId, onOverrideSaved }) {
   return (
     <div style={S.tableWrap}>
       <div style={S.tableHdr}>
@@ -50,16 +58,19 @@ function PairedTable({ section, pts, label, disabled, turbineId, sheetId, onOver
       <table style={S.table}>
         <thead>
           <tr>
-            <th style={S.th}>SREL</th>
+            <th style={S.th}>Port</th>
+            {showSrel && <th style={S.thSrel}>SREL</th>}
             <th style={{ ...S.th, textAlign: 'right' }}>{section.x_label}</th>
-            <th style={S.th}>SREL</th>
+            <th style={S.th}>Port</th>
+            {showSrel && <th style={S.thSrel}>SREL</th>}
             <th style={{ ...S.th, textAlign: 'right' }}>{section.y_label}</th>
           </tr>
         </thead>
         <tbody>
           {pts.map((pt, i) => (
             <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-              <td style={S.tdKey}>{pt.xs === 'static' ? '◆' : pt.xk}</td>
+              <td style={S.tdKey}>{pt.xs === 'static' ? '◆' : (pt.x_port || pt.xk)}</td>
+              {showSrel && <td style={S.tdSrel}>{pt.xs === 'static' ? '' : (pt.x_kks || pt.xk)}</td>}
               <td style={S.tdVal}>
                 {pt.xs === 'static' ? (
                   <StaticVal value={pt.xv} />
@@ -69,7 +80,8 @@ function PairedTable({ section, pts, label, disabled, turbineId, sheetId, onOver
                     turbineId={turbineId} sheetId={sheetId} onSaved={onOverrideSaved} />
                 )}
               </td>
-              <td style={S.tdKey}>{pt.ys === 'static' ? '◆' : pt.yk}</td>
+              <td style={S.tdKey}>{pt.ys === 'static' ? '◆' : (pt.y_port || pt.yk)}</td>
+              {showSrel && <td style={S.tdSrel}>{pt.ys === 'static' ? '' : (pt.y_kks || pt.yk)}</td>}
               <td style={S.tdVal}>
                 {pt.ys === 'static' ? (
                   <StaticVal value={pt.yv} />
@@ -284,6 +296,7 @@ function InfoPanel({ panel, color = '#5C3D99' }) {
 
 export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
   const sheetId = data.id
+  const [showSrel, setShowSrel] = useState(false)
 
   return (
     <div>
@@ -292,6 +305,15 @@ export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
 
       {/* Optional gas index panel (SG123) */}
       {data.gas_index && <GasIndexPanel panel={data.gas_index} />}
+
+      {data.sections?.length > 0 && (
+        <div style={S.srelToggleRow}>
+          <button style={{ ...S.srelToggleBtn, ...(showSrel ? S.srelToggleActive : {}) }}
+            onClick={() => setShowSrel(v => !v)}>
+            {showSrel ? '− SREL' : '+ SREL'}
+          </button>
+        </div>
+      )}
 
       {data.sections?.map((section, si) => (
         <div key={si} style={S.section}>
@@ -305,6 +327,7 @@ export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
               section={section}
               pts={section.points || []}
               label={section.loading_label || 'Loading'}
+              showSrel={showSrel}
               turbineId={turbineId}
               sheetId={sheetId}
               onOverrideSaved={onOverrideSaved}
@@ -313,12 +336,14 @@ export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
               section={section}
               pts={section.points_u || []}
               label={section.unloading_label || 'Unloading'}
+              showSrel={showSrel}
               turbineId={turbineId}
               sheetId={sheetId}
               onOverrideSaved={onOverrideSaved}
             />
             <SideTable
               st={section.side_table}
+              showSrel={showSrel}
               turbineId={turbineId}
               sheetId={sheetId}
               onOverrideSaved={onOverrideSaved}
@@ -353,6 +378,11 @@ const S = {
   tdVal:            { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', whiteSpace: 'nowrap', textAlign: 'right', minWidth: '64px' },
   tdDesc:           { padding: '0.2rem 0.5rem', borderBottom: '1px solid #141420', color: '#9888B8', fontSize: '0.75rem' },
   staticVal:        { color: '#7799bb', fontVariantNumeric: 'tabular-nums', fontSize: '0.82rem' },
+  thSrel:           { background: '#F0EBF8', color: '#9888B8', padding: '0.25rem 0.4rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap', fontSize: '0.72rem', fontStyle: 'italic' },
+  tdSrel:           { padding: '0.2rem 0.4rem', borderBottom: '1px solid #141420', color: '#9888B8', fontFamily: 'monospace', fontSize: '0.7rem', whiteSpace: 'nowrap' },
+  srelToggleRow:    { marginBottom: '0.5rem' },
+  srelToggleBtn:    { background: '#F4F0FA', border: '1px solid #D0C4E8', color: '#6A50A0', borderRadius: '3px', cursor: 'pointer', padding: '0.1rem 0.5rem', fontSize: '0.72rem' },
+  srelToggleActive: { background: '#EDE3F8', borderColor: '#5C3D99', color: '#5C3D99' },
   gasTempWrap:      { display: 'flex', alignItems: 'flex-start', gap: '2rem', marginBottom: '1.5rem', paddingBottom: '1rem', borderBottom: '1px solid #D0C4E8' },
   gasTempTable:     { flexShrink: 0 },
   gasTempTitle:     { fontSize: '0.82rem', fontWeight: 700, color: '#2A1A4A', marginBottom: '0.4rem' },
