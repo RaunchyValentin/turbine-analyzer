@@ -309,8 +309,8 @@ export default function SmcpPage({ data, turbineId, onOverrideSaved }) {
           </table>
 
           <div style={S.note}>
-            All gradient values (#N/A in Sarir project) are applied by the T3000 controller
-            as ramp rates for pilot gas adjustment. Positive = increase PG, Negative = decrease PG.
+            All gradient values are applied by the T3000 controller as ramp rates for pilot gas adjustment.
+            Positive = increase PG, Negative = decrease PG.
             SMPVFDOWN is the fastest reduction – used in alarm situations.
           </div>
         </div>
