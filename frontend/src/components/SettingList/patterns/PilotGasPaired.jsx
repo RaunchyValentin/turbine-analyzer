@@ -6,6 +6,41 @@ function StaticVal({ value }) {
   return <span style={S.staticVal}>◆ {value ?? '—'}</span>
 }
 
+function SideTable({ st, turbineId, sheetId, onOverrideSaved }) {
+  if (!st) return null
+  return (
+    <div style={S.tableWrap}>
+      <div style={S.tableHdr}>
+        <span style={S.tableLabel}>{st.label}</span>
+      </div>
+      <table style={S.table}>
+        <thead>
+          <tr>
+            <th style={{ ...S.th, textAlign: 'right' }}>{st.x_label}</th>
+            <th style={{ ...S.th, textAlign: 'right' }}>{st.y_label}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(st.points || []).map((pt, i) => (
+            <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+              <td style={S.tdVal}>
+                <ValueCell srelKey={pt.xk} value={pt.xv} originalValue={pt.xo}
+                  overridden={pt.x_overridden} editable
+                  turbineId={turbineId} sheetId={sheetId} onSaved={onOverrideSaved} />
+              </td>
+              <td style={S.tdVal}>
+                <ValueCell srelKey={pt.yk} value={pt.yv} originalValue={pt.yo}
+                  overridden={pt.y_overridden} editable
+                  turbineId={turbineId} sheetId={sheetId} onSaved={onOverrideSaved} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 function PairedTable({ section, pts, label, disabled, turbineId, sheetId, onOverrideSaved }) {
   return (
     <div style={S.tableWrap}>
@@ -176,6 +211,12 @@ export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
               section={section}
               pts={section.points_u || []}
               label={section.unloading_label || 'Unloading'}
+              turbineId={turbineId}
+              sheetId={sheetId}
+              onOverrideSaved={onOverrideSaved}
+            />
+            <SideTable
+              st={section.side_table}
               turbineId={turbineId}
               sheetId={sheetId}
               onOverrideSaved={onOverrideSaved}

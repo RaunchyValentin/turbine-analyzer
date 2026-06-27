@@ -164,10 +164,14 @@ def _ep(pt: dict, srel: dict, overrides: dict) -> None:
 
 
 def _enrich_h(config: dict, srel: dict, overrides: dict) -> None:
-    """Enrich pattern H (PilotGasPaired): sections with points / points_u."""
+    """Enrich pattern H (PilotGasPaired): sections with points / points_u / side_table."""
     for section in config.get("sections", []):
         for key in ("points", "points_u"):
             for pt in section.get(key, []):
+                _ep(pt, srel, overrides)
+        st = section.get("side_table")
+        if st:
+            for pt in st.get("points", []):
                 _ep(pt, srel, overrides)
     # Optional gas_index panel
     gi = config.get("gas_index")

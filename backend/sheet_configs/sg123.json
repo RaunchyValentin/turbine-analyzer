@@ -50,7 +50,24 @@
         {"xk":"F6FE.160","yk":"F6FE.170"},
         {"xk":"F6FE.180","yk":"F6FE.190"},
         {"xk":"F6FE.200","yk":"F6FE.210"}
-      ]
+      ],
+      "side_table": {
+        "label": "MSPG.TVIF1 — TC1-Correction",
+        "x_label": "T [°C]",
+        "y_label": "TC1 [-]",
+        "points": [
+          {"xk":"TVIF1.20","yk":"TVIF1.30"},
+          {"xk":"TVIF1.40","yk":"TVIF1.50"},
+          {"xk":"TVIF1.60","yk":"TVIF1.70"},
+          {"xk":"TVIF1.80","yk":"TVIF1.90"},
+          {"xk":"TVIF1.100","yk":"TVIF1.110"},
+          {"xk":"TVIF1.120","yk":"TVIF1.130"},
+          {"xk":"TVIF1.140","yk":"TVIF1.150"},
+          {"xk":"TVIF1.160","yk":"TVIF1.170"},
+          {"xk":"TVIF1.180","yk":"TVIF1.190"},
+          {"xk":"TVIF1.200","yk":"TVIF1.210"}
+        ]
+      }
     },
     {
       "title": "3.2c Pilot Gas as Function of IGV — Split Controller",
