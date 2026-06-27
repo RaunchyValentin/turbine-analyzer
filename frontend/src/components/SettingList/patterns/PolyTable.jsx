@@ -76,8 +76,8 @@ function BlockSection({ block, turbineId, sheetId, interpolation, onInterpolatio
           </thead>
           <tbody>
             {block.points?.map((pt, pi) => {
-              const xPort = pt.x_label || pt.x_srel
-              const yPort = pt.y_label || pt.y_srel
+              const xPort = pt.x_label || pt.x_port || pt.x_srel
+              const yPort = pt.y_label || pt.y_port || pt.y_srel
               const xSrel = pt.x_label ? (pt.x_kks || pt.x_srel) : pt.x_kks
               const ySrel = pt.y_label ? (pt.y_kks || pt.y_srel) : pt.y_kks
               return (

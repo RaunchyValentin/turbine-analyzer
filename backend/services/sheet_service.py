@@ -199,6 +199,26 @@ def _enrich_h(config: dict, srel: dict, overrides: dict) -> None:
         }
 
 
+def _srel_port_label(key: str) -> str | None:
+    """'TVIK.20' → 'TVIK.A1', 'TVIK.30' → 'TVIK.B1', 'F6L.40' → 'F6L.A2', etc.
+    Even port-IDs (20,40,...) = x-axis → A1,A2,...
+    Odd-of-type (30,50,...) = y-axis → B1,B2,...
+    Returns None if key doesn't match the pattern.
+    """
+    if '.' not in key:
+        return None
+    name, _, num_str = key.rpartition('.')
+    try:
+        num = int(num_str)
+    except ValueError:
+        return None
+    if num > 0 and num % 20 == 0:
+        return f"{name}.A{num // 20}"
+    if num > 0 and num % 20 == 10:
+        return f"{name}.B{(num - 10) // 20}"
+    return None
+
+
 def _enrich_b(config: dict, srel: dict, overrides: dict,
               name_map: dict | None = None) -> None:
     for block_key in ("blocks", "blocks_split"):
@@ -216,6 +236,7 @@ def _enrich_b(config: dict, srel: dict, overrides: dict,
                     if name_map is not None:
                         resolved = name_map.get(key)
                         pt[f"{axis}_kks"] = resolved if resolved and resolved != key else None
+                    pt[f"{axis}_port"] = _srel_port_label(key)
 
 
 def _safe_float(v) -> float | None:
