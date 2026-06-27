@@ -120,7 +120,7 @@ function BlockSection({ block, turbineId, sheetId, interpolation, onInterpolatio
               showlegend: false,
             }}
             config={{ displayModeBar: false, responsive: true }}
-            style={{ width: '360px', height: '280px' }}
+            style={{ width: '520px', height: '340px' }}
           />
         )}
       </div>
@@ -140,7 +140,7 @@ const styles = {
   toggleGroup: { marginLeft: 'auto', display: 'flex', gap: '2px' },
   toggleBtn:   { background: '#F4F0FA', border: '1px solid #D0C4E8', color: '#6A50A0', borderRadius: '3px', cursor: 'pointer', padding: '0.1rem 0.5rem', fontSize: '0.72rem' },
   toggleActive:{ background: '#EDE3F8', borderColor: '#5C3D99', color: '#5C3D99' },
-  layout:      { display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap' },
+  layout:      { display: 'flex', gap: '2rem', alignItems: 'flex-start', flexWrap: 'nowrap' },
   table:       { borderCollapse: 'collapse', fontSize: '0.8rem', flexShrink: 0 },
   th:          { background: '#F7F3FC', color: '#9888B8', padding: '0.25rem 0.55rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap' },
   rowEven:     { background: '#F7F3FC' },
