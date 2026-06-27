@@ -72,7 +72,7 @@
     {
       "title": "3.2c Pilot Gas as Function of IGV — Split Controller",
       "x_label": "IGV [0..1]",
-      "y_label": "Correction Factor",
+      "y_label": "PG Split [%]",
       "loading_label": "MSPG.F4F — Loading",
       "unloading_label": "MSPG.F4FE — Unloading",
       "points": [
