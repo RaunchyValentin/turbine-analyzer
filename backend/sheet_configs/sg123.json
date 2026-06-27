@@ -98,7 +98,24 @@
         {"xk":"F4FE.160","yk":"F4FE.170"},
         {"xk":"F4FE.180","yk":"F4FE.190"},
         {"xk":"F4FE.200","yk":"F4FE.210"}
-      ]
+      ],
+      "side_table": {
+        "label": "MSPG.TVIF2 — TC1-Correction",
+        "x_label": "T [°C]",
+        "y_label": "TC1 [-]",
+        "points": [
+          {"xk":"TVIF2.20","yk":"TVIF2.30"},
+          {"xk":"TVIF2.40","yk":"TVIF2.50"},
+          {"xk":"TVIF2.60","yk":"TVIF2.70"},
+          {"xk":"TVIF2.80","yk":"TVIF2.90"},
+          {"xk":"TVIF2.100","yk":"TVIF2.110"},
+          {"xk":"TVIF2.120","yk":"TVIF2.130"},
+          {"xk":"TVIF2.140","yk":"TVIF2.150"},
+          {"xk":"TVIF2.160","yk":"TVIF2.170"},
+          {"xk":"TVIF2.180","yk":"TVIF2.190"},
+          {"xk":"TVIF2.200","yk":"TVIF2.210"}
+        ]
+      }
     }
   ]
 }
