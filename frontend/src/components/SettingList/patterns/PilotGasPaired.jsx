@@ -10,15 +10,9 @@ function PairedTable({ section, pts, label, disabled, turbineId, sheetId, onOver
   return (
     <div style={S.tableWrap}>
       <div style={S.tableHdr}>
-        <span style={{ ...S.tableLabel, ...(disabled ? S.tableLabelDim : {}) }}>{label}</span>
-        {disabled && <span style={S.deactivatedBadge}>DEACTIVATED</span>}
+        <span style={S.tableLabel}>{label}</span>
       </div>
-      {disabled && (
-        <div style={S.unloadingBanner}>
-          ⚠ Initially deactivated. Unloading curve not yet active for this GT.
-        </div>
-      )}
-      <table style={{ ...S.table, opacity: disabled ? 0.5 : 1 }}>
+      <table style={S.table}>
         <thead>
           <tr>
             <th style={S.th}>SREL</th>
@@ -153,7 +147,6 @@ function InfoPanel({ panel, color = '#5C3D99' }) {
 
 export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
   const sheetId = data.id
-  const unlDisabled = data.unloading_disabled
 
   return (
     <div>
@@ -175,7 +168,6 @@ export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
               section={section}
               pts={section.points || []}
               label={section.loading_label || 'Loading'}
-              disabled={false}
               turbineId={turbineId}
               sheetId={sheetId}
               onOverrideSaved={onOverrideSaved}
@@ -184,7 +176,6 @@ export default function PilotGasPaired({ data, turbineId, onOverrideSaved }) {
               section={section}
               pts={section.points_u || []}
               label={section.unloading_label || 'Unloading'}
-              disabled={!!unlDisabled}
               turbineId={turbineId}
               sheetId={sheetId}
               onOverrideSaved={onOverrideSaved}
@@ -211,9 +202,6 @@ const S = {
   tableWrap:        { flexShrink: 0 },
   tableHdr:         { display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.3rem' },
   tableLabel:       { fontFamily: 'monospace', color: '#5C3D99', fontWeight: 700, fontSize: '0.8rem' },
-  tableLabelDim:    { color: '#445566' },
-  deactivatedBadge: { fontSize: '0.62rem', color: '#aa7700', background: '#1a1200', border: '1px solid #443300', borderRadius: '3px', padding: '0.05rem 0.35rem' },
-  unloadingBanner:  { fontSize: '0.72rem', color: '#aa7700', background: '#1a1200', border: '1px solid #332200', borderRadius: '3px', padding: '0.25rem 0.5rem', marginBottom: '0.3rem', maxWidth: '320px' },
   table:            { borderCollapse: 'collapse', fontSize: '0.78rem' },
   th:               { background: '#F7F3FC', color: '#556', padding: '0.25rem 0.5rem', textAlign: 'left', borderBottom: '1px solid #D0C4E8', whiteSpace: 'nowrap', fontWeight: 600 },
   rowEven:          { background: '#F7F3FC' },
