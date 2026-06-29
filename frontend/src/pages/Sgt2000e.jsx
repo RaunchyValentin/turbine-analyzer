@@ -57,12 +57,12 @@ const RUNUP_LIMIT = [
   { port: 'A6', nameX: '|HL130.130', portB: 'B6', nameY: '|HL130.140', x: 200, y: 0.3  },
 ]
 const F4_DATA = [
-  { x: 0,   y: 0.58, srelX: 'MSPG.F4L.01', srelY: 'MSPG.F4H.01' },
-  { x: 20,  y: 0.39, srelX: 'MSPG.F4L.02', srelY: 'MSPG.F4H.02' },
-  { x: 40,  y: 0.39, srelX: 'MSPG.F4L.03', srelY: 'MSPG.F4H.03' },
-  { x: 60,  y: 0.39, srelX: 'MSPG.F4L.04', srelY: 'MSPG.F4H.04' },
-  { x: 80,  y: 0.36, srelX: 'MSPG.F4L.05', srelY: 'MSPG.F4H.05' },
-  { x: 100, y: 0.36, srelX: 'MSPG.F4L.06', srelY: 'MSPG.F4H.06' },
+  { port: 'A1', nameX: '|F4.30',  portB: 'B1', nameY: '|F4.40',  x: 0,   y: 0.58 },
+  { port: 'A2', nameX: '|F4.50',  portB: 'B2', nameY: '|F4.60',  x: 20,  y: 0.39 },
+  { port: 'A3', nameX: '|F4.70',  portB: 'B3', nameY: '|F4.80',  x: 40,  y: 0.39 },
+  { port: 'A4', nameX: '|F4.90',  portB: 'B4', nameY: '|F4.100', x: 60,  y: 0.39 },
+  { port: 'A5', nameX: '|F4.110', portB: 'B5', nameY: '|F4.120', x: 80,  y: 0.36 },
+  { port: 'A6', nameX: '|F4.130', portB: 'B6', nameY: '|F4.140', x: 100, y: 0.36 },
 ]
 const F6_DATA = [
   { x: 300, y: 1,    srelX: 'MSPG.F6L.01', srelY: 'MSPG.F6H.01' },
@@ -354,7 +354,7 @@ function Sheet2Tab({ turbineId }) {
   const [pilotGas,   setPilotGas]   = useState(() => PILOT_GAS_DEFAULT.map(p => ({ ...p })))
   const [showSrel,   setShowSrel]   = useState(false)
   const [runupPts,   setRunupPts]   = useState(() => RUNUP_LIMIT.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
-  const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p, x: null, y: null })))
+  const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
   const [f6Pts,      setF6Pts]      = useState(() => F6_DATA.map(p => ({ ...p, x: null, y: null })))
   const [premixPts,  setPremixPts]  = useState(() => PREMIX_KV.map(p => ({ ...p, flow: null, lfit: null })))
   const [atk56,      setAtk56]      = useState({ a5: { srel: null, value: null }, b5: { srel: null, value: null }, a6: { srel: null, value: null }, b6: { srel: null, value: null } })
@@ -412,6 +412,24 @@ function Sheet2Tab({ turbineId }) {
       return pts.filter(p => p.x != null || p.y != null).length
     }
 
+    const loadF4 = async () => {
+      const { data } = await client.get('/parameters', {
+        params: { turbine_id: turbineId, search: 'MBP15DG010|F4.', limit: 100 }
+      })
+      const rows = data || []
+      const findRow = suffix => {
+        const row = rows.find(p => p.name.endsWith(suffix))
+        const kks = row?.kks || null, name = row?.name || null
+        return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
+      }
+      const pts = F4_DATA.map(r => {
+        const rx = findRow(r.nameX), ry = findRow(r.nameY)
+        return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
+      })
+      setF4Pts(pts)
+      return pts.filter(p => p.x != null || p.y != null).length
+    }
+
     const loadAtkkor = async () => {
       const [a5v, b5v, a6v, b6v] = await Promise.all([
         fetchFull('ATKKOR.110'), fetchFull('ATKKOR.120'),
@@ -432,7 +450,7 @@ function Sheet2Tab({ turbineId }) {
         loadScalar(BASELOAD_DATA,   setBaseload),
         loadScalar(CHANGEOVER_DATA, setChangeover),
         loadRunup(),
-        loadPoly(F4_DATA,     setF4Pts,     'x',    'y'   ),
+        loadF4(),
         loadPoly(F6_DATA,     setF6Pts,     'x',    'y'   ),
         loadPoly(PREMIX_KV,   setPremixPts, 'flow', 'lfit'),
         loadAtkkor(),
@@ -605,20 +623,20 @@ function Sheet2Tab({ turbineId }) {
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
             <table style={S.table}>
               <thead><tr>
-                <th style={S.th}>Port</th>
-                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={S.th}>Port A</th>
+                <th style={S.thSrel}>SREL</th>
                 <th style={{ ...S.th, textAlign: 'right' }}>IGV [%]</th>
-                <th style={S.th}>Port</th>
-                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
+                <th style={S.thSrel}>SREL</th>
                 <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
               </tr></thead>
               <tbody>{f4Pts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-                  <td style={S.tdPort}>{portOf(p.srelX)}</td>
-                  {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
+                  <td style={S.tdPort}>{p.port}</td>
+                  <td style={S.tdSrel}>{p.srelX || '—'}</td>
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x ?? '—'}</td>
-                  <td style={S.tdPort}>{portOf(p.srelY)}</td>
-                  {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
+                  <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{p.portB}</td>
+                  <td style={S.tdSrel}>{p.srelY || '—'}</td>
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y != null ? p.y.toFixed(3) : '—'}</td>
                 </tr>
               ))}</tbody>
