@@ -357,6 +357,7 @@ function Sheet2Tab({ turbineId }) {
   const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p, x: null, y: null })))
   const [f6Pts,      setF6Pts]      = useState(() => F6_DATA.map(p => ({ ...p, x: null, y: null })))
   const [premixPts,  setPremixPts]  = useState(() => PREMIX_KV.map(p => ({ ...p, flow: null, lfit: null })))
+  const [atk56,      setAtk56]      = useState({ a5: { srel: null, value: null }, b5: { srel: null, value: null }, a6: { srel: null, value: null }, b6: { srel: null, value: null } })
   const [loadNote,   setLoadNote]   = useState(null)
 
   useEffect(() => {
@@ -364,6 +365,15 @@ function Sheet2Tab({ turbineId }) {
     const fetch1 = search =>
       client.get('/parameters', { params: { turbine_id: turbineId, search, limit: 1 } })
         .then(r => parseFloat(r.data?.[0]?.value)).catch(() => NaN)
+
+    const fetchFull = search =>
+      client.get('/parameters', { params: { turbine_id: turbineId, search, limit: 1 } })
+        .then(r => {
+          const row = r.data?.[0]
+          const kks = row?.kks || null; const name = row?.name || null
+          return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
+        })
+        .catch(() => ({ value: NaN, srel: null }))
 
     const loadScalar = async (arr, setter) => {
       const vals = await Promise.all(arr.map(r => fetch1(r.srel)))
@@ -384,6 +394,20 @@ function Sheet2Tab({ turbineId }) {
       return [...xVals, ...yVals].filter(v => Number.isFinite(v)).length
     }
 
+    const loadAtkkor = async () => {
+      const [a5v, b5v, a6v, b6v] = await Promise.all([
+        fetchFull('ATKKOR.110'), fetchFull('ATKKOR.120'),
+        fetchFull('ATKKOR.130'), fetchFull('ATKKOR.140'),
+      ])
+      setAtk56({
+        a5: { srel: a5v.srel, value: Number.isFinite(a5v.value) ? a5v.value : null },
+        b5: { srel: b5v.srel, value: Number.isFinite(b5v.value) ? b5v.value : null },
+        a6: { srel: a6v.srel, value: Number.isFinite(a6v.value) ? a6v.value : null },
+        b6: { srel: b6v.srel, value: Number.isFinite(b6v.value) ? b6v.value : null },
+      })
+      return [a5v, b5v, a6v, b6v].filter(v => Number.isFinite(v.value)).length
+    }
+
     const loadAll = async () => {
       const counts = await Promise.all([
         loadScalar(STARTUP_PARAMS,  setStartup),
@@ -393,6 +417,7 @@ function Sheet2Tab({ turbineId }) {
         loadPoly(F4_DATA,     setF4Pts,     'x',    'y'   ),
         loadPoly(F6_DATA,     setF6Pts,     'x',    'y'   ),
         loadPoly(PREMIX_KV,   setPremixPts, 'flow', 'lfit'),
+        loadAtkkor(),
       ])
       const total = counts.reduce((a, b) => a + b, 0)
       if (total > 0) setLoadNote(`${total} values loaded from project`)
@@ -483,13 +508,24 @@ function Sheet2Tab({ turbineId }) {
           <div style={S.tableTitle}>ATKKOR (MBP03DU002)</div>
           <table style={S.table}>
             <thead><tr>
-              <th style={S.th}>Pt</th>
+              <th style={S.th}>Port A</th>
+              <th style={S.thSrel}>SREL</th>
               <th style={{ ...S.th, textAlign: 'right' }}>ATK [°C]</th>
+              <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
+              <th style={S.thSrel}>SREL</th>
               <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
             </tr></thead>
             <tbody>
-              <tr style={S.rowEven}><td style={S.td}>5</td><td style={{ ...S.tdNum, fontWeight: 700 }}>100</td><td style={{ ...S.tdNum, fontWeight: 700 }}>0.04</td></tr>
-              <tr style={S.rowOdd}> <td style={S.td}>6</td><td style={{ ...S.tdNum, fontWeight: 700 }}>300</td><td style={{ ...S.tdNum, fontWeight: 700 }}>0.10</td></tr>
+              {[{ ptA: 'A5', ptB: 'B5', a: atk56.a5, b: atk56.b5 }, { ptA: 'A6', ptB: 'B6', a: atk56.a6, b: atk56.b6 }].map((row, i) => (
+                <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+                  <td style={S.tdPort}>{row.ptA}</td>
+                  <td style={S.tdSrel}>{row.a.srel || '—'}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{row.a.value ?? '—'}</td>
+                  <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{row.ptB}</td>
+                  <td style={S.tdSrel}>{row.b.srel || '—'}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{row.b.value ?? '—'}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
