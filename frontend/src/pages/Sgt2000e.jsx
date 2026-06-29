@@ -37,15 +37,24 @@ const CHANGEOVER_DATA = [
   { srel: 'TT.ATK.178', desc: 'VB minimum',     value: 350, unit: '°C' },
 ]
 
-const PILOT_GAS_DEFAULT = [
-  { pt: 1, x: 0,    y: 0   },
-  { pt: 2, x: 0.15, y: 5   },
-  { pt: 3, x: 0.30, y: 15  },
-  { pt: 4, x: 0.50, y: 30  },
-  { pt: 5, x: 0.70, y: 55  },
-  { pt: 6, x: 0.90, y: 75  },
-  { pt: 7, x: 1.10, y: 90  },
-  { pt: 8, x: 1.25, y: 100 },
+const PILOT_GAS_DATA = [
+  { port: 'A1',  nameX: '|HSP0.30',  portB: 'B1',  nameY: '|HSP0.40'  },
+  { port: 'A2',  nameX: '|HSP0.50',  portB: 'B2',  nameY: '|HSP0.60'  },
+  { port: 'A3',  nameX: '|HSP0.70',  portB: 'B3',  nameY: '|HSP0.80'  },
+  { port: 'A4',  nameX: '|HSP0.90',  portB: 'B4',  nameY: '|HSP0.100' },
+  { port: 'A5',  nameX: '|HSP0.110', portB: 'B5',  nameY: '|HSP0.120' },
+  { port: 'A6',  nameX: '|HSP0.130', portB: 'B6',  nameY: '|HSP0.140' },
+  { port: 'A7',  nameX: '|HSP0.150', portB: 'B7',  nameY: '|HSP0.160' },
+  { port: 'A8',  nameX: '|HSP0.170', portB: 'B8',  nameY: '|HSP0.180' },
+  { port: 'A9',  nameX: '|HSP0.190', portB: 'B9',  nameY: '|HSP0.200' },
+  { port: 'A10', nameX: '|HSP0.210', portB: 'B10', nameY: '|HSP0.220' },
+  { port: 'A11', nameX: '|HSP0.230', portB: 'B11', nameY: '|HSP0.240' },
+  { port: 'A12', nameX: '|HSP0.250', portB: 'B12', nameY: '|HSP0.260' },
+  { port: 'A13', nameX: '|HSP0.270', portB: 'B13', nameY: '|HSP0.280' },
+  { port: 'A14', nameX: '|HSP0.290', portB: 'B14', nameY: '|HSP0.300' },
+  { port: 'A15', nameX: '|HSP0.310', portB: 'B15', nameY: '|HSP0.320' },
+  { port: 'A16', nameX: '|HSP0.330', portB: 'B16', nameY: '|HSP0.340' },
+  { port: 'A17', nameX: '|HSP0.350', portB: 'B17', nameY: '|HSP0.360' },
 ]
 
 const RUNUP_LIMIT = [
@@ -351,7 +360,7 @@ function Sheet2Tab({ turbineId }) {
   const [baseload,   setBaseload]   = useState(() => BASELOAD_DATA.map(p => ({ ...p, value: null })))
   const [changeover, setChangeover] = useState(() => CHANGEOVER_DATA.map(p => ({ ...p, value: null })))
   const [vbTrip,     setVbTrip]     = useState('')
-  const [pilotGas,   setPilotGas]   = useState(() => PILOT_GAS_DEFAULT.map(p => ({ ...p })))
+  const [pilotGas,   setPilotGas]   = useState(() => PILOT_GAS_DATA.map(p => ({ ...p, flow: null, lfit: null, srelX: null, srelY: null })))
   const [showSrel,   setShowSrel]   = useState(false)
   const [runupPts,   setRunupPts]   = useState(() => RUNUP_LIMIT.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
   const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
@@ -413,18 +422,29 @@ function Sheet2Tab({ turbineId }) {
     }
 
     const loadPremix = async () => {
-      const { data } = await client.get('/parameters', {
-        params: { turbine_id: turbineId, search: 'MBP03DU003|HSG0.', limit: 100 }
-      })
-      const rows = data || []
+      const [{ data: hsgData }, { data: fegData }] = await Promise.all([
+        client.get('/parameters', { params: { turbine_id: turbineId, search: 'MBP03DU003|HSG0.', limit: 100 } }),
+        client.get('/parameters', { params: { turbine_id: turbineId, search: 'MBP03DU003|FEG12.10', limit: 5 } }),
+      ])
+      const rows = hsgData || []
       const findRow = suffix => {
         const row = rows.find(p => p.name.endsWith(suffix))
         const kks = row?.kks || null, name = row?.name || null
         return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
       }
+      const fegRow = (fegData || []).find(p => p.name.endsWith('|FEG12.10'))
+      const fegSrel = fegRow ? (fegRow.kks !== fegRow.name ? fegRow.kks : null) : null
+      const fegVal = fegRow ? parseFloat(fegRow.value) : null
+
       const pts = PREMIX_KV.map(r => {
         const rx = findRow(r.nameX), ry = findRow(r.nameY)
-        return { ...r, flow: Number.isFinite(rx.value) ? rx.value : null, lfit: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
+        let flow = Number.isFinite(rx.value) ? rx.value : null
+        let srelX = rx.srel
+        if (r.port === 'A6' && (flow == null || flow === 0) && Number.isFinite(fegVal)) {
+          flow = fegVal
+          srelX = fegSrel
+        }
+        return { ...r, flow, lfit: Number.isFinite(ry.value) ? ry.value : null, srelX, srelY: ry.srel }
       })
       setPremixPts(pts)
       return pts.filter(p => p.flow != null || p.lfit != null).length
@@ -480,6 +500,24 @@ function Sheet2Tab({ turbineId }) {
       return [a5v, b5v, a6v, b6v].filter(v => Number.isFinite(v.value)).length
     }
 
+    const loadHsp0 = async () => {
+      const { data } = await client.get('/parameters', {
+        params: { turbine_id: turbineId, search: 'MBP15DG010|HSP0.', limit: 100 }
+      })
+      const rows = data || []
+      const findRow = suffix => {
+        const row = rows.find(p => p.name.endsWith(suffix))
+        const kks = row?.kks || null, name = row?.name || null
+        return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
+      }
+      const pts = PILOT_GAS_DATA.map(r => {
+        const rx = findRow(r.nameX), ry = findRow(r.nameY)
+        return { ...r, flow: Number.isFinite(rx.value) ? rx.value : null, lfit: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
+      })
+      setPilotGas(pts)
+      return pts.filter(p => p.flow != null || p.lfit != null).length
+    }
+
     const loadAll = async () => {
       const counts = await Promise.all([
         loadScalar(STARTUP_PARAMS,  setStartup),
@@ -490,6 +528,7 @@ function Sheet2Tab({ turbineId }) {
         loadF6(),
         loadPremix(),
         loadAtkkor(),
+        loadHsp0(),
       ])
       const total = counts.reduce((a, b) => a + b, 0)
       if (total > 0) setLoadNote(`${total} values loaded from project`)
@@ -581,20 +620,20 @@ function Sheet2Tab({ turbineId }) {
           <table style={S.table}>
             <thead><tr>
               <th style={S.th}>Port A</th>
-              <th style={S.thSrel}>SREL</th>
+              {showSrel && <th style={S.thSrel}>SREL</th>}
               <th style={{ ...S.th, textAlign: 'right' }}>ATK [°C]</th>
               <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
-              <th style={S.thSrel}>SREL</th>
+              {showSrel && <th style={S.thSrel}>SREL</th>}
               <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
             </tr></thead>
             <tbody>
               {[{ ptA: 'A5', ptB: 'B5', a: atk56.a5, b: atk56.b5 }, { ptA: 'A6', ptB: 'B6', a: atk56.a6, b: atk56.b6 }].map((row, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{row.ptA}</td>
-                  <td style={S.tdSrel}>{row.a.srel || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{row.a.srel || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{row.a.value ?? '—'}</td>
                   <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{row.ptB}</td>
-                  <td style={S.tdSrel}>{row.b.srel || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{row.b.srel || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{row.b.value ?? '—'}</td>
                 </tr>
               ))}
@@ -625,19 +664,19 @@ function Sheet2Tab({ turbineId }) {
             <table style={S.table}>
               <thead><tr>
                 <th style={S.th}>Port A</th>
-                <th style={S.thSrel}>SREL</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Speed [s⁻¹]</th>
                 <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
-                <th style={S.thSrel}>SREL</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Setpoint [p.u.]</th>
               </tr></thead>
               <tbody>{runupPts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{p.port}</td>
-                  <td style={S.tdSrel}>{p.srelX || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelX || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x ?? '—'}</td>
                   <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{p.portB}</td>
-                  <td style={S.tdSrel}>{p.srelY || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelY || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y ?? '—'}</td>
                 </tr>
               ))}</tbody>
@@ -660,19 +699,19 @@ function Sheet2Tab({ turbineId }) {
             <table style={S.table}>
               <thead><tr>
                 <th style={S.th}>Port A</th>
-                <th style={S.thSrel}>SREL</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>IGV [%]</th>
                 <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
-                <th style={S.thSrel}>SREL</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
               </tr></thead>
               <tbody>{f4Pts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{p.port}</td>
-                  <td style={S.tdSrel}>{p.srelX || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelX || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x ?? '—'}</td>
                   <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{p.portB}</td>
-                  <td style={S.tdSrel}>{p.srelY || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelY || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y != null ? p.y.toFixed(3) : '—'}</td>
                 </tr>
               ))}</tbody>
@@ -695,19 +734,19 @@ function Sheet2Tab({ turbineId }) {
             <table style={S.table}>
               <thead><tr>
                 <th style={S.th}>Port A</th>
-                <th style={S.thSrel}>SREL</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>ATK [°C]</th>
                 <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
-                <th style={S.thSrel}>SREL</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
               </tr></thead>
               <tbody>{f6Pts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{p.port}</td>
-                  <td style={S.tdSrel}>{p.srelX || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelX || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x ?? '—'}</td>
                   <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{p.portB}</td>
-                  <td style={S.tdSrel}>{p.srelY || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelY || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y != null ? p.y.toFixed(3) : '—'}</td>
                 </tr>
               ))}</tbody>
@@ -730,19 +769,19 @@ function Sheet2Tab({ turbineId }) {
             <table style={S.table}>
               <thead><tr>
                 <th style={S.th}>Port A</th>
-                <th style={S.thSrel}>SREL</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Flow [m³/h]</th>
                 <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
-                <th style={S.thSrel}>SREL</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Lfit [%]</th>
               </tr></thead>
               <tbody>{premixPts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{p.port}</td>
-                  <td style={S.tdSrel}>{p.srelX || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelX || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.flow ?? '—'}</td>
                   <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{p.portB}</td>
-                  <td style={S.tdSrel}>{p.srelY || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelY || '—'}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.lfit ?? '—'}</td>
                 </tr>
               ))}</tbody>
@@ -808,15 +847,21 @@ function Sheet2Tab({ turbineId }) {
           <div style={S.tableTitle}>HSP0 Characteristic (editable)</div>
           <table style={S.table}>
             <thead><tr>
-              <th style={S.th}>#</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
+              <th style={S.th}>Port A</th>
+              {showSrel && <th style={S.thSrel}>SREL</th>}
+              <th style={{ ...S.th, textAlign: 'right' }}>Flow [m³/h]</th>
+              <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
+              {showSrel && <th style={S.thSrel}>SREL</th>}
               <th style={{ ...S.th, textAlign: 'right' }}>Lfit [%]</th>
             </tr></thead>
             <tbody>{pilotGas.map((p, i) => (
               <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-                <td style={{ ...S.td, color: '#9888B8' }}>{p.pt}</td>
-                <td style={S.tdNum}><EditCell value={p.x} onChange={v => updPG(i, 'x', v)} dec={3} /></td>
-                <td style={S.tdNum}><EditCell value={p.y} onChange={v => updPG(i, 'y', v)} dec={1} /></td>
+                <td style={S.tdPort}>{p.port}</td>
+                {showSrel && <td style={S.tdSrel}>{p.srelX || '—'}</td>}
+                <td style={S.tdNum}><EditCell value={p.flow} onChange={v => updPG(i, 'flow', v)} dec={3} /></td>
+                <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{p.portB}</td>
+                {showSrel && <td style={S.tdSrel}>{p.srelY || '—'}</td>}
+                <td style={S.tdNum}><EditCell value={p.lfit} onChange={v => updPG(i, 'lfit', v)} dec={1} /></td>
               </tr>
             ))}</tbody>
           </table>
@@ -827,14 +872,14 @@ function Sheet2Tab({ turbineId }) {
           <div style={S.chartTitle}>HSP0 NG KV — Flow vs Lfit Characteristic</div>
           <Plot
             data={[{
-              x: pilotGas.map(p => p.y),
-              y: pilotGas.map(p => p.x),
+              x: pilotGas.map(p => p.lfit),
+              y: pilotGas.map(p => p.flow),
               type: 'scatter', mode: 'lines+markers',
               line: { color: '#5C3D99', width: 2 },
               marker: { size: 6, color: '#5C3D99' },
-              name: 'Flow [kg/s]',
+              name: 'Flow [m³/h]',
             }]}
-            layout={PL('Lfit [%]', 'Flow [kg/s]')}
+            layout={PL('Lfit [%]', 'Flow [m³/h]')}
             config={PC}
             style={{ width: '100%', height: 260 }}
           />
@@ -847,6 +892,7 @@ function Sheet2Tab({ turbineId }) {
 // ── Tab 2: IGV LSVCAL ────────────────────────────────────────────────────────
 
 function LsvcalTab({ turbineId }) {
+  const showSrel = true
   const [lsvcalOld, setLsvcalOld] = useState(() => LSVCAL_OLD.map(p => ({ ...p })))
   const [lsvcalNew, setLsvcalNew] = useState(() => LSVCAL_OLD.map(p => ({ x: p.x, y: null })))
   const [newSize,   setNewSize]   = useState(6)
@@ -1140,6 +1186,7 @@ function LsvcalTab({ turbineId }) {
 const HAP_OLD = 0.8, HLL_OLD = 0.2, PAP_OLD = 113.4
 
 function YminTab({ turbineId }) {
+  const showSrel = true
   const [hapOld, setHapOld] = useState(HAP_OLD)
   const [hllOld, setHllOld] = useState(HLL_OLD)
   const [papOld, setPapOld] = useState(PAP_OLD)
@@ -1156,22 +1203,27 @@ function YminTab({ turbineId }) {
 
   useEffect(() => {
     if (!turbineId) return
-    const fetchParam = search =>
-      client.get('/parameters', { params: { turbine_id: turbineId, search, limit: 1 } })
-        .then(r => {
-          const row = r.data?.[0]
-          const kks  = row?.kks  || null
-          const name = row?.name || null
-          return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
-        })
-        .catch(() => ({ value: NaN, srel: null }))
+    const fetchExact = async (search, suffix) => {
+      const { data } = await client.get('/parameters', {
+        params: { turbine_id: turbineId, search, limit: 10 }
+      })
+      const row = (data || []).find(p => p.name.endsWith(suffix))
+      const kks = row?.kks || null, name = row?.name || null
+      return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
+    }
     const loadAll = async () => {
       const [h, l, p, c] = await Promise.all([
-        fetchParam('|HAP.10'), fetchParam('|HLL.10'), fetchParam('|PAP.10'), fetchParam('|CALDN.10'),
+        fetchExact('MBY10DU050|HAP',   '|HAP.10'),
+        fetchExact('MBY10DU050|HLL',   '|HLL.10'),
+        fetchExact('MBY10DU050|PAP',   '|PAP.10'),
+        fetchExact('MBY10DU050|CALDN', '|CALDN.10'),
       ])
-      if (Number.isFinite(h.value)) { setHapOld(h.value); setHapSrel(h.srel) }
-      if (Number.isFinite(l.value)) { setHllOld(l.value); setHllSrel(l.srel) }
-      if (Number.isFinite(p.value)) { setPapOld(p.value); setPapSrel(p.srel) }
+      if (Number.isFinite(h.value)) setHapOld(h.value)
+      if (h.srel) setHapSrel(h.srel)
+      if (Number.isFinite(l.value)) setHllOld(l.value)
+      if (l.srel) setHllSrel(l.srel)
+      if (Number.isFinite(p.value)) setPapOld(p.value)
+      if (p.srel) setPapSrel(p.srel)
       if (c.srel) setCaldnSrel(c.srel)
     }
     loadAll()
@@ -1224,7 +1276,7 @@ function YminTab({ turbineId }) {
           <table style={S.table}>
             <thead><tr>
               <th style={S.th}>Parameter</th>
-              <th style={S.thSrel}>SREL</th>
+              {showSrel && <th style={S.thSrel}>SREL</th>}
               <th style={{ ...S.th, textAlign: 'right' }}>Old</th>
               <th style={{ ...S.th, textAlign: 'right', background: '#3D2270' }}>New (editable)</th>
               <th style={S.th}>Unit</th>
@@ -1238,7 +1290,7 @@ function YminTab({ turbineId }) {
               ].map(({ p, old, val, set, unit, dec, srel }, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={{ ...S.td, fontFamily: 'monospace', fontWeight: 700, color: '#5C3D99' }}>{p}</td>
-                  <td style={S.tdSrel}>{srel || '—'}</td>
+                  {showSrel && <td style={S.tdSrel}>{srel || '—'}</td>}
                   <td style={{ ...S.tdNum, color: '#9888B8' }}>{old.toFixed(dec)}</td>
                   <td style={{ ...S.tdNum, background: '#F0F4FF' }}>
                     {set ? <EditCell value={val} onChange={set} dec={dec} /> : (val !== null ? <strong>{val.toFixed(dec)}</strong> : <span style={{ color: '#B8A8DA' }}>—</span>)}
@@ -1248,7 +1300,7 @@ function YminTab({ turbineId }) {
               ))}
               <tr style={{ borderTop: '2px solid #D0C4E8' }}>
                 <td style={{ ...S.td, fontWeight: 700, color: '#6A50A0' }}>CALDN</td>
-                <td style={S.tdSrel}>{caldnSrel || '—'}</td>
+                {showSrel && <td style={S.tdSrel}>{caldnSrel || '—'}</td>}
                 <td style={{ ...S.tdNum, color: '#9888B8' }}>{calDN(hapOld, hllOld).toFixed(4)}</td>
                 <td style={{ ...S.tdNum, background: '#f0fff4', fontWeight: 700, color: '#1a4d1a' }}>{hasNew ? calDN(hap, hll).toFixed(4) : <span style={{ color: '#B8A8DA' }}>—</span>}</td>
                 <td style={{ ...S.td, color: '#9888B8' }}>—</td>
