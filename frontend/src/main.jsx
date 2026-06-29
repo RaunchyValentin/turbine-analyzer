@@ -15,6 +15,7 @@ import Import from './pages/Import'
 import Turbines from './pages/Turbines'
 import Export from './pages/Export'
 import Settings from './pages/Settings'
+import Sgt2000e from './pages/Sgt2000e'
 
 function Layout() {
   return (
@@ -42,6 +43,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
           <Route path="/settings" element={<Settings />} />
           <Route path="/settings/:turbineId" element={<Settings />} />
           <Route path="/settings/:turbineId/:sheetId" element={<Settings />} />
+          <Route path="/sgt2000e" element={<Sgt2000e />} />
+          <Route path="/sgt2000e/:turbineId" element={<Sgt2000e />} />
         </Route>
       </Routes>
     </BrowserRouter>

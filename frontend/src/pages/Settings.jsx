@@ -20,7 +20,7 @@ export default function Settings() {
   const startW = useRef(0)
 
   useEffect(() => {
-    client.get('/turbines').then(r => setTurbines(r.data))
+    client.get('/turbines').then(r => setTurbines((r.data || []).filter(t => !t.type || (t.type !== 'SGT5-2000E' && t.type !== 'SGT6-2000E'))))
     client.get('/settings/navigation').then(r => setNav(r.data))
   }, [])
 
@@ -57,6 +57,8 @@ export default function Settings() {
     }
   }, [])
 
+  const currentTurbine = turbines.find(t => String(t.id) === String(turbineId))
+
   return (
     <div style={styles.root}>
       <div style={styles.topbar} className="no-print">
@@ -64,9 +66,12 @@ export default function Settings() {
         <select value={turbineId || ''} onChange={handleTurbineChange} style={styles.select}>
           <option value=''>— select —</option>
           {turbines.map(t => (
-            <option key={t.id} value={t.id}>{t.name}</option>
+            <option key={t.id} value={t.id}>{t.name}{t.type ? ` — ${t.type}` : ''}</option>
           ))}
         </select>
+        {currentTurbine?.type && (
+          <span style={styles.typeBadge}>{currentTurbine.type}</span>
+        )}
       </div>
 
       <div style={styles.body} className="settings-body">
@@ -97,6 +102,7 @@ const styles = {
   topbar:       { display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: '#F4F0FA', borderBottom: '1px solid #D0C4E8' },
   topbarLabel:  { color: '#9888B8', fontSize: '0.8rem' },
   select:       { background: '#F4F0FA', color: '#2A1A4A', border: '1px solid #D0C4E8', borderRadius: '4px', padding: '0.2rem 0.5rem', fontSize: '0.85rem' },
+  typeBadge:    { fontSize: '0.72rem', fontWeight: 700, padding: '0.15rem 0.55rem', borderRadius: '3px', background: '#EDE3F8', color: '#5C3D99', border: '1px solid #D0C4E8' },
   body:         { display: 'flex', flex: 1, overflow: 'hidden' },
   resizeHandle: { width: '4px', background: '#EDE3F8', cursor: 'col-resize', flexShrink: 0, transition: 'background 0.15s', ':hover': { background: '#5C3D99' } },
   main:         { flex: 1, overflow: 'auto', padding: '1.25rem' },

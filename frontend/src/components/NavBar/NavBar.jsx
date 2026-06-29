@@ -8,6 +8,7 @@ const links = [
   { to: '/', label: 'Dashboard' },
   { to: '/turbines', label: 'Turbines' },
   { to: '/settings', label: 'Settings' },
+  { to: '/sgt2000e', label: 'SGT-2000E' },
   { to: '/comparison', label: 'Comparison' },
   { to: '/curves', label: 'Curves' },
   { to: '/export', label: 'Export' },

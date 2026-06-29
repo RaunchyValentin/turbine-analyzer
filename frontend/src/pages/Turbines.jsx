@@ -2,6 +2,8 @@
 import { useNavigate } from 'react-router-dom'
 import client from '../api/client'
 
+const TURBINE_TYPES = ['SGT5-2000E', 'SGT6-2000E', 'SGT5-4000F', 'SGT6-4000F']
+
 function sourceLabel(filename) {
   if (!filename) return '—'
   const ext = filename.split('.').pop().toLowerCase()
@@ -27,6 +29,7 @@ export default function Turbines() {
   const [projectName, setProjectName]   = useState('')
   const [turbineName, setTurbineName]   = useState('')
   const [kksPrefix, setKksPrefix]       = useState('')
+  const [turbineType, setTurbineType]   = useState('')
   const [kksPrefixes, setKksPrefixes]   = useState([])   // [{prefix, count}]
   const [scanningPfx, setScanningPfx]   = useState(false)
   const [importing, setImporting]       = useState(false)
@@ -58,6 +61,7 @@ export default function Turbines() {
     setTurbineName(parsed.turbine)
     setKksPrefix('')
     setKksPrefixes([])
+    setTurbineType('')
 
     // Scan JAR for KKS prefixes
     if (f.name.toLowerCase().endsWith('.jar')) {
@@ -92,12 +96,14 @@ export default function Turbines() {
       fd.append('project_name', projectName)
       fd.append('turbine_name', turbineName)
       if (kksPrefix.trim()) fd.append('kks_prefix', kksPrefix.trim())
+      if (turbineType.trim()) fd.append('turbine_type', turbineType.trim())
       const r = await client.post('/import/create', fd)
       setImportResult(r.data)
       setFile(null)
       setProjectName('')
       setTurbineName('')
       setKksPrefix('')
+      setTurbineType('')
       loadTurbines()
     } catch (e) {
       setImportError(e.response?.data?.detail || 'Import failed')
@@ -204,6 +210,17 @@ export default function Turbines() {
               />
             </label>
             <label style={s.label}>
+              Model
+              <select
+                style={{ ...s.input, width: '145px' }}
+                value={turbineType}
+                onChange={e => setTurbineType(e.target.value)}
+              >
+                <option value="">— select —</option>
+                {TURBINE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </label>
+            <label style={s.label}>
               KKS prefix
               {scanningPfx
                 ? <span style={{ ...s.input, color: '#555', width: '130px' }}>scanning…</span>
@@ -281,6 +298,7 @@ export default function Turbines() {
                 <tr>
                   <th style={s.th}>Project</th>
                   <th style={s.th}>Turbine</th>
+                  <th style={s.th}>Model</th>
                   <th style={s.th}>Source file</th>
                   <th style={s.th}>Source</th>
                   <th style={s.th}>Date</th>
@@ -318,9 +336,15 @@ export default function Turbines() {
                     <td style={s.td}>
                       <span
                         style={s.turbineLink}
-                        onClick={() => navigate(`/settings/${t.id}/SO111b`)}
+                        onClick={() => {
+                          const is2e = t.type === 'SGT5-2000E' || t.type === 'SGT6-2000E'
+                          navigate(is2e ? `/sgt2000e/${t.id}` : `/settings/${t.id}/SO111b`)
+                        }}
                         title="Open in Setting List"
                       >{t.name}</span>
+                    </td>
+                    <td style={s.td}>
+                      {t.type ? <span style={typeBadgeStyle(t.type)}>{t.type}</span> : <span style={{ color: '#B8A8DA' }}>—</span>}
                     </td>
                     <td style={{ ...s.td, ...s.fileCell }} title={t.source_file}>{t.source_file || '—'}</td>
                     <td style={s.td}>
@@ -361,6 +385,21 @@ export default function Turbines() {
       </section>
     </div>
   )
+}
+
+function typeBadgeStyle(type) {
+  const is4F = type && type.includes('4000F')
+  return {
+    display: 'inline-block',
+    fontSize: '0.7rem',
+    fontWeight: 700,
+    padding: '0.1rem 0.4rem',
+    borderRadius: '3px',
+    background: is4F ? '#EDE3F8' : '#E8F0FA',
+    color: is4F ? '#5C3D99' : '#2A5099',
+    border: `1px solid ${is4F ? '#D0C4E8' : '#C4D0E8'}`,
+    whiteSpace: 'nowrap',
+  }
 }
 
 function sourceStyle(filename) {
