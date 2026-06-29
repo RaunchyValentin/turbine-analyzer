@@ -209,6 +209,7 @@ async def create_and_import(
     turbine_name: str = Form(...),
     file: UploadFile = File(...),
     kks_prefix: str = Form(""),
+    turbine_type: str = Form(""),
     db: AsyncSession = Depends(get_db),
 ):
     """One-shot: find-or-create project, create turbine, parse and save."""
@@ -251,6 +252,7 @@ async def create_and_import(
     turbine = Turbine(
         project_id=project.id,
         name=turbine_name,
+        type=turbine_type.strip() or None,
         source_file=filename,
         file_date=file_date,
         imported_at=date.today(),

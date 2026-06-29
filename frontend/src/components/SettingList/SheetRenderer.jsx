@@ -9,6 +9,7 @@ import ReadOnlyCalc from './patterns/ReadOnlyCalc'
 import RunUpController from './patterns/RunUpController'
 import PilotGasPaired from './patterns/PilotGasPaired'
 import SmcpPage from './patterns/SmcpPage'
+import LhvCorrPage from './patterns/LhvCorrPage'
 
 const PATTERNS = {
   A: ScalarTable,
@@ -20,6 +21,7 @@ const PATTERNS = {
   G: RunUpController,
   H: PilotGasPaired,
   I: SmcpPage,
+  J: LhvCorrPage,
 }
 
 export default function SheetRenderer({ turbineId, sheetId }) {
@@ -73,9 +75,7 @@ export default function SheetRenderer({ turbineId, sheetId }) {
           onClick={() => window.print()}
           style={styles.printBtn}
           title="Print / Save as PDF"
-        >
-          ⎙ Print
-        </button>
+        >⎙ Print / Save PDF</button>
       </div>
       <Component
         data={data}
@@ -95,7 +95,7 @@ const styles = {
   sheetId:     { color: '#5C3D99', fontWeight: 700, fontSize: '0.85rem', flexShrink: 0 },
   title:       { margin: 0, fontSize: '1.1rem', color: '#111111', fontWeight: 700 },
   fuelBadge:   { fontSize: '0.72rem', padding: '0.15rem 0.5rem', borderRadius: '3px', background: '#F4F0FA', color: '#5C3D99' },
-  printBtn:    { marginLeft: 'auto', padding: '0.25rem 0.75rem', fontSize: '0.78rem', background: '#F4F0FA', border: '1px solid #D0C4E8', borderRadius: 3, color: '#5C3D99', cursor: 'pointer', fontWeight: 600 },
+  printBtn:    { marginLeft: 'auto', padding: '0.22rem 0.8rem', fontSize: '0.78rem', background: 'transparent', border: '1px solid #5C3D99', borderRadius: 4, color: '#5C3D99', cursor: 'pointer', fontWeight: 600 },
   printHeader: { display: 'none', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem', paddingBottom: '0.4rem', borderBottom: '1px solid #D0C4E8' },
   printBrand:  { fontSize: '0.75rem', color: '#6A50A0', fontWeight: 600 },
   printDate:   { fontSize: '0.72rem', color: '#9888B8' },

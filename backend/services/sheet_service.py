@@ -53,6 +53,8 @@ async def get_sheet(turbine_id: int, sheet_id: str, db: AsyncSession) -> dict:
         _enrich_h(enriched, srel_lookup, overrides, name_map, port_map)
     elif pattern == "I":
         _enrich_i(enriched, srel_lookup, overrides)
+    elif pattern == "J":
+        _enrich_j(enriched, srel_lookup, overrides)
     # E, F — config returned as-is (no live values needed for now)
 
     return enriched
@@ -396,6 +398,32 @@ def _enrich_i(enriched: dict, srel_lookup: dict, overrides: dict) -> None:
             srel[key] = {"value": override, "original": original, "overridden": True}
         else:
             srel[key] = {"value": original, "overridden": False}
+    enriched["srel"] = srel
+
+
+def _enrich_j(enriched: dict, srel_lookup: dict, overrides: dict) -> None:
+    """Pattern J: LHV/WI correction page — flat srel dict with static value fallbacks."""
+    keys = enriched.get("srel_keys", [])
+    statics: dict = enriched.get("static_values", {})
+    srel: dict[str, dict] = {}
+    for key in keys:
+        raw = srel_lookup.get(key)
+        original = raw if raw and raw != "" else None
+        static_val = statics.get(key)
+        override = overrides.get(key)
+        if override is not None:
+            srel[key] = {
+                "value": override,
+                "original": original if original is not None else (str(static_val) if static_val is not None else None),
+                "overridden": True,
+                "static": False,
+            }
+        elif original is not None:
+            srel[key] = {"value": original, "overridden": False, "static": False}
+        elif static_val is not None:
+            srel[key] = {"value": str(static_val), "overridden": False, "static": True}
+        else:
+            srel[key] = {"value": None, "overridden": False, "static": False}
     enriched["srel"] = srel
 
 

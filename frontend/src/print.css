@@ -4,33 +4,146 @@
 }
 
 @media print {
-  /* Hide all navigation and chrome */
-  .no-print { display: none !important; }
+  /* ── Page setup: A4 landscape ── */
+  @page {
+    size: A4 landscape;
+    margin: 12mm 14mm;
+  }
 
-  /* Show print-only elements */
+  /* ── Preserve all colours exactly ── */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* ── Hide chrome ── */
+  .no-print   { display: none !important; }
   .print-only { display: block !important; }
 
-  /* Reset page background */
-  body, #root { background: #fff !important; }
+  /* ── White only for layout shells ── */
+  body, #root, main { background: #fff !important; box-shadow: none !important; }
+  * { box-shadow: none !important; }
 
-  /* Settings layout: sidebar hidden → main takes full width */
+  /* ── Remove app shell padding ── */
+  main { padding: 0 !important; }
+
+  /* ── Settings layout ── */
   .settings-body { display: block !important; }
   .settings-main { overflow: visible !important; padding: 0 !important; width: 100% !important; }
 
-  /* Avoid page break inside a table row or block */
-  tr, .no-break { page-break-inside: avoid; break-inside: avoid; }
+  /* ── Plotly: hide toolbar only ── */
+  .js-plotly-plot .modebar { display: none !important; }
 
-  /* Page break before each settings block section */
-  .print-block { page-break-inside: avoid; break-inside: avoid; }
+  /* ══════════════════════════════════════
+     Parameters tab — 3 pages
+     Page 1: section header + param tables
+     Page 2: grouped polynomial charts
+     Page 3: Pilot Gas Settings
+  ══════════════════════════════════════ */
 
-  /* Remove box shadows, adjust fonts */
-  * { box-shadow: none !important; }
-
-  /* Plotly chart: fixed size for print */
-  .js-plotly-plot { max-width: 600px !important; }
-
-  @page {
-    size: A4 landscape;
-    margin: 15mm 12mm;
+  /* Start page 2 before the grouped charts block */
+  /* 3-col grid → 2 rows: [HL130|F4|F6] [Premix|F4+F6 span2]
+     This is the only way to fit all 5 groups on one A4 landscape page
+     (3 rows × 72mm = 250mm which exceeds 186mm usable height) */
+  .sgt-poly-group {
+    break-before:          always;
+    page-break-before:     always;
+    display:               grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap:                   5mm  !important;
+    align-items:           start !important;
   }
+
+  /* F4+F6 by OTC (5th item) fills cols 2-3 on row 2 */
+  .sgt-poly-group > div:last-child {
+    grid-column: span 2 !important;
+  }
+
+  /* Start page 3 before Pilot Gas header */
+  .sgt-pilot-gas-hdr {
+    break-before: always;
+    page-break-before: always;
+  }
+
+  /* Section header stays glued to content below it */
+  .sgt-section-hdr {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Each poly chart+table group is atomic */
+  .sgt-poly-group > div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Pilot Gas block stays together */
+  .sgt-pilot-gas {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* ══════════════════════════════════════
+     IGV LSVCAL tab — 2 pages
+     Page 1: section header + tables
+     Page 2: chart (full landscape height)
+  ══════════════════════════════════════ */
+
+  /* Force page break: chart starts on fresh page */
+  .sgt-lsvcal-wrap {
+    break-before: always;
+    page-break-before: always;
+    width: 100% !important;
+  }
+
+  /* Chart fills the full landscape page */
+  .sgt-lsvcal-wrap .js-plotly-plot {
+    width:       100%  !important;
+    height:      165mm !important;
+    margin-left: 0     !important;
+  }
+
+  /* Tables section: no internal breaks */
+  .sgt-lsvcal-tables {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* ── CSV table: show first 8 rows only ── */
+  .sgt-csv-scroll { max-height: none !important; overflow: visible !important; }
+  .sgt-csv-scroll tbody tr:nth-child(n + 9) { display: none !important; }
+
+  /* ── Grouped poly charts ──
+     CSS width/height cannot scale Plotly SVG content (no viewBox).
+     transform:scale() shrinks the pre-rendered bitmap correctly.
+     Negative margins collapse the layout space freed by the transform,
+     so the flex row and grid cell sizes are computed as if the chart
+     were already at the target size.
+
+     Small charts: 300×300px → scale(0.5) → ~150×150px ≈ 40mm */
+  .sgt-poly-group .js-plotly-plot {
+    transform:        scale(0.5) !important;
+    transform-origin: top left   !important;
+    margin-right:    -150px      !important;
+    margin-bottom:   -150px      !important;
+  }
+
+  /* F4+F6 chart: 420×360px → scale(0.58) → ~244×209px ≈ 64×55mm
+     (has a 2-col span so there is room for a wider chart) */
+  .sgt-poly-group > div:last-child .js-plotly-plot {
+    transform:        scale(0.58) !important;
+    transform-origin: top left    !important;
+    margin-right:    -176px       !important;
+    margin-bottom:   -151px       !important;
+  }
+
+  /* ── YMIN chart ── */
+  .sgt-tab-ymin .js-plotly-plot {
+    width:  135mm !important;
+    height: 100mm !important;
+  }
+
+  /* ── Table rows: no split ── */
+  tr { break-inside: avoid; page-break-inside: avoid; }
+
+  /* ── Typography ── */
+  body  { font-size: 9pt !important; }
+  table { font-size: 8pt !important; }
 }

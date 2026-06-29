@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Plot from 'react-plotly.js'
 import client from '../api/client'
+import MBA22Tab from './MBA22Tab'
 
 export const IS_2000E = t => t === 'SGT5-2000E' || t === 'SGT6-2000E'
 
@@ -48,21 +49,37 @@ const PILOT_GAS_DEFAULT = [
 ]
 
 const RUNUP_LIMIT = [
-  { x: 0, y: 0.03 }, { x: 16, y: 0.07 }, { x: 32, y: 0.11 },
-  { x: 48, y: 0.26 }, { x: 60, y: 0.3 }, { x: 200, y: 0.3 },
+  { x: 0,   y: 0.03, srelX: 'MBY10DG010|HL130.A01', srelY: 'MBY10DG010|HL130.B01' },
+  { x: 16,  y: 0.07, srelX: 'MBY10DG010|HL130.A02', srelY: 'MBY10DG010|HL130.B02' },
+  { x: 32,  y: 0.11, srelX: 'MBY10DG010|HL130.A03', srelY: 'MBY10DG010|HL130.B03' },
+  { x: 48,  y: 0.26, srelX: 'MBY10DG010|HL130.A04', srelY: 'MBY10DG010|HL130.B04' },
+  { x: 60,  y: 0.3,  srelX: 'MBY10DG010|HL130.A05', srelY: 'MBY10DG010|HL130.B05' },
+  { x: 200, y: 0.3,  srelX: 'MBY10DG010|HL130.A06', srelY: 'MBY10DG010|HL130.B06' },
 ]
 const F4_DATA = [
-  { x: 0, y: 0.58 }, { x: 20, y: 0.39 }, { x: 40, y: 0.39 },
-  { x: 60, y: 0.39 }, { x: 80, y: 0.36 }, { x: 100, y: 0.36 },
+  { x: 0,   y: 0.58, srelX: 'MSPG.F4L.01', srelY: 'MSPG.F4H.01' },
+  { x: 20,  y: 0.39, srelX: 'MSPG.F4L.02', srelY: 'MSPG.F4H.02' },
+  { x: 40,  y: 0.39, srelX: 'MSPG.F4L.03', srelY: 'MSPG.F4H.03' },
+  { x: 60,  y: 0.39, srelX: 'MSPG.F4L.04', srelY: 'MSPG.F4H.04' },
+  { x: 80,  y: 0.36, srelX: 'MSPG.F4L.05', srelY: 'MSPG.F4H.05' },
+  { x: 100, y: 0.36, srelX: 'MSPG.F4L.06', srelY: 'MSPG.F4H.06' },
 ]
 const F6_DATA = [
-  { x: 300, y: 1 }, { x: 360, y: 0.82 }, { x: 380, y: 0.77 },
-  { x: 430, y: 0.69 }, { x: 500, y: 0.42 }, { x: 520, y: 0.2 }, { x: 530, y: 0 },
+  { x: 300, y: 1,    srelX: 'MSPG.F6L.01', srelY: 'MSPG.F6H.01' },
+  { x: 360, y: 0.82, srelX: 'MSPG.F6L.02', srelY: 'MSPG.F6H.02' },
+  { x: 380, y: 0.77, srelX: 'MSPG.F6L.03', srelY: 'MSPG.F6H.03' },
+  { x: 430, y: 0.69, srelX: 'MSPG.F6L.04', srelY: 'MSPG.F6H.04' },
+  { x: 500, y: 0.42, srelX: 'MSPG.F6L.05', srelY: 'MSPG.F6H.05' },
+  { x: 520, y: 0.2,  srelX: 'MSPG.F6L.06', srelY: 'MSPG.F6H.06' },
+  { x: 530, y: 0,    srelX: 'MSPG.F6L.07', srelY: 'MSPG.F6H.07' },
 ]
 const PREMIX_KV = [
-  { idx: 1, flow: 0, lfit: 0 }, { idx: 2, flow: 2.8, lfit: 3 },
-  { idx: 3, flow: 5.597, lfit: 10 }, { idx: 4, flow: 7.83, lfit: 13 },
-  { idx: 5, flow: 111.323, lfit: 65 }, { idx: 6, flow: 139.886, lfit: 100 },
+  { idx: 1, flow: 0,       lfit: 0,   srelX: 'MBP15DG040|HSG0.V01', srelY: 'MBP15DG040|HSG0.W01' },
+  { idx: 2, flow: 2.8,     lfit: 3,   srelX: 'MBP15DG040|HSG0.V02', srelY: 'MBP15DG040|HSG0.W02' },
+  { idx: 3, flow: 5.597,   lfit: 10,  srelX: 'MBP15DG040|HSG0.V03', srelY: 'MBP15DG040|HSG0.W03' },
+  { idx: 4, flow: 7.83,    lfit: 13,  srelX: 'MBP15DG040|HSG0.V04', srelY: 'MBP15DG040|HSG0.W04' },
+  { idx: 5, flow: 111.323, lfit: 65,  srelX: 'MBP15DG040|HSG0.V05', srelY: 'MBP15DG040|HSG0.W05' },
+  { idx: 6, flow: 139.886, lfit: 100, srelX: 'MBP15DG040|HSG0.V06', srelY: 'MBP15DG040|HSG0.W06' },
 ]
 
 const LSVCAL_OLD = [
@@ -186,6 +203,78 @@ function autoFitYmin(exp, pap) {
   }
 }
 
+// Piecewise linear interpolation at x from sorted breakpoints
+function pwInterp(pts, x) {
+  if (!pts.length) return null
+  if (x <= pts[0].x) return pts[0].y
+  if (x >= pts[pts.length - 1].x) return pts[pts.length - 1].y
+  for (let i = 0; i < pts.length - 1; i++) {
+    if (x >= pts[i].x && x <= pts[i + 1].x) {
+      const t = (x - pts[i].x) / (pts[i + 1].x - pts[i].x)
+      return pts[i].y + t * (pts[i + 1].y - pts[i].y)
+    }
+  }
+  return null
+}
+
+// Greedy optimal breakpoint insertion: find positions minimising piecewise RMSE vs expData
+function optimalBreakpoints(expData, existing, addCount) {
+  const exXs = expData.map(p => p.ymincal)
+  const exYs = expData.map(p => p.lsvsw)
+  const span  = Math.max(...exXs) - Math.min(...exXs) || 1
+  const bw    = span * 0.4
+  const yMin  = Math.min(...exYs), yMax = Math.max(...exYs)
+  const tol   = (yMax - yMin) * 0.05
+  const botPts = expData.filter(p => p.lsvsw <= yMin + tol)
+  const topPts = expData.filter(p => p.lsvsw >= yMax - tol)
+  const bottomEdge = botPts.length >= 2 ? Math.max(...botPts.map(p => p.ymincal)) : -Infinity
+  const topEdge    = topPts.length >= 2 ? Math.min(...topPts.map(p => p.ymincal)) :  Infinity
+
+  const fitY = x => {
+    if (x <= bottomEdge) return yMin
+    if (x >= topEdge)    return yMax
+    const y = loessLinearAt(exXs, exYs, x, bw)
+    return y !== null ? +y.toFixed(4) : null
+  }
+
+  const calcRMSE = pts => {
+    let ss = 0, n = 0
+    for (const { ymincal, lsvsw } of expData) {
+      const y = pwInterp(pts, ymincal)
+      if (y !== null) { ss += (y - lsvsw) ** 2; n++ }
+    }
+    return n > 0 ? Math.sqrt(ss / n) : Infinity
+  }
+
+  // Build starting set: existing points with y computed from LOESS (for RMSE calc)
+  let current = existing
+    .filter(p => p.x !== null)
+    .map(p => ({ x: p.x, y: fitY(p.x) ?? p.y }))
+    .filter(p => p.y !== null)
+    .sort((a, b) => a.x - b.x)
+
+  // Unique candidate x values from experimental data
+  const usedX = new Set(current.map(p => p.x))
+  const candidates = [...new Set(exXs)].filter(x => !usedX.has(x))
+
+  for (let k = 0; k < addCount; k++) {
+    let bestX = null, bestY = null, bestRMSE = Infinity
+    for (const cx of candidates) {
+      if (usedX.has(cx)) continue
+      const cy = fitY(cx)
+      if (cy === null) continue
+      const trial = [...current, { x: cx, y: cy }].sort((a, b) => a.x - b.x)
+      const rmse = calcRMSE(trial)
+      if (rmse < bestRMSE) { bestRMSE = rmse; bestX = cx; bestY = cy }
+    }
+    if (bestX !== null) {
+      current = [...current, { x: bestX, y: bestY }].sort((a, b) => a.x - b.x)
+      usedX.add(bestX)
+    }
+  }
+  return current
+}
+
 // "step-after" line: hold Y until next X point
 function makeStepLine(pts) {
   const sorted = [...pts].sort((a, b) => a.x - b.x)
@@ -254,12 +343,16 @@ const PC = { displayModeBar: false, responsive: true }
 
 // ── Tab 1: Sheet2 ─────────────────────────────────────────────────────────────
 
+// "MBY10DG010|HL130.A01" → "HL130.A01";  "MSPG.F4L.01" → "MSPG.F4L.01"
+const portOf = srel => srel.includes('|') ? srel.split('|')[1] : srel
+
 function Sheet2Tab() {
   const [startup,    setStartup]    = useState(() => STARTUP_PARAMS.map(p => ({ ...p })))
   const [baseload,   setBaseload]   = useState(() => BASELOAD_DATA.map(p => ({ ...p })))
   const [changeover, setChangeover] = useState(() => CHANGEOVER_DATA.map(p => ({ ...p })))
   const [vbTrip,     setVbTrip]     = useState('')
   const [pilotGas,   setPilotGas]   = useState(() => PILOT_GAS_DEFAULT.map(p => ({ ...p })))
+  const [showSrel,   setShowSrel]   = useState(false)
 
   const updRow = (setter, i, v) => setter(rows => rows.map((r, j) => j === i ? { ...r, value: v } : r))
   const updPG  = (i, field, v) => setPilotGas(pts => pts.map((r, j) => j === i ? { ...r, [field]: v } : r))
@@ -297,23 +390,6 @@ function Sheet2Tab() {
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <ParamTable rows={startup}  setter={setStartup}  title="Start-up Settings" />
         <ParamTable rows={baseload} setter={setBaseload} title="Baseload Settings" />
-
-        {/* HL130 Run-Up Limitation table */}
-        <div style={{ flexShrink: 0 }}>
-          <div style={S.tableTitle}>HL130 Run-Up Limitation</div>
-          <table style={S.table}>
-            <thead><tr>
-              <th style={{ ...S.th, textAlign: 'right' }}>Speed [%]</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>Setpoint [%]</th>
-            </tr></thead>
-            <tbody>{RUNUP_LIMIT.map((p, i) => (
-              <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-                <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x}</td>
-                <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y}</td>
-              </tr>
-            ))}</tbody>
-          </table>
-        </div>
 
         {/* Changeover Settings with VB trip row */}
         <div style={{ flexShrink: 0 }}>
@@ -355,7 +431,7 @@ function Sheet2Tab() {
           </table>
         </div>
 
-        {/* ATKKOR + Premix */}
+        {/* ATKKOR */}
         <div style={{ flexShrink: 0 }}>
           <div style={S.tableTitle}>ATKKOR (MBP03DU002)</div>
           <table style={S.table}>
@@ -369,68 +445,218 @@ function Sheet2Tab() {
               <tr style={S.rowOdd}> <td style={S.td}>6</td><td style={{ ...S.tdNum, fontWeight: 700 }}>300</td><td style={{ ...S.tdNum, fontWeight: 700 }}>0.10</td></tr>
             </tbody>
           </table>
-          <div style={{ marginTop: '1rem', display: 'inline-block' }}>
-            <div style={S.tableTitle}>Premix NG CV KV (HSG0)</div>
-            <table style={{ ...S.table, width: '100%' }}>
+        </div>
+      </div>
+
+      {/* Polynomial curves header + SREL toggle */}
+      <div className="no-print" style={{ marginTop: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+        <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#5C3D99' }}>Polynomial Curves</span>
+        <button
+          onClick={() => setShowSrel(v => !v)}
+          style={{ fontSize: '0.68rem', padding: '0.06rem 0.42rem', borderRadius: 3, border: '1px solid #9888B8', background: showSrel ? '#EDE3F8' : 'transparent', color: '#6A50A0', cursor: 'pointer', fontFamily: 'monospace', lineHeight: 1.5 }}
+        >{showSrel ? '[ − SREL ]' : '[ + SREL ]'}</button>
+      </div>
+
+      {/* Grouped: table + chart for each polynomial */}
+      <div className="sgt-poly-group" style={{ marginTop: '0.5rem', display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+
+        {/* HL130 */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={{ ...S.tableTitle, lineHeight: 1.25 }}>
+            <div>HL130 Run-Up Limitation</div>
+            <div style={{ fontWeight: 400, fontSize: '0.64rem', fontFamily: 'monospace', color: '#9888B8', marginTop: 1 }}>MBY10DG010 · HL130</div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', marginTop: 0 }}>
+            <table style={S.table}>
               <thead><tr>
-                <th style={S.th}>#</th>
+                <th style={S.th}>Port</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={{ ...S.th, textAlign: 'right' }}>Speed [%]</th>
+                <th style={S.th}>Port</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={{ ...S.th, textAlign: 'right' }}>Setpoint [%]</th>
+              </tr></thead>
+              <tbody>{RUNUP_LIMIT.map((p, i) => (
+                <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+                  <td style={S.tdPort}>{portOf(p.srelX)}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x}</td>
+                  <td style={S.tdPort}>{portOf(p.srelY)}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+            <Plot data={[{
+              x: RUNUP_LIMIT.map(p => p.x), y: RUNUP_LIMIT.map(p => p.y),
+              type: 'scatter', mode: 'lines+markers',
+              line: { color: '#5C3D99', width: 2 }, marker: { size: 5 }, name: 'Setpoint [%]',
+            }]} layout={PL('Speed [%]', 'Setpoint [%]')} config={PC} style={{ width: 300, height: 300 }} />
+          </div>
+        </div>
+
+        {/* F4 */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={{ ...S.tableTitle, lineHeight: 1.25 }}>
+            <div>Pilot Gas F4 — IGV → Flow</div>
+            <div style={{ fontWeight: 400, fontSize: '0.64rem', fontFamily: 'monospace', color: '#9888B8', marginTop: 1 }}>MBP15DG010 · MSPG.F4</div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+            <table style={S.table}>
+              <thead><tr>
+                <th style={S.th}>Port</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={{ ...S.th, textAlign: 'right' }}>IGV [%]</th>
+                <th style={S.th}>Port</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
+              </tr></thead>
+              <tbody>{F4_DATA.map((p, i) => (
+                <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+                  <td style={S.tdPort}>{portOf(p.srelX)}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x}</td>
+                  <td style={S.tdPort}>{portOf(p.srelY)}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y.toFixed(3)}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+            <Plot data={[{
+              x: F4_DATA.map(p => p.x), y: F4_DATA.map(p => p.y),
+              type: 'scatter', mode: 'lines+markers',
+              line: { color: '#5C3D99', width: 2 }, marker: { size: 5 }, name: 'F4 Flow [kg/s]',
+            }]} layout={PL('IGV [%]', 'Flow [kg/s]')} config={PC} style={{ width: 300, height: 300 }} />
+          </div>
+        </div>
+
+        {/* F6 */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={{ ...S.tableTitle, lineHeight: 1.25 }}>
+            <div>Pilot Gas F6 — ATK → Flow</div>
+            <div style={{ fontWeight: 400, fontSize: '0.64rem', fontFamily: 'monospace', color: '#9888B8', marginTop: 1 }}>MBP15DG010 · MSPG.F6</div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+            <table style={S.table}>
+              <thead><tr>
+                <th style={S.th}>Port</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={{ ...S.th, textAlign: 'right' }}>ATK [°C]</th>
+                <th style={S.th}>Port</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
+              </tr></thead>
+              <tbody>{F6_DATA.map((p, i) => (
+                <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+                  <td style={S.tdPort}>{portOf(p.srelX)}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x}</td>
+                  <td style={S.tdPort}>{portOf(p.srelY)}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y.toFixed(3)}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+            <Plot data={[{
+              x: F6_DATA.map(p => p.x), y: F6_DATA.map(p => p.y),
+              type: 'scatter', mode: 'lines+markers',
+              line: { color: '#E06B00', width: 2 }, marker: { size: 5 }, name: 'F6 Flow [kg/s]',
+            }]} layout={PL('ATK [°C]', 'Flow [kg/s]')} config={PC} style={{ width: 300, height: 300 }} />
+          </div>
+        </div>
+
+        {/* Premix KV */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={{ ...S.tableTitle, lineHeight: 1.25 }}>
+            <div>HSG0 Premix NG CV KV</div>
+            <div style={{ fontWeight: 400, fontSize: '0.64rem', fontFamily: 'monospace', color: '#9888B8', marginTop: 1 }}>MBP15DG040 · HSG0</div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+            <table style={S.table}>
+              <thead><tr>
+                <th style={S.th}>Port</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
+                <th style={S.th}>Port</th>
+                {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Lfit [%]</th>
               </tr></thead>
               <tbody>{PREMIX_KV.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-                  <td style={S.td}>{p.idx}</td>
+                  <td style={S.tdPort}>{portOf(p.srelX)}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.flow}</td>
+                  <td style={S.tdPort}>{portOf(p.srelY)}</td>
+                  {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.lfit}</td>
                 </tr>
               ))}</tbody>
             </table>
+            <Plot data={[{
+              x: PREMIX_KV.map(p => p.lfit), y: PREMIX_KV.map(p => p.flow),
+              type: 'scatter', mode: 'lines+markers',
+              line: { color: '#4caf7d', width: 2 }, marker: { size: 5 }, name: 'Flow [kg/s]',
+            }]} layout={PL('Lfit [%]', 'Flow [kg/s]')} config={PC} style={{ width: 300, height: 300 }} />
+          </div>
+        </div>
+
+        {/* F4+F6 by OTC */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={{ ...S.tableTitle, lineHeight: 1.25 }}>
+            <div>F4+F6 by OTC</div>
+            <div style={{ fontWeight: 400, fontSize: '0.64rem', fontFamily: 'monospace', color: '#9888B8', marginTop: 1 }}>← F4 + F6 (derived)</div>
+          </div>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+            <div>
+              <table style={S.table}>
+                <thead><tr>
+                  <th style={S.th}>Port F4.y</th>
+                  {showSrel && <th style={S.thSrel}>SREL</th>}
+                  <th style={{ ...S.th, textAlign: 'right' }}>F4 [kg/s]</th>
+                  <th style={{ ...S.th, textAlign: 'right' }}>ATK [°C]</th>
+                  <th style={S.th}>Port F6.y</th>
+                  {showSrel && <th style={S.thSrel}>SREL</th>}
+                  <th style={{ ...S.th, textAlign: 'right' }}>F6 [kg/s]</th>
+                  <th style={{ ...S.th, textAlign: 'right', background: '#3D2270' }}>F4+F6 [kg/s]</th>
+                </tr></thead>
+                <tbody>{F4_DATA.map((f4, i) => {
+                  const f6 = F6_DATA[i] ?? F6_DATA[F6_DATA.length - 1]
+                  const sum = +(f4.y + f6.y).toFixed(3)
+                  return (
+                    <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+                      <td style={S.tdPort}>{portOf(f4.srelY)}</td>
+                      {showSrel && <td style={S.tdSrel}>{f4.srelY}</td>}
+                      <td style={S.tdNum}>{f4.y.toFixed(3)}</td>
+                      <td style={S.tdNum}>{f6.x}</td>
+                      <td style={S.tdPort}>{portOf(f6.srelY)}</td>
+                      {showSrel && <td style={S.tdSrel}>{f6.srelY}</td>}
+                      <td style={S.tdNum}>{f6.y.toFixed(3)}</td>
+                      <td style={{ ...S.tdNum, fontWeight: 700, color: '#3D2270', background: '#F0EDFA' }}>{sum}</td>
+                    </tr>
+                  )
+                })}</tbody>
+              </table>
+              <div style={{ ...S.note, marginTop: '0.25rem' }}>F4+F6 = сумма по точкам (ось X — ATK [°C])</div>
+            </div>
+            <Plot
+              data={[{
+                x: F4_DATA.map((_, i) => (F6_DATA[i] ?? F6_DATA[F6_DATA.length - 1]).x),
+                y: F4_DATA.map((f4, i) => +(f4.y + (F6_DATA[i] ?? F6_DATA[F6_DATA.length - 1]).y).toFixed(3)),
+                type: 'scatter', mode: 'lines+markers',
+                line: { color: '#5C3D99', width: 2.5 }, marker: { size: 7, color: '#5C3D99' },
+                name: 'F4+F6 [kg/s]',
+              }]}
+              layout={{ ...PL('ATK [°C]', 'Flow [kg/s]'), showlegend: false }}
+              config={PC}
+              style={{ width: 420, height: 360 }}
+            />
           </div>
         </div>
       </div>
 
-      {/* Charts */}
-      <div style={{ display: 'flex', gap: '1rem', marginTop: '1.25rem', flexWrap: 'wrap' }}>
-        <div style={{ flex: '1 1 240px' }}>
-          <div style={S.chartTitle}>HL130 Run-Up Limitation</div>
-          <Plot data={[{
-            x: RUNUP_LIMIT.map(p => p.x), y: RUNUP_LIMIT.map(p => p.y),
-            type: 'scatter', mode: 'lines+markers',
-            line: { color: '#5C3D99', width: 2, shape: 'hv' }, marker: { size: 5 }, name: 'Setpoint [%]',
-          }]} layout={PL('Speed [%]', 'Setpoint [%]')} config={PC} style={{ width: '100%', height: 210 }} />
-        </div>
-
-        <div style={{ flex: '1 1 240px' }}>
-          <div style={S.chartTitle}>Pilot Gas F4 — IGV → Flow</div>
-          <Plot data={[{
-            x: F4_DATA.map(p => p.x), y: F4_DATA.map(p => p.y),
-            type: 'scatter', mode: 'lines+markers',
-            line: { color: '#5C3D99', width: 2 }, marker: { size: 5 }, name: 'F4 Flow [kg/s]',
-          }]} layout={PL('IGV [%]', 'Flow [kg/s]')} config={PC} style={{ width: '100%', height: 210 }} />
-        </div>
-
-        <div style={{ flex: '1 1 240px' }}>
-          <div style={S.chartTitle}>Pilot Gas F6 — ATK → Flow</div>
-          <Plot data={[{
-            x: F6_DATA.map(p => p.x), y: F6_DATA.map(p => p.y),
-            type: 'scatter', mode: 'lines+markers',
-            line: { color: '#E06B00', width: 2 }, marker: { size: 5 }, name: 'F6 Flow [kg/s]',
-          }]} layout={PL('ATK [°C]', 'Flow [kg/s]')} config={PC} style={{ width: '100%', height: 210 }} />
-        </div>
-
-        <div style={{ flex: '1 1 240px' }}>
-          <div style={S.chartTitle}>HSG0 Premix KV — Flow vs Lfit</div>
-          <Plot data={[{
-            x: PREMIX_KV.map(p => p.lfit), y: PREMIX_KV.map(p => p.flow),
-            type: 'scatter', mode: 'lines+markers',
-            line: { color: '#4caf7d', width: 2 }, marker: { size: 5 }, name: 'Flow [kg/s]',
-          }]} layout={PL('Lfit [%]', 'Flow [kg/s]')} config={PC} style={{ width: '100%', height: 210 }} />
-        </div>
-      </div>
-
       {/* Pilot Gas Settings */}
-      <div style={S.sectionHdr}>Pilot Gas Settings — MBP15DG010|HSP0</div>
-      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+      <div className="sgt-section-hdr sgt-pilot-gas-hdr" style={S.sectionHdr}>Pilot Gas Settings — MBP15DG010|HSP0</div>
+      <div className="sgt-pilot-gas" style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <div style={{ flexShrink: 0 }}>
           <div style={S.tableTitle}>HSP0 Characteristic (editable)</div>
           <table style={S.table}>
@@ -481,27 +707,39 @@ function LsvcalTab({ turbineId }) {
   const [fitDone,   setFitDone]   = useState(false)
   const [csvError,  setCsvError]  = useState('')
   const [dbLoading, setDbLoading] = useState(false)
-  const fileRef = useRef()
+  const [editMode,  setEditMode]  = useState(false)
+  const [plotEl,    setPlotEl]    = useState(null)
+  const fileRef  = useRef()
+  const dragRef  = useRef(null)
+  const hoverRef = useRef(null)
 
   const changeNewSize = (n) => {
     setNewSize(n)
-    setLsvcalNew(prev => {
-      if (n <= prev.length) return prev.slice(0, n)
-      const add = n - prev.length
-      const withX = [...prev].filter(p => p.x !== null).sort((a, b) => a.x - b.x)
+    if (n <= lsvcalNew.length) {
+      setLsvcalNew(lsvcalNew.slice(0, n))
+      setFitDone(false)
+      return
+    }
+    const add = n - lsvcalNew.length
+    if (expData && expData.length > 0) {
+      const result = optimalBreakpoints(expData, lsvcalNew, add)
+      setLsvcalNew(result)
+      setFitDone(result.every(p => p.y !== null))
+    } else {
+      // Fallback: midpoints of largest gaps
+      const withX = lsvcalNew.filter(p => p.x !== null).sort((a, b) => a.x - b.x)
       if (withX.length < 2) {
-        return [...prev, ...Array(add).fill(null).map(() => ({ x: null, y: null }))]
+        setLsvcalNew([...lsvcalNew, ...Array(add).fill(null).map(() => ({ x: null, y: null }))])
+      } else {
+        const gaps = []
+        for (let i = 0; i < withX.length - 1; i++)
+          gaps.push({ gap: withX[i+1].x - withX[i].x, mid: +((withX[i].x + withX[i+1].x) / 2).toFixed(4) })
+        const newX = gaps.sort((a, b) => b.gap - a.gap).slice(0, add).map(g => g.mid)
+        const combined = [...lsvcalNew, ...newX.map(x => ({ x, y: null }))].sort((a, b) => (a.x ?? Infinity) - (b.x ?? Infinity))
+        setLsvcalNew(combined)
       }
-      // Find midpoints of the `add` largest gaps between existing breakpoints
-      const gaps = []
-      for (let i = 0; i < withX.length - 1; i++)
-        gaps.push({ gap: withX[i+1].x - withX[i].x, mid: +((withX[i].x + withX[i+1].x) / 2).toFixed(4) })
-      const newX = gaps.sort((a, b) => b.gap - a.gap).slice(0, add).map(g => g.mid)
-      const combined = [...prev, ...newX.map(x => ({ x, y: null }))]
-      combined.sort((a, b) => (a.x ?? Infinity) - (b.x ?? Infinity))
-      return combined
-    })
-    setFitDone(false)
+      setFitDone(false)
+    }
   }
 
   useEffect(() => {
@@ -536,6 +774,38 @@ function LsvcalTab({ turbineId }) {
 
   const updNew = (i, field, v) => setLsvcalNew(pts => pts.map((r, j) => j === i ? { ...r, [field]: v } : r))
 
+  // drag-to-edit NEW curve points
+  useEffect(() => {
+    if (!plotEl) return
+    const onDown = (e) => {
+      if (!hoverRef.current) return
+      e.preventDefault()
+      e.stopPropagation()
+      dragRef.current = { ...hoverRef.current, startY: e.clientY }
+    }
+    const onMove = (e) => {
+      if (!dragRef.current) return
+      const layout = plotEl._fullLayout
+      if (!layout?.yaxis) return
+      const rect = plotEl.getBoundingClientRect()
+      const dataY = layout.yaxis.p2l(e.clientY - rect.top - layout.margin.t)
+      if (!Number.isFinite(dataY)) return
+      const clamped = +Math.max(0.3, Math.min(1.6, dataY)).toFixed(4)
+      const idx = dragRef.current.lsvcalIdx
+      setLsvcalNew(pts => pts.map((p, j) => j === idx ? { ...p, y: clamped } : p))
+      setFitDone(false)
+    }
+    const onUp = () => { dragRef.current = null }
+    plotEl.addEventListener('mousedown', onDown)
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+    return () => {
+      plotEl.removeEventListener('mousedown', onDown)
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+  }, [plotEl])
+
   const handleFit = () => {
     if (!expData || !expData.length) return
     const withX = lsvcalNew.filter(p => p.x !== null)
@@ -565,7 +835,7 @@ function LsvcalTab({ turbineId }) {
   return (
     <div>
       <div style={S.sectionHdr}>IGV Precontrol — LSVCAL Polynomial</div>
-      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+      <div className="sgt-lsvcal-tables" style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
 
         {/* OLD (from DB) */}
         <div style={{ flexShrink: 0 }}>
@@ -647,7 +917,7 @@ function LsvcalTab({ turbineId }) {
               <div style={{ fontSize: '0.72rem', color: '#9888B8', marginBottom: '0.4rem' }}>
                 {expData.length} points (from CSV)
               </div>
-              <div style={{ maxHeight: 200, overflowY: 'auto', border: '1px solid #D0C4E8', borderRadius: 4, display: 'inline-block' }}>
+              <div className="sgt-csv-scroll" style={{ maxHeight: 200, overflowY: 'auto', border: '1px solid #D0C4E8', borderRadius: 4, display: 'inline-block' }}>
                 <table style={{ ...S.table, width: 'auto' }}>
                   <thead><tr>
                     <th style={{ ...S.th, textAlign: 'right' }}>YMINCAL</th>
@@ -674,17 +944,44 @@ function LsvcalTab({ turbineId }) {
       </div>
 
       {/* Chart */}
-      <div style={{ marginTop: '1.25rem' }}>
-        <div style={S.chartTitle}>LSVCAL / V300 — YMINCAL vs LSVSW</div>
+      <div className="sgt-lsvcal-wrap" style={{ marginTop: '1.25rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
+          <div style={S.chartTitle}>LSVCAL / V300 — YMINCAL vs LSVSW</div>
+          {validNew.length >= 1 && (
+            <button
+              onClick={() => { setEditMode(m => !m); hoverRef.current = null; dragRef.current = null; if (plotEl) plotEl.style.cursor = '' }}
+              style={{
+                fontSize: '0.73rem', padding: '2px 10px', borderRadius: 4,
+                border: `1px solid ${editMode ? '#CC2222' : '#9888B8'}`,
+                background: editMode ? '#CC2222' : 'transparent',
+                color: editMode ? '#fff' : '#6A50A0',
+                cursor: 'pointer', fontWeight: 600, flexShrink: 0,
+              }}
+            >{editMode ? '✎ Drag mode ON — click off to zoom' : '✎ Drag NEW points'}</button>
+          )}
+          {editMode && <span style={{ fontSize: '0.68rem', color: '#CC2222' }}>drag markers up/down to adjust LSVSW</span>}
+        </div>
         <Plot
           data={[
             ...(expData ? [{ x: expData.map(p => p.ymincal), y: expData.map(p => p.lsvsw), type: 'scatter', mode: 'lines+markers', line: { color: '#E06B00', width: 1 }, marker: { color: '#E06B00', size: 4, opacity: 0.75 }, name: 'Experimental' }] : []),
             ...(validOld.length >= 2 ? [{ x: validOld.map(p => p.x), y: validOld.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#5B8BC8', width: 2 }, marker: { color: '#5B8BC8', size: 7, symbol: 'square' }, name: 'LSVCAL old' }] : []),
-            ...(validNew.length >= 2 ? [{ x: validNew.map(p => p.x), y: validNew.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#CC2222', width: 2 }, marker: { color: '#CC2222', size: 6 }, name: 'LSVCAL new' }] : []),
+            ...(validNew.length >= 2 ? [{ x: validNew.map(p => p.x), y: validNew.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#CC2222', width: 2 }, marker: { color: '#CC2222', size: editMode ? 10 : 6 }, name: 'LSVCAL new' }] : []),
           ]}
-          layout={PL('YMINCAL', 'LSVSW (LSVCAL / V300)')}
+          layout={{ ...PL('YMINCAL', 'LSVSW (LSVCAL / V300)'), dragmode: editMode ? false : 'zoom', uirevision: 'lsvcal' }}
           config={PC}
-          style={{ width: '100%', height: 'calc(100vh - 420px)', minHeight: 320 }}
+          onInitialized={(_, el) => setPlotEl(el)}
+          onHover={(data) => {
+            if (!editMode || !data.points?.length) { hoverRef.current = null; return }
+            const pt = data.points[0]
+            const newCurveNum = (expData ? 1 : 0) + (validOld.length >= 2 ? 1 : 0)
+            if (pt.curveNumber !== newCurveNum) { hoverRef.current = null; if (plotEl) plotEl.style.cursor = ''; return }
+            const lsvcalIdx = lsvcalNew.indexOf(validNew[pt.pointIndex])
+            if (lsvcalIdx < 0) { hoverRef.current = null; return }
+            hoverRef.current = { lsvcalIdx, ptIdx: pt.pointIndex }
+            if (plotEl) plotEl.style.cursor = 'ns-resize'
+          }}
+          onUnhover={() => { if (!dragRef.current) { hoverRef.current = null; if (plotEl) plotEl.style.cursor = '' } }}
+          style={{ width: 'calc(100% + 2.5rem)', marginLeft: '-1.25rem', height: 'calc(100vh - 160px)', minHeight: 650 }}
         />
       </div>
     </div>
@@ -875,9 +1172,12 @@ const S = {
   tableTitle:  { background: '#F7F3FC', border: '1px solid #D0C4E8', padding: '0.22rem 0.55rem', fontWeight: 700, fontSize: '0.78rem', color: '#5C3D99', marginBottom: 0 },
   table:       { borderCollapse: 'collapse', fontSize: '0.78rem' },
   th:          { background: '#5C3D99', color: '#ffffff', padding: '0.25rem 0.55rem', textAlign: 'left', fontWeight: 600, borderRight: '1px solid #3D2270', whiteSpace: 'nowrap' },
+  thSrel:      { background: '#3D2270', color: '#C4B0E0', padding: '0.25rem 0.45rem', textAlign: 'left', fontWeight: 400, fontSize: '0.64rem', fontStyle: 'italic', whiteSpace: 'nowrap' },
   td:          { padding: '0.18rem 0.55rem', borderBottom: '1px solid #EDE3F8', color: '#2A1A4A', whiteSpace: 'nowrap' },
   tdNum:       { padding: '0.18rem 0.55rem', borderBottom: '1px solid #EDE3F8', color: '#2A1A4A', whiteSpace: 'nowrap', textAlign: 'right', fontVariantNumeric: 'tabular-nums' },
   tdMono:      { padding: '0.18rem 0.55rem', borderBottom: '1px solid #EDE3F8', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.7rem', whiteSpace: 'nowrap' },
+  tdPort:      { padding: '0.18rem 0.5rem', borderBottom: '1px solid #EDE3F8', color: '#5C3D99', fontFamily: 'monospace', fontSize: '0.72rem', whiteSpace: 'nowrap', fontWeight: 600 },
+  tdSrel:      { padding: '0.18rem 0.45rem', borderBottom: '1px solid #EDE3F8', color: '#9888B8', fontFamily: 'monospace', fontSize: '0.68rem', whiteSpace: 'nowrap' },
   rowEven:     { background: '#F7F3FC' },
   rowOdd:      { background: '#ffffff' },
   btn:         { padding: '0.28rem 0.7rem', fontSize: '0.78rem', background: '#5C3D99', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontWeight: 600 },
@@ -893,6 +1193,7 @@ const TABS = [
   { id: 'sheet2', label: 'Parameters' },
   { id: 'lsvcal', label: 'IGV LSVCAL' },
   { id: 'ymin',   label: 'YMIN' },
+  { id: 'mba22',  label: 'MBA22' },
 ]
 
 export default function Sgt2000e() {
@@ -907,11 +1208,17 @@ export default function Sgt2000e() {
 
   const current = turbines.find(t => String(t.id) === String(turbineId))
 
+  const switchTab = (id) => {
+    setTab(id)
+    // Plotly charts in display:none containers need a resize signal to fill correctly
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 60)
+  }
+
   return (
     <div style={pg.root}>
       {/* Topbar */}
       <div style={pg.topbar} className="no-print">
-        <span style={pg.label}>Turbine (SGT-2000E):</span>
+        <span style={pg.label}>Turbine:</span>
         <select value={turbineId || ''} onChange={e => navigate(e.target.value ? `/sgt2000e/${e.target.value}` : '/sgt2000e')} style={pg.select}>
           <option value=''>— select —</option>
           {turbines.map(t => <option key={t.id} value={t.id}>{t.name}{t.type ? ` — ${t.type}` : ''}</option>)}
@@ -922,12 +1229,15 @@ export default function Sgt2000e() {
             No SGT5/6-2000E turbines imported yet — import a JAR/SREL and set Model = SGT5/6-2000E
           </span>
         )}
+        <div style={{ marginLeft: 'auto' }}>
+          <button onClick={() => window.print()} style={pg.printBtn}>⎙ Print / Save PDF</button>
+        </div>
       </div>
 
       {/* Tab bar */}
       <div style={pg.tabBar} className="no-print">
         {TABS.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)}
+          <button key={t.id} onClick={() => switchTab(t.id)}
             style={{ ...pg.tab, ...(tab === t.id ? pg.tabActive : {}) }}>
             {t.label}
           </button>
@@ -936,9 +1246,10 @@ export default function Sgt2000e() {
 
       {/* Content — all tabs stay mounted to preserve state */}
       <div style={pg.content}>
-        <div style={{ display: tab === 'sheet2' ? 'block' : 'none' }}><Sheet2Tab /></div>
-        <div style={{ display: tab === 'lsvcal' ? 'block' : 'none' }}><LsvcalTab turbineId={turbineId} /></div>
-        <div style={{ display: tab === 'ymin'   ? 'block' : 'none' }}><YminTab /></div>
+        <div className="sgt-tab-sheet2" style={{ display: tab === 'sheet2' ? 'block' : 'none' }}><Sheet2Tab /></div>
+        <div className="sgt-tab-lsvcal" style={{ display: tab === 'lsvcal' ? 'block' : 'none' }}><LsvcalTab turbineId={turbineId} /></div>
+        <div className="sgt-tab-ymin"   style={{ display: tab === 'ymin'   ? 'block' : 'none' }}><YminTab /></div>
+        <div className="sgt-tab-mba22"  style={{ display: tab === 'mba22'  ? 'block' : 'none' }}><MBA22Tab turbineId={turbineId} /></div>
       </div>
     </div>
   )
@@ -954,4 +1265,5 @@ const pg = {
   tab:       { padding: '0.45rem 1.25rem', border: 'none', borderBottom: '2px solid transparent', cursor: 'pointer', fontSize: '0.83rem', background: 'transparent', color: '#9888B8', transition: 'all 0.15s' },
   tabActive: { borderBottom: '2px solid #5C3D99', color: '#5C3D99', fontWeight: 700, background: '#ffffff' },
   content:   { flex: 1, padding: '1rem 0.25rem 2rem' },
+  printBtn:  { fontSize: '0.78rem', padding: '0.22rem 0.8rem', borderRadius: 4, border: '1px solid #5C3D99', background: 'transparent', color: '#5C3D99', cursor: 'pointer', fontWeight: 600 },
 }

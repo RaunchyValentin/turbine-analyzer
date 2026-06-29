@@ -1,6 +1,8 @@
 ﻿import React, { useState, useRef } from 'react'
 import client from '../api/client'
 
+const TURBINE_TYPES = ['SGT5-2000E', 'SGT6-2000E', 'SGT5-4000F', 'SGT6-4000F']
+
 const S = {
   page:    { padding: '1.5rem', maxWidth: 720, fontFamily: 'system-ui, sans-serif' },
   h1:      { fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.2rem', color: '#2A1A4A' },
@@ -28,6 +30,7 @@ export default function Import() {
   const [selPrefix, setSelPrefix] = useState('')
   const [projectName, setProjectName] = useState('')
   const [turbineName, setTurbineName] = useState('')
+  const [turbineType, setTurbineType] = useState('')
   const [importing, setImporting] = useState(false)
   const [result, setResult]     = useState(null)  // {ok, msg}
   const inputRef = useRef()
@@ -37,6 +40,7 @@ export default function Import() {
     setPfxFile(f)
     setPrefixes([])
     setSelPrefix('')
+    setTurbineType('')
     setResult(null)
 
     if (f.name.toLowerCase().endsWith('.jar')) {
@@ -67,6 +71,7 @@ export default function Import() {
     fd.append('project_name', projectName.trim())
     fd.append('turbine_name', unitName.trim())
     fd.append('kks_prefix', prefix)
+    if (turbineType.trim()) fd.append('turbine_type', turbineType.trim())
     const r = await client.post('/import/create', fd)
     return r.data
   }
@@ -185,6 +190,13 @@ export default function Import() {
             <div style={S.col}>
               <label style={S.label}>Turbine / unit name</label>
               <input style={S.input} value={turbineName} onChange={e => setTurbineName(e.target.value)} placeholder="e.g. GT31" />
+            </div>
+            <div style={S.col}>
+              <label style={S.label}>Model</label>
+              <select style={S.input} value={turbineType} onChange={e => setTurbineType(e.target.value)}>
+                <option value="">— select —</option>
+                {TURBINE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
             </div>
           </div>
 
