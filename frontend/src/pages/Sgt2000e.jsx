@@ -347,16 +347,16 @@ const PC = { displayModeBar: false, responsive: true }
 const portOf = srel => srel.includes('|') ? srel.split('|')[1] : srel
 
 function Sheet2Tab({ turbineId }) {
-  const [startup,    setStartup]    = useState(() => STARTUP_PARAMS.map(p => ({ ...p })))
-  const [baseload,   setBaseload]   = useState(() => BASELOAD_DATA.map(p => ({ ...p })))
-  const [changeover, setChangeover] = useState(() => CHANGEOVER_DATA.map(p => ({ ...p })))
+  const [startup,    setStartup]    = useState(() => STARTUP_PARAMS.map(p => ({ ...p, value: null })))
+  const [baseload,   setBaseload]   = useState(() => BASELOAD_DATA.map(p => ({ ...p, value: null })))
+  const [changeover, setChangeover] = useState(() => CHANGEOVER_DATA.map(p => ({ ...p, value: null })))
   const [vbTrip,     setVbTrip]     = useState('')
   const [pilotGas,   setPilotGas]   = useState(() => PILOT_GAS_DEFAULT.map(p => ({ ...p })))
   const [showSrel,   setShowSrel]   = useState(false)
-  const [runupPts,   setRunupPts]   = useState(() => RUNUP_LIMIT.map(p => ({ ...p })))
-  const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p })))
-  const [f6Pts,      setF6Pts]      = useState(() => F6_DATA.map(p => ({ ...p })))
-  const [premixPts,  setPremixPts]  = useState(() => PREMIX_KV.map(p => ({ ...p })))
+  const [runupPts,   setRunupPts]   = useState(() => RUNUP_LIMIT.map(p => ({ ...p, x: null, y: null })))
+  const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p, x: null, y: null })))
+  const [f6Pts,      setF6Pts]      = useState(() => F6_DATA.map(p => ({ ...p, x: null, y: null })))
+  const [premixPts,  setPremixPts]  = useState(() => PREMIX_KV.map(p => ({ ...p, flow: null, lfit: null })))
   const [loadNote,   setLoadNote]   = useState(null)
 
   useEffect(() => {
@@ -527,10 +527,10 @@ function Sheet2Tab({ turbineId }) {
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{portOf(p.srelX)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
-                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x ?? '—'}</td>
                   <td style={S.tdPort}>{portOf(p.srelY)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
-                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y ?? '—'}</td>
                 </tr>
               ))}</tbody>
             </table>
@@ -562,10 +562,10 @@ function Sheet2Tab({ turbineId }) {
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{portOf(p.srelX)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
-                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x ?? '—'}</td>
                   <td style={S.tdPort}>{portOf(p.srelY)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
-                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y.toFixed(3)}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y != null ? p.y.toFixed(3) : '—'}</td>
                 </tr>
               ))}</tbody>
             </table>
@@ -597,10 +597,10 @@ function Sheet2Tab({ turbineId }) {
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{portOf(p.srelX)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
-                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x ?? '—'}</td>
                   <td style={S.tdPort}>{portOf(p.srelY)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
-                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y.toFixed(3)}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y != null ? p.y.toFixed(3) : '—'}</td>
                 </tr>
               ))}</tbody>
             </table>
@@ -632,10 +632,10 @@ function Sheet2Tab({ turbineId }) {
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{portOf(p.srelX)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
-                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.flow}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.flow ?? '—'}</td>
                   <td style={S.tdPort}>{portOf(p.srelY)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
-                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.lfit}</td>
+                  <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.lfit ?? '—'}</td>
                 </tr>
               ))}</tbody>
             </table>
@@ -668,17 +668,17 @@ function Sheet2Tab({ turbineId }) {
                 </tr></thead>
                 <tbody>{f4Pts.map((p4, i) => {
                   const p6 = f6Pts[i] ?? f6Pts[f6Pts.length - 1]
-                  const sum = +(p4.y + p6.y).toFixed(3)
+                  const sum = p4.y != null && p6.y != null ? +(p4.y + p6.y).toFixed(3) : null
                   return (
                     <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                       <td style={S.tdPort}>{portOf(p4.srelY)}</td>
                       {showSrel && <td style={S.tdSrel}>{p4.srelY}</td>}
-                      <td style={S.tdNum}>{p4.y.toFixed(3)}</td>
-                      <td style={S.tdNum}>{p6.x}</td>
+                      <td style={S.tdNum}>{p4.y != null ? p4.y.toFixed(3) : '—'}</td>
+                      <td style={S.tdNum}>{p6.x ?? '—'}</td>
                       <td style={S.tdPort}>{portOf(p6.srelY)}</td>
                       {showSrel && <td style={S.tdSrel}>{p6.srelY}</td>}
-                      <td style={S.tdNum}>{p6.y.toFixed(3)}</td>
-                      <td style={{ ...S.tdNum, fontWeight: 700, color: '#3D2270', background: '#F0EDFA' }}>{sum}</td>
+                      <td style={S.tdNum}>{p6.y != null ? p6.y.toFixed(3) : '—'}</td>
+                      <td style={{ ...S.tdNum, fontWeight: 700, color: '#3D2270', background: '#F0EDFA' }}>{sum ?? '—'}</td>
                     </tr>
                   )
                 })}</tbody>
@@ -688,7 +688,7 @@ function Sheet2Tab({ turbineId }) {
             <Plot
               data={[{
                 x: f4Pts.map((_, i) => (f6Pts[i] ?? f6Pts[f6Pts.length - 1]).x),
-                y: f4Pts.map((p4, i) => +(p4.y + (f6Pts[i] ?? f6Pts[f6Pts.length - 1]).y).toFixed(3)),
+                y: f4Pts.map((p4, i) => { const p6 = f6Pts[i] ?? f6Pts[f6Pts.length - 1]; return p4.y != null && p6.y != null ? +(p4.y + p6.y).toFixed(3) : null }),
                 type: 'scatter', mode: 'lines+markers',
                 line: { color: '#5C3D99', width: 2.5 }, marker: { size: 7, color: '#5C3D99' },
                 name: 'F4+F6 [kg/s]',
@@ -1039,13 +1039,30 @@ function LsvcalTab({ turbineId }) {
 
 const HAP_OLD = 0.8, HLL_OLD = 0.2, PAP_OLD = 113.4
 
-function YminTab() {
+function YminTab({ turbineId }) {
+  const [hapOld, setHapOld] = useState(HAP_OLD)
+  const [hllOld, setHllOld] = useState(HLL_OLD)
+  const [papOld, setPapOld] = useState(PAP_OLD)
   const [hap, setHap] = useState(null)
   const [hll, setHll] = useState(null)
   const [pap, setPap] = useState(null)
   const [expData, setExpData] = useState(null)
   const [csvError, setCsvError] = useState('')
   const fileRef = useRef()
+
+  useEffect(() => {
+    if (!turbineId) return
+    const fetch1 = search =>
+      client.get('/parameters', { params: { turbine_id: turbineId, search, limit: 1 } })
+        .then(r => parseFloat(r.data?.[0]?.value)).catch(() => NaN)
+    const loadAll = async () => {
+      const [h, l, p] = await Promise.all([fetch1('|HAP.10'), fetch1('|HLL.10'), fetch1('|PAP.10')])
+      if (Number.isFinite(h)) setHapOld(h)
+      if (Number.isFinite(l)) setHllOld(l)
+      if (Number.isFinite(p)) setPapOld(p)
+    }
+    loadAll()
+  }, [turbineId])
 
   const yminAt = (pel, h, l, p) => l + (h - l) * (pel / p)
   const calDN = (h, l) => h - l   // PAP = PN always → (HAP-HLL)/(PAP/PN) = HAP-HLL
@@ -1076,7 +1093,7 @@ function YminTab() {
     reader.readAsText(file)
   }
 
-  const lineOld = [0, PAP_OLD].map(pel => ({ pel, ymin: yminAt(pel, HAP_OLD, HLL_OLD, PAP_OLD) }))
+  const lineOld = [0, papOld].map(pel => ({ pel, ymin: yminAt(pel, hapOld, hllOld, papOld) }))
   const lineNew = hasNew ? [0, pap].map(pel => ({ pel, ymin: yminAt(pel, hap, hll, pap) })) : []
 
   return (
@@ -1097,10 +1114,10 @@ function YminTab() {
             </tr></thead>
             <tbody>
               {[
-                { p: 'HAP', old: HAP_OLD, val: hap, set: setHap, unit: '—', dec: 4 },
-                { p: 'HLL', old: HLL_OLD, val: hll, set: setHll, unit: '—', dec: 4 },
-                { p: 'PAP', old: PAP_OLD, val: pap, set: setPap, unit: 'MW', dec: 1 },
-                { p: 'PN',  old: PAP_OLD, val: pap, set: null,   unit: 'MW', dec: 1 },
+                { p: 'HAP', old: hapOld, val: hap, set: setHap, unit: '—', dec: 4 },
+                { p: 'HLL', old: hllOld, val: hll, set: setHll, unit: '—', dec: 4 },
+                { p: 'PAP', old: papOld, val: pap, set: setPap, unit: 'MW', dec: 1 },
+                { p: 'PN',  old: papOld, val: pap, set: null,   unit: 'MW', dec: 1 },
               ].map(({ p, old, val, set, unit, dec }, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={{ ...S.td, fontFamily: 'monospace', fontWeight: 700, color: '#5C3D99' }}>{p}</td>
@@ -1113,7 +1130,7 @@ function YminTab() {
               ))}
               <tr style={{ borderTop: '2px solid #D0C4E8' }}>
                 <td style={{ ...S.td, fontWeight: 700, color: '#6A50A0' }}>CALDN</td>
-                <td style={{ ...S.tdNum, color: '#9888B8' }}>{calDN(HAP_OLD, HLL_OLD).toFixed(4)}</td>
+                <td style={{ ...S.tdNum, color: '#9888B8' }}>{calDN(hapOld, hllOld).toFixed(4)}</td>
                 <td style={{ ...S.tdNum, background: '#f0fff4', fontWeight: 700, color: '#1a4d1a' }}>{hasNew ? calDN(hap, hll).toFixed(4) : <span style={{ color: '#B8A8DA' }}>—</span>}</td>
                 <td style={{ ...S.td, color: '#9888B8' }}>—</td>
               </tr>
@@ -1183,7 +1200,7 @@ function YminTab() {
                 x: lineOld.map(p => p.pel), y: lineOld.map(p => p.ymin),
                 type: 'scatter', mode: 'lines',
                 line: { color: '#9888B8', width: 2, dash: 'dash' },
-                name: `Old: HAP=${HAP_OLD}, HLL=${HLL_OLD}`,
+                name: `Old: HAP=${hapOld}, HLL=${hllOld}`,
               },
               ...(lineNew.length ? [{
                 x: lineNew.map(p => p.pel), y: lineNew.map(p => p.ymin),
@@ -1295,7 +1312,7 @@ export default function Sgt2000e() {
       <div style={pg.content}>
         <div className="sgt-tab-sheet2" style={{ display: tab === 'sheet2' ? 'block' : 'none' }}><Sheet2Tab turbineId={turbineId} /></div>
         <div className="sgt-tab-lsvcal" style={{ display: tab === 'lsvcal' ? 'block' : 'none' }}><LsvcalTab turbineId={turbineId} /></div>
-        <div className="sgt-tab-ymin"   style={{ display: tab === 'ymin'   ? 'block' : 'none' }}><YminTab /></div>
+        <div className="sgt-tab-ymin"   style={{ display: tab === 'ymin'   ? 'block' : 'none' }}><YminTab turbineId={turbineId} /></div>
         <div className="sgt-tab-mba22"  style={{ display: tab === 'mba22'  ? 'block' : 'none' }}><MBA22Tab turbineId={turbineId} /></div>
       </div>
     </div>
