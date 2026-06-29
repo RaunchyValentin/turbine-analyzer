@@ -65,13 +65,13 @@ const F4_DATA = [
   { port: 'A6', nameX: '|F4.130', portB: 'B6', nameY: '|F4.140', x: 100, y: 0.36 },
 ]
 const F6_DATA = [
-  { x: 300, y: 1,    srelX: 'MSPG.F6L.01', srelY: 'MSPG.F6H.01' },
-  { x: 360, y: 0.82, srelX: 'MSPG.F6L.02', srelY: 'MSPG.F6H.02' },
-  { x: 380, y: 0.77, srelX: 'MSPG.F6L.03', srelY: 'MSPG.F6H.03' },
-  { x: 430, y: 0.69, srelX: 'MSPG.F6L.04', srelY: 'MSPG.F6H.04' },
-  { x: 500, y: 0.42, srelX: 'MSPG.F6L.05', srelY: 'MSPG.F6H.05' },
-  { x: 520, y: 0.2,  srelX: 'MSPG.F6L.06', srelY: 'MSPG.F6H.06' },
-  { x: 530, y: 0,    srelX: 'MSPG.F6L.07', srelY: 'MSPG.F6H.07' },
+  { port: 'A1', nameX: '|F6.30',  portB: 'B1', nameY: '|F6.40',  x: 300, y: 1    },
+  { port: 'A2', nameX: '|F6.50',  portB: 'B2', nameY: '|F6.60',  x: 360, y: 0.82 },
+  { port: 'A3', nameX: '|F6.70',  portB: 'B3', nameY: '|F6.80',  x: 380, y: 0.77 },
+  { port: 'A4', nameX: '|F6.90',  portB: 'B4', nameY: '|F6.100', x: 430, y: 0.69 },
+  { port: 'A5', nameX: '|F6.110', portB: 'B5', nameY: '|F6.120', x: 500, y: 0.42 },
+  { port: 'A6', nameX: '|F6.130', portB: 'B6', nameY: '|F6.140', x: 520, y: 0.2  },
+  { port: 'A7', nameX: '|F6.150', portB: 'B7', nameY: '|F6.160', x: 530, y: 0    },
 ]
 const PREMIX_KV = [
   { idx: 1, flow: 0,       lfit: 0,   srelX: 'MBP15DG040|HSG0.V01', srelY: 'MBP15DG040|HSG0.W01' },
@@ -344,7 +344,7 @@ const PC = { displayModeBar: false, responsive: true }
 // ── Tab 1: Sheet2 ─────────────────────────────────────────────────────────────
 
 // "MBY10DG010|HL130.A01" → "HL130.A01";  "MSPG.F4L.01" → "MSPG.F4L.01"
-const portOf = srel => srel.includes('|') ? srel.split('|')[1] : srel
+const portOf = srel => srel ? (srel.includes('|') ? srel.split('|')[1] : srel) : '—'
 
 function Sheet2Tab({ turbineId }) {
   const [startup,    setStartup]    = useState(() => STARTUP_PARAMS.map(p => ({ ...p, value: null })))
@@ -355,7 +355,7 @@ function Sheet2Tab({ turbineId }) {
   const [showSrel,   setShowSrel]   = useState(false)
   const [runupPts,   setRunupPts]   = useState(() => RUNUP_LIMIT.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
   const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
-  const [f6Pts,      setF6Pts]      = useState(() => F6_DATA.map(p => ({ ...p, x: null, y: null })))
+  const [f6Pts,      setF6Pts]      = useState(() => F6_DATA.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
   const [premixPts,  setPremixPts]  = useState(() => PREMIX_KV.map(p => ({ ...p, flow: null, lfit: null })))
   const [atk56,      setAtk56]      = useState({ a5: { srel: null, value: null }, b5: { srel: null, value: null }, a6: { srel: null, value: null }, b6: { srel: null, value: null } })
   const [loadNote,   setLoadNote]   = useState(null)
@@ -412,6 +412,24 @@ function Sheet2Tab({ turbineId }) {
       return pts.filter(p => p.x != null || p.y != null).length
     }
 
+    const loadF6 = async () => {
+      const { data } = await client.get('/parameters', {
+        params: { turbine_id: turbineId, search: 'MBP15DG010|F6.', limit: 100 }
+      })
+      const rows = data || []
+      const findRow = suffix => {
+        const row = rows.find(p => p.name.endsWith(suffix))
+        const kks = row?.kks || null, name = row?.name || null
+        return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
+      }
+      const pts = F6_DATA.map(r => {
+        const rx = findRow(r.nameX), ry = findRow(r.nameY)
+        return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
+      })
+      setF6Pts(pts)
+      return pts.filter(p => p.x != null || p.y != null).length
+    }
+
     const loadF4 = async () => {
       const { data } = await client.get('/parameters', {
         params: { turbine_id: turbineId, search: 'MBP15DG010|F4.', limit: 100 }
@@ -451,7 +469,7 @@ function Sheet2Tab({ turbineId }) {
         loadScalar(CHANGEOVER_DATA, setChangeover),
         loadRunup(),
         loadF4(),
-        loadPoly(F6_DATA,     setF6Pts,     'x',    'y'   ),
+        loadF6(),
         loadPoly(PREMIX_KV,   setPremixPts, 'flow', 'lfit'),
         loadAtkkor(),
       ])
@@ -658,20 +676,20 @@ function Sheet2Tab({ turbineId }) {
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
             <table style={S.table}>
               <thead><tr>
-                <th style={S.th}>Port</th>
-                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={S.th}>Port A</th>
+                <th style={S.thSrel}>SREL</th>
                 <th style={{ ...S.th, textAlign: 'right' }}>ATK [°C]</th>
-                <th style={S.th}>Port</th>
-                {showSrel && <th style={S.thSrel}>SREL</th>}
+                <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
+                <th style={S.thSrel}>SREL</th>
                 <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
               </tr></thead>
               <tbody>{f6Pts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-                  <td style={S.tdPort}>{portOf(p.srelX)}</td>
-                  {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
+                  <td style={S.tdPort}>{p.port}</td>
+                  <td style={S.tdSrel}>{p.srelX || '—'}</td>
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x ?? '—'}</td>
-                  <td style={S.tdPort}>{portOf(p.srelY)}</td>
-                  {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
+                  <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{p.portB}</td>
+                  <td style={S.tdSrel}>{p.srelY || '—'}</td>
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y != null ? p.y.toFixed(3) : '—'}</td>
                 </tr>
               ))}</tbody>
@@ -729,12 +747,12 @@ function Sheet2Tab({ turbineId }) {
             <div>
               <table style={S.table}>
                 <thead><tr>
-                  <th style={S.th}>Port F4.y</th>
-                  {showSrel && <th style={S.thSrel}>SREL</th>}
+                  <th style={S.th}>Port F4.B</th>
+                  <th style={S.thSrel}>SREL</th>
                   <th style={{ ...S.th, textAlign: 'right' }}>F4 [kg/s]</th>
                   <th style={{ ...S.th, textAlign: 'right' }}>ATK [°C]</th>
-                  <th style={S.th}>Port F6.y</th>
-                  {showSrel && <th style={S.thSrel}>SREL</th>}
+                  <th style={S.th}>Port F6.B</th>
+                  <th style={S.thSrel}>SREL</th>
                   <th style={{ ...S.th, textAlign: 'right' }}>F6 [kg/s]</th>
                   <th style={{ ...S.th, textAlign: 'right', background: '#3D2270' }}>F4+F6 [kg/s]</th>
                 </tr></thead>
@@ -743,12 +761,12 @@ function Sheet2Tab({ turbineId }) {
                   const sum = p4.y != null && p6.y != null ? +(p4.y + p6.y).toFixed(3) : null
                   return (
                     <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-                      <td style={S.tdPort}>{portOf(p4.srelY)}</td>
-                      {showSrel && <td style={S.tdSrel}>{p4.srelY}</td>}
+                      <td style={S.tdPort}>{p4.portB}</td>
+                      <td style={S.tdSrel}>{p4.srelY || '—'}</td>
                       <td style={S.tdNum}>{p4.y != null ? p4.y.toFixed(3) : '—'}</td>
                       <td style={S.tdNum}>{p6.x ?? '—'}</td>
-                      <td style={S.tdPort}>{portOf(p6.srelY)}</td>
-                      {showSrel && <td style={S.tdSrel}>{p6.srelY}</td>}
+                      <td style={S.tdPort}>{p6.portB}</td>
+                      <td style={S.tdSrel}>{p6.srelY || '—'}</td>
                       <td style={S.tdNum}>{p6.y != null ? p6.y.toFixed(3) : '—'}</td>
                       <td style={{ ...S.tdNum, fontWeight: 700, color: '#3D2270', background: '#F0EDFA' }}>{sum ?? '—'}</td>
                     </tr>
