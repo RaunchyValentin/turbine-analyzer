@@ -49,12 +49,12 @@ const PILOT_GAS_DEFAULT = [
 ]
 
 const RUNUP_LIMIT = [
-  { x: 0,   y: 0.03, srelX: 'MBY10DG010|HL130.A01', srelY: 'MBY10DG010|HL130.B01' },
-  { x: 16,  y: 0.07, srelX: 'MBY10DG010|HL130.A02', srelY: 'MBY10DG010|HL130.B02' },
-  { x: 32,  y: 0.11, srelX: 'MBY10DG010|HL130.A03', srelY: 'MBY10DG010|HL130.B03' },
-  { x: 48,  y: 0.26, srelX: 'MBY10DG010|HL130.A04', srelY: 'MBY10DG010|HL130.B04' },
-  { x: 60,  y: 0.3,  srelX: 'MBY10DG010|HL130.A05', srelY: 'MBY10DG010|HL130.B05' },
-  { x: 200, y: 0.3,  srelX: 'MBY10DG010|HL130.A06', srelY: 'MBY10DG010|HL130.B06' },
+  { port: 'A1', nameX: '|HL130.30',  portB: 'B1', nameY: '|HL130.40',  x: 0,   y: 0.03 },
+  { port: 'A2', nameX: '|HL130.50',  portB: 'B2', nameY: '|HL130.60',  x: 16,  y: 0.07 },
+  { port: 'A3', nameX: '|HL130.70',  portB: 'B3', nameY: '|HL130.80',  x: 32,  y: 0.11 },
+  { port: 'A4', nameX: '|HL130.90',  portB: 'B4', nameY: '|HL130.100', x: 48,  y: 0.26 },
+  { port: 'A5', nameX: '|HL130.110', portB: 'B5', nameY: '|HL130.120', x: 60,  y: 0.3  },
+  { port: 'A6', nameX: '|HL130.130', portB: 'B6', nameY: '|HL130.140', x: 200, y: 0.3  },
 ]
 const F4_DATA = [
   { x: 0,   y: 0.58, srelX: 'MSPG.F4L.01', srelY: 'MSPG.F4H.01' },
@@ -353,7 +353,7 @@ function Sheet2Tab({ turbineId }) {
   const [vbTrip,     setVbTrip]     = useState('')
   const [pilotGas,   setPilotGas]   = useState(() => PILOT_GAS_DEFAULT.map(p => ({ ...p })))
   const [showSrel,   setShowSrel]   = useState(false)
-  const [runupPts,   setRunupPts]   = useState(() => RUNUP_LIMIT.map(p => ({ ...p, x: null, y: null })))
+  const [runupPts,   setRunupPts]   = useState(() => RUNUP_LIMIT.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
   const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p, x: null, y: null })))
   const [f6Pts,      setF6Pts]      = useState(() => F6_DATA.map(p => ({ ...p, x: null, y: null })))
   const [premixPts,  setPremixPts]  = useState(() => PREMIX_KV.map(p => ({ ...p, flow: null, lfit: null })))
@@ -394,6 +394,15 @@ function Sheet2Tab({ turbineId }) {
       return [...xVals, ...yVals].filter(v => Number.isFinite(v)).length
     }
 
+    const loadRunup = async () => {
+      const reqs = await Promise.all(RUNUP_LIMIT.flatMap(r => [fetchFull(r.nameX), fetchFull(r.nameY)]))
+      setRunupPts(RUNUP_LIMIT.map((r, i) => {
+        const rx = reqs[i * 2], ry = reqs[i * 2 + 1]
+        return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
+      }))
+      return reqs.filter(v => Number.isFinite(v.value)).length
+    }
+
     const loadAtkkor = async () => {
       const [a5v, b5v, a6v, b6v] = await Promise.all([
         fetchFull('ATKKOR.110'), fetchFull('ATKKOR.120'),
@@ -413,7 +422,7 @@ function Sheet2Tab({ turbineId }) {
         loadScalar(STARTUP_PARAMS,  setStartup),
         loadScalar(BASELOAD_DATA,   setBaseload),
         loadScalar(CHANGEOVER_DATA, setChangeover),
-        loadPoly(RUNUP_LIMIT, setRunupPts,  'x',    'y'   ),
+        loadRunup(),
         loadPoly(F4_DATA,     setF4Pts,     'x',    'y'   ),
         loadPoly(F6_DATA,     setF6Pts,     'x',    'y'   ),
         loadPoly(PREMIX_KV,   setPremixPts, 'flow', 'lfit'),
@@ -552,20 +561,20 @@ function Sheet2Tab({ turbineId }) {
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', marginTop: 0 }}>
             <table style={S.table}>
               <thead><tr>
-                <th style={S.th}>Port</th>
-                {showSrel && <th style={S.thSrel}>SREL</th>}
-                <th style={{ ...S.th, textAlign: 'right' }}>Speed [%]</th>
-                <th style={S.th}>Port</th>
-                {showSrel && <th style={S.thSrel}>SREL</th>}
-                <th style={{ ...S.th, textAlign: 'right' }}>Setpoint [%]</th>
+                <th style={S.th}>Port A</th>
+                <th style={S.thSrel}>SREL</th>
+                <th style={{ ...S.th, textAlign: 'right' }}>Speed [s⁻¹]</th>
+                <th style={{ ...S.th, borderLeft: '2px solid #2A1A4A' }}>Port B</th>
+                <th style={S.thSrel}>SREL</th>
+                <th style={{ ...S.th, textAlign: 'right' }}>Setpoint [p.u.]</th>
               </tr></thead>
               <tbody>{runupPts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-                  <td style={S.tdPort}>{portOf(p.srelX)}</td>
-                  {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
+                  <td style={S.tdPort}>{p.port}</td>
+                  <td style={S.tdSrel}>{p.srelX || '—'}</td>
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x ?? '—'}</td>
-                  <td style={S.tdPort}>{portOf(p.srelY)}</td>
-                  {showSrel && <td style={S.tdSrel}>{p.srelY}</td>}
+                  <td style={{ ...S.tdPort, borderLeft: '2px solid #D0C4E8' }}>{p.portB}</td>
+                  <td style={S.tdSrel}>{p.srelY || '—'}</td>
                   <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y ?? '—'}</td>
                 </tr>
               ))}</tbody>
