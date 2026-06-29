@@ -1043,6 +1043,10 @@ function YminTab({ turbineId }) {
   const [hapOld, setHapOld] = useState(HAP_OLD)
   const [hllOld, setHllOld] = useState(HLL_OLD)
   const [papOld, setPapOld] = useState(PAP_OLD)
+  const [hapSrel,   setHapSrel]   = useState(null)
+  const [hllSrel,   setHllSrel]   = useState(null)
+  const [papSrel,   setPapSrel]   = useState(null)
+  const [caldnSrel, setCaldnSrel] = useState(null)
   const [hap, setHap] = useState(null)
   const [hll, setHll] = useState(null)
   const [pap, setPap] = useState(null)
@@ -1052,14 +1056,23 @@ function YminTab({ turbineId }) {
 
   useEffect(() => {
     if (!turbineId) return
-    const fetch1 = search =>
+    const fetchParam = search =>
       client.get('/parameters', { params: { turbine_id: turbineId, search, limit: 1 } })
-        .then(r => parseFloat(r.data?.[0]?.value)).catch(() => NaN)
+        .then(r => {
+          const row = r.data?.[0]
+          const kks  = row?.kks  || null
+          const name = row?.name || null
+          return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
+        })
+        .catch(() => ({ value: NaN, srel: null }))
     const loadAll = async () => {
-      const [h, l, p] = await Promise.all([fetch1('|HAP.10'), fetch1('|HLL.10'), fetch1('|PAP.10')])
-      if (Number.isFinite(h)) setHapOld(h)
-      if (Number.isFinite(l)) setHllOld(l)
-      if (Number.isFinite(p)) setPapOld(p)
+      const [h, l, p, c] = await Promise.all([
+        fetchParam('|HAP.10'), fetchParam('|HLL.10'), fetchParam('|PAP.10'), fetchParam('|CALDN.10'),
+      ])
+      if (Number.isFinite(h.value)) { setHapOld(h.value); setHapSrel(h.srel) }
+      if (Number.isFinite(l.value)) { setHllOld(l.value); setHllSrel(l.srel) }
+      if (Number.isFinite(p.value)) { setPapOld(p.value); setPapSrel(p.srel) }
+      if (c.srel) setCaldnSrel(c.srel)
     }
     loadAll()
   }, [turbineId])
@@ -1103,24 +1116,29 @@ function YminTab({ turbineId }) {
 
         {/* Parameter table + controls */}
         <div style={{ flexShrink: 0, minWidth: 330 }}>
-          <div style={S.tableTitle}>YMIN = HLL + (HAP − HLL) × (PEL / PAP)</div>
+          <div style={{ ...S.tableTitle, lineHeight: 1.3 }}>
+            <div>YMIN = HLL + (HAP − HLL) × (PEL / PAP)</div>
+            <div style={{ fontWeight: 400, fontSize: '0.64rem', fontFamily: 'monospace', color: '#9888B8', marginTop: 1 }}>MBY10DU050</div>
+          </div>
           <div style={{ ...S.note, padding: '0.2rem 0.55rem' }}>CALDN = (HAP−HLL)/(PAP/PN)</div>
           <table style={S.table}>
             <thead><tr>
               <th style={S.th}>Parameter</th>
+              <th style={S.thSrel}>SREL</th>
               <th style={{ ...S.th, textAlign: 'right' }}>Old</th>
               <th style={{ ...S.th, textAlign: 'right', background: '#3D2270' }}>New (editable)</th>
               <th style={S.th}>Unit</th>
             </tr></thead>
             <tbody>
               {[
-                { p: 'HAP', old: hapOld, val: hap, set: setHap, unit: '—', dec: 4 },
-                { p: 'HLL', old: hllOld, val: hll, set: setHll, unit: '—', dec: 4 },
-                { p: 'PAP', old: papOld, val: pap, set: setPap, unit: 'MW', dec: 1 },
-                { p: 'PN',  old: papOld, val: pap, set: null,   unit: 'MW', dec: 1 },
-              ].map(({ p, old, val, set, unit, dec }, i) => (
+                { p: 'HAP', old: hapOld, val: hap, set: setHap, unit: '—', dec: 4, srel: hapSrel },
+                { p: 'HLL', old: hllOld, val: hll, set: setHll, unit: '—', dec: 4, srel: hllSrel },
+                { p: 'PAP', old: papOld, val: pap, set: setPap, unit: 'MW', dec: 1, srel: papSrel },
+                { p: 'PN',  old: papOld, val: pap, set: null,   unit: 'MW', dec: 1, srel: papSrel },
+              ].map(({ p, old, val, set, unit, dec, srel }, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={{ ...S.td, fontFamily: 'monospace', fontWeight: 700, color: '#5C3D99' }}>{p}</td>
+                  <td style={S.tdSrel}>{srel || '—'}</td>
                   <td style={{ ...S.tdNum, color: '#9888B8' }}>{old.toFixed(dec)}</td>
                   <td style={{ ...S.tdNum, background: '#F0F4FF' }}>
                     {set ? <EditCell value={val} onChange={set} dec={dec} /> : (val !== null ? <strong>{val.toFixed(dec)}</strong> : <span style={{ color: '#B8A8DA' }}>—</span>)}
@@ -1130,6 +1148,7 @@ function YminTab({ turbineId }) {
               ))}
               <tr style={{ borderTop: '2px solid #D0C4E8' }}>
                 <td style={{ ...S.td, fontWeight: 700, color: '#6A50A0' }}>CALDN</td>
+                <td style={S.tdSrel}>{caldnSrel || '—'}</td>
                 <td style={{ ...S.tdNum, color: '#9888B8' }}>{calDN(hapOld, hllOld).toFixed(4)}</td>
                 <td style={{ ...S.tdNum, background: '#f0fff4', fontWeight: 700, color: '#1a4d1a' }}>{hasNew ? calDN(hap, hll).toFixed(4) : <span style={{ color: '#B8A8DA' }}>—</span>}</td>
                 <td style={{ ...S.td, color: '#9888B8' }}>—</td>

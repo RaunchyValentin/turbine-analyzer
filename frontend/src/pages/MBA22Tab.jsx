@@ -4,27 +4,27 @@ import client from '../api/client'
 
 // ── Static data (2000_e_test.xlsx sheet MBA22) ─────────────────────────────────
 const TC_SENSORS = [
-  { id: 'MBA22CT102B', tMax: 0, mode: 'DO/PO', tci: 31.47,   n: 59.9596, alarmSrel: 'TT.ATK.M02', tripSrel: 'TT.ATK.S02', oldAlarm: 596.6, oldTrip: 622.6 },
-  { id: 'MBA22CT103B', tMax: 0, mode: 'DO/PO', tci: 33.0333, n: 59.9674, alarmSrel: 'TT.ATK.M03', tripSrel: 'TT.ATK.S03', oldAlarm: 597.5, oldTrip: 623.5 },
-  { id: 'MBA22CT104B', tMax: 0, mode: 'DO/PO', tci: 32.97,   n: 60.0228, alarmSrel: 'TT.ATK.M04', tripSrel: 'TT.ATK.S04', oldAlarm: 616,   oldTrip: 642   },
-  { id: 'MBA22CT105B', tMax: 0, mode: 'DO/PO', tci: 33.0333, n: 59.975,  alarmSrel: 'TT.ATK.M05', tripSrel: 'TT.ATK.S05', oldAlarm: 600,   oldTrip: 630   },
-  { id: 'MBA22CT106B', tMax: 0, mode: 'DO/PO', tci: 32.9667, n: 59.9591, alarmSrel: 'TT.ATK.M06', tripSrel: 'TT.ATK.S06', oldAlarm: 625.9, oldTrip: 651.9 },
-  { id: 'MBA22CT107B', tMax: 0, mode: 'DO/PO', tci: 31.4667, n: 59.9596, alarmSrel: 'TT.ATK.M07', tripSrel: 'TT.ATK.S07', oldAlarm: 604.9, oldTrip: 630.9 },
-  { id: 'MBA22CT108B', tMax: 0, mode: 'DO/PO', tci: 32.7667, n: 60.0279, alarmSrel: 'TT.ATK.M08', tripSrel: 'TT.ATK.S08', oldAlarm: 601,   oldTrip: 627   },
-  { id: 'MBA22CT109B', tMax: 0, mode: 'DO',    tci: 32.9667, n: 59.9516, alarmSrel: 'TT.ATK.M09', tripSrel: 'TT.ATK.S09', oldAlarm: 600,   oldTrip: 630   },
+  { id: 'MBA22CT102B', tMax: 0, mode: 'DO', tci: 0, n: 50, alarmSrel: 'TT.ATK.M02', tripSrel: 'TT.ATK.S02', oldAlarm: 596.6, oldTrip: 622.6 },
+  { id: 'MBA22CT103B', tMax: 0, mode: 'DO', tci: 0, n: 50, alarmSrel: 'TT.ATK.M03', tripSrel: 'TT.ATK.S03', oldAlarm: 597.5, oldTrip: 623.5 },
+  { id: 'MBA22CT104B', tMax: 0, mode: 'DO', tci: 0, n: 50, alarmSrel: 'TT.ATK.M04', tripSrel: 'TT.ATK.S04', oldAlarm: 616,   oldTrip: 642   },
+  { id: 'MBA22CT105B', tMax: 0, mode: 'DO', tci: 0, n: 50, alarmSrel: 'TT.ATK.M05', tripSrel: 'TT.ATK.S05', oldAlarm: 600,   oldTrip: 630   },
+  { id: 'MBA22CT106B', tMax: 0, mode: 'DO', tci: 0, n: 50, alarmSrel: 'TT.ATK.M06', tripSrel: 'TT.ATK.S06', oldAlarm: 625.9, oldTrip: 651.9 },
+  { id: 'MBA22CT107B', tMax: 0, mode: 'DO', tci: 0, n: 50, alarmSrel: 'TT.ATK.M07', tripSrel: 'TT.ATK.S07', oldAlarm: 604.9, oldTrip: 630.9 },
+  { id: 'MBA22CT108B', tMax: 0, mode: 'DO', tci: 0, n: 50, alarmSrel: 'TT.ATK.M08', tripSrel: 'TT.ATK.S08', oldAlarm: 601,   oldTrip: 627   },
+  { id: 'MBA22CT109B', tMax: 0, mode: 'DO', tci: 0, n: 50, alarmSrel: 'TT.ATK.M09', tripSrel: 'TT.ATK.S09', oldAlarm: 600,   oldTrip: 630   },
 ]
 
 const IMBALANCE_MODES = ['DO BL', 'PO BL', 'CC PO']
 
 const IMBALANCE_DEFAULT = {
-  'MBA22CT102B': [613.3,  603.5,  602.08],
-  'MBA22CT103B': [605.6,  596.3,  604.6 ],
-  'MBA22CT104B': [588.72, 582.9,  601.8 ],
-  'MBA22CT105B': [557.27, 572.14, 564.78],
-  'MBA22CT106B': [562.7,  568.15, 566.8 ],
-  'MBA22CT107B': [587.2,  581.1,  574.5 ],
-  'MBA22CT108B': [593.3,  589.6,  583.5 ],
-  'MBA22CT109B': [539.8,  539.7,  549.66],
+  'MBA22CT102B': [0, 0, 0],
+  'MBA22CT103B': [0, 0, 0],
+  'MBA22CT104B': [0, 0, 0],
+  'MBA22CT105B': [0, 0, 0],
+  'MBA22CT106B': [0, 0, 0],
+  'MBA22CT107B': [0, 0, 0],
+  'MBA22CT108B': [0, 0, 0],
+  'MBA22CT109B': [0, 0, 0],
 }
 
 // ── Formulas (from Excel MBA22) ────────────────────────────────────────────────
