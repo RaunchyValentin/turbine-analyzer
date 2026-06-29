@@ -395,12 +395,21 @@ function Sheet2Tab({ turbineId }) {
     }
 
     const loadRunup = async () => {
-      const reqs = await Promise.all(RUNUP_LIMIT.flatMap(r => [fetchFull(r.nameX), fetchFull(r.nameY)]))
-      setRunupPts(RUNUP_LIMIT.map((r, i) => {
-        const rx = reqs[i * 2], ry = reqs[i * 2 + 1]
+      const { data } = await client.get('/parameters', {
+        params: { turbine_id: turbineId, search: '|HL130.', limit: 100 }
+      })
+      const rows = data || []
+      const findRow = suffix => {
+        const row = rows.find(p => p.name.endsWith(suffix))
+        const kks = row?.kks || null, name = row?.name || null
+        return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
+      }
+      const pts = RUNUP_LIMIT.map(r => {
+        const rx = findRow(r.nameX), ry = findRow(r.nameY)
         return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
-      }))
-      return reqs.filter(v => Number.isFinite(v.value)).length
+      })
+      setRunupPts(pts)
+      return pts.filter(p => p.x != null || p.y != null).length
     }
 
     const loadAtkkor = async () => {
