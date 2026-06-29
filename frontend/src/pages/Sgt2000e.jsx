@@ -21,10 +21,11 @@ const STARTUP_PARAMS = [
 ]
 
 const BASELOAD_DATA = [
-  { srel: 'EGGLK', desc: 'Baseload CC',  value: 535, unit: '°C' },
-  { srel: 'EGSLK', desc: 'Peak load CC', value: 535, unit: '°C' },
-  { srel: 'EGSL',  desc: 'Peak load SC', value: 535, unit: '°C' },
-  { srel: 'EGGL',  desc: 'Simple cycle', value: 535, unit: '°C' },
+  { srel: 'EGGLK',      desc: 'Baseload CC',    value: 535, unit: '°C' },
+  { srel: 'EGSLK',      desc: 'Peak load CC',   value: 535, unit: '°C' },
+  { srel: 'EGSL',       desc: 'Peak load SC',   value: 535, unit: '°C' },
+  { srel: 'EGGL',       desc: 'Simple cycle',   value: 535, unit: '°C' },
+  { srel: 'TT.ATK.D04', desc: 'Part load OTC',  value: 0,   unit: '°C' },
 ]
 
 const CHANGEOVER_DATA = [
@@ -104,30 +105,48 @@ const YMIN_EXP = [
 
 // ── Math utils ───────────────────────────────────────────────────────────────
 
-function loessAt(xs, ys, x0, bw) {
-  let sw = 0, swy = 0
+// Local linear LOESS (1st-order) — fits y = a + b*x locally via WLS
+function loessLinearAt(xs, ys, x0, bw) {
+  let sw=0, swx=0, swx2=0, swy=0, swxy=0
   for (let i = 0; i < xs.length; i++) {
     const d = (xs[i] - x0) / bw
     const w = Math.exp(-0.5 * d * d)
-    sw += w; swy += w * ys[i]
+    sw += w; swx += w*xs[i]; swx2 += w*xs[i]*xs[i]
+    swy += w*ys[i]; swxy += w*xs[i]*ys[i]
   }
-  return sw < 1e-12 ? null : swy / sw
-}
-
-function adaptiveBw(xs, x0, k) {
-  const dists = xs.map(x => Math.abs(x - x0)).sort((a, b) => a - b)
-  const span = Math.max(...xs) - Math.min(...xs)
-  return Math.max(dists[Math.min(k, dists.length - 1)], span * 0.02, 1e-6)
+  if (sw < 1e-12) return null
+  const det = sw*swx2 - swx*swx
+  if (det < 1e-12) return swy / sw  // fallback: weighted mean
+  const b = (sw*swxy - swx*swy) / det
+  const a = (swy - b*swx) / sw
+  return a + b*x0
 }
 
 function runLoessFit(expData, newPts) {
   if (!expData.length || !newPts.length) return newPts
   const xs = expData.map(p => p.ymincal)
   const ys = expData.map(p => p.lsvsw)
-  const K = Math.max(3, Math.min(8, Math.round(xs.length / 4)))
+  const yMin = Math.min(...ys), yMax = Math.max(...ys)
+  const tol = (yMax - yMin) * 0.05  // 5% of y-range as plateau tolerance
+
+  // Detect saturation edges from experimental data
+  const botPts = expData.filter(p => p.lsvsw <= yMin + tol)
+  const topPts = expData.filter(p => p.lsvsw >= yMax - tol)
+  const bottomEdge = botPts.length >= 2 ? Math.max(...botPts.map(p => p.ymincal)) : -Infinity
+  const topEdge    = topPts.length >= 2 ? Math.min(...topPts.map(p => p.ymincal)) :  Infinity
+
+  // LOESS only on linear segment (between plateaus)
+  const midData = expData.filter(p => p.ymincal > bottomEdge && p.ymincal < topEdge)
+  const mxs = midData.length >= 3 ? midData.map(p => p.ymincal) : xs
+  const mys = midData.length >= 3 ? midData.map(p => p.lsvsw)   : ys
+  const span = Math.max(...mxs) - Math.min(...mxs) || 1
+  const bw = span * 0.5
+
   return newPts.map(pt => {
-    const bw = adaptiveBw(xs, pt.x, K)
-    const y = loessAt(xs, ys, pt.x, bw)
+    let y
+    if (pt.x <= bottomEdge)   y = yMin
+    else if (pt.x >= topEdge) y = yMax
+    else                       y = loessLinearAt(mxs, mys, pt.x, bw)
     return { ...pt, y: y != null ? +y.toFixed(4) : pt.y }
   })
 }
@@ -138,18 +157,33 @@ function computeRMSE(exp, hap, hll, pap) {
   return Math.sqrt(ss / exp.length)
 }
 
+// Robust IRLS fit with Huber weights — resistant to outliers (hysteresis, noise)
 function autoFitYmin(exp, pap) {
-  let s11 = 0, s12 = 0, s22 = 0, sy1 = 0, sy2 = 0
-  exp.forEach(({ pel, ymin }) => {
-    const a = pel / pap, x1 = 1 - a, x2 = a
-    s11 += x1 * x1; s12 += x1 * x2; s22 += x2 * x2
-    sy1 += x1 * ymin; sy2 += x2 * ymin
-  })
-  const det = s11 * s22 - s12 * s12
-  if (Math.abs(det) < 1e-12) return null
-  const hll = Math.max(0, Math.min(1, (s22 * sy1 - s12 * sy2) / det))
-  const hap = Math.max(0, Math.min(1, (s11 * sy2 - s12 * sy1) / det))
-  return { hap: +hap.toFixed(4), hll: +hll.toFixed(4) }
+  const wls = (weights) => {
+    let s11=0, s12=0, s22=0, sy1=0, sy2=0
+    exp.forEach(({ pel, ymin }, i) => {
+      const w = weights ? weights[i] : 1
+      const a = pel / pap, x1 = 1 - a, x2 = a
+      s11 += w*x1*x1; s12 += w*x1*x2; s22 += w*x2*x2
+      sy1 += w*x1*ymin; sy2 += w*x2*ymin
+    })
+    const det = s11*s22 - s12*s12
+    if (Math.abs(det) < 1e-12) return null
+    return { hap: (s11*sy2 - s12*sy1)/det, hll: (s22*sy1 - s12*sy2)/det }
+  }
+  let r = wls(null)
+  if (!r) return null
+  for (let iter = 0; iter < 4; iter++) {
+    const resids = exp.map(({ pel, ymin }) => Math.abs(r.hll + (r.hap - r.hll) * (pel/pap) - ymin))
+    const sorted = [...resids].sort((a, b) => a - b)
+    const mad = sorted[Math.floor(sorted.length / 2)] || 1e-6
+    const delta = Math.max(mad * 1.5, 1e-6)
+    r = wls(resids.map(e => e <= delta ? 1 : delta / e)) || r
+  }
+  return {
+    hap: +Math.max(0, Math.min(1, r.hap)).toFixed(4),
+    hll: +Math.max(0, Math.min(1, r.hll)).toFixed(4),
+  }
 }
 
 // "step-after" line: hold Y until next X point
@@ -263,6 +297,23 @@ function Sheet2Tab() {
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <ParamTable rows={startup}  setter={setStartup}  title="Start-up Settings" />
         <ParamTable rows={baseload} setter={setBaseload} title="Baseload Settings" />
+
+        {/* HL130 Run-Up Limitation table */}
+        <div style={{ flexShrink: 0 }}>
+          <div style={S.tableTitle}>HL130 Run-Up Limitation</div>
+          <table style={S.table}>
+            <thead><tr>
+              <th style={{ ...S.th, textAlign: 'right' }}>Speed [%]</th>
+              <th style={{ ...S.th, textAlign: 'right' }}>Setpoint [%]</th>
+            </tr></thead>
+            <tbody>{RUNUP_LIMIT.map((p, i) => (
+              <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+                <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.x}</td>
+                <td style={{ ...S.tdNum, fontWeight: 700 }}>{p.y}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
 
         {/* Changeover Settings with VB trip row */}
         <div style={{ flexShrink: 0 }}>
@@ -425,11 +476,33 @@ function Sheet2Tab() {
 function LsvcalTab({ turbineId }) {
   const [lsvcalOld, setLsvcalOld] = useState(() => LSVCAL_OLD.map(p => ({ ...p })))
   const [lsvcalNew, setLsvcalNew] = useState(() => LSVCAL_OLD.map(p => ({ x: p.x, y: null })))
+  const [newSize,   setNewSize]   = useState(6)
   const [expData,   setExpData]   = useState(null)
   const [fitDone,   setFitDone]   = useState(false)
   const [csvError,  setCsvError]  = useState('')
   const [dbLoading, setDbLoading] = useState(false)
   const fileRef = useRef()
+
+  const changeNewSize = (n) => {
+    setNewSize(n)
+    setLsvcalNew(prev => {
+      if (n <= prev.length) return prev.slice(0, n)
+      const add = n - prev.length
+      const withX = [...prev].filter(p => p.x !== null).sort((a, b) => a.x - b.x)
+      if (withX.length < 2) {
+        return [...prev, ...Array(add).fill(null).map(() => ({ x: null, y: null }))]
+      }
+      // Find midpoints of the `add` largest gaps between existing breakpoints
+      const gaps = []
+      for (let i = 0; i < withX.length - 1; i++)
+        gaps.push({ gap: withX[i+1].x - withX[i].x, mid: +((withX[i].x + withX[i+1].x) / 2).toFixed(4) })
+      const newX = gaps.sort((a, b) => b.gap - a.gap).slice(0, add).map(g => g.mid)
+      const combined = [...prev, ...newX.map(x => ({ x, y: null }))]
+      combined.sort((a, b) => (a.x ?? Infinity) - (b.x ?? Infinity))
+      return combined
+    })
+    setFitDone(false)
+  }
 
   useEffect(() => {
     if (!turbineId) return
@@ -518,9 +591,18 @@ function LsvcalTab({ turbineId }) {
 
         {/* NEW (editable) */}
         <div style={{ flexShrink: 0 }}>
-          <div style={{ ...S.tableTitle, background: '#E8F5E9', color: '#1a4d1a', borderBottom: '1px solid #4caf7d44' }}>
+          <div style={{ ...S.tableTitle, background: '#E8F5E9', color: '#1a4d1a', borderBottom: '1px solid #4caf7d44', display: 'flex', alignItems: 'center', gap: 6 }}>
             LSVCAL new
-            {fitDone && <span style={{ fontWeight: 400, fontSize: '0.7rem', color: '#4caf7d', marginLeft: 6 }}>✓ fitted</span>}
+            {fitDone && <span style={{ fontWeight: 400, fontSize: '0.7rem', color: '#4caf7d' }}>✓ fitted</span>}
+            <span style={{ marginLeft: 'auto', display: 'flex', gap: 3 }}>
+              {[6, 10].map(n => (
+                <button key={n} onClick={() => changeNewSize(n)} style={{
+                  fontSize: '0.68rem', padding: '1px 7px', borderRadius: 3, border: '1px solid #4caf7d',
+                  background: newSize === n ? '#4caf7d' : 'transparent',
+                  color: newSize === n ? '#fff' : '#1a4d1a', cursor: 'pointer', fontWeight: 700,
+                }}>{n} pts</button>
+              ))}
+            </span>
           </div>
           <table style={S.table}>
             <thead><tr>
@@ -539,7 +621,7 @@ function LsvcalTab({ turbineId }) {
         </div>
 
         {/* CSV + experimental data */}
-        <div style={{ flex: '1 1 260px' }}>
+        <div style={{ flexShrink: 0, width: 'fit-content' }}>
           <div style={S.tableTitle}>Experimental Data (CSV)</div>
           <div style={{ fontSize: '0.72rem', color: '#6A50A0', marginBottom: '0.4rem' }}>
             Columns: <code>YMINCAL</code>, <code>LSVSW</code> (tab or comma)
@@ -565,8 +647,8 @@ function LsvcalTab({ turbineId }) {
               <div style={{ fontSize: '0.72rem', color: '#9888B8', marginBottom: '0.4rem' }}>
                 {expData.length} points (from CSV)
               </div>
-              <div style={{ maxHeight: 200, overflowY: 'auto', border: '1px solid #D0C4E8', borderRadius: 4 }}>
-                <table style={S.table}>
+              <div style={{ maxHeight: 200, overflowY: 'auto', border: '1px solid #D0C4E8', borderRadius: 4, display: 'inline-block' }}>
+                <table style={{ ...S.table, width: 'auto' }}>
                   <thead><tr>
                     <th style={{ ...S.th, textAlign: 'right' }}>YMINCAL</th>
                     <th style={{ ...S.th, textAlign: 'right' }}>LSVSW</th>
@@ -586,7 +668,7 @@ function LsvcalTab({ turbineId }) {
             </div>
           )}
           <div style={{ ...S.note, marginTop: '0.5rem' }}>
-            Fit: LOESS locally weighted, adaptive window. X breakpoints from "new" table, Y = fitted YMINCAL.
+            Fit: plateau detection (5% tolerance) + local linear LOESS on linear segment. YMINCAL breakpoints from "new" table → fitted LSVSW.
           </div>
         </div>
       </div>
@@ -602,7 +684,7 @@ function LsvcalTab({ turbineId }) {
           ]}
           layout={PL('YMINCAL', 'LSVSW (LSVCAL / V300)')}
           config={PC}
-          style={{ width: '100%', height: 300 }}
+          style={{ width: '100%', height: 'calc(100vh - 420px)', minHeight: 320 }}
         />
       </div>
     </div>
@@ -628,9 +710,14 @@ function YminTab() {
   const rmse = useMemo(() => (expData && hasNew) ? computeRMSE(expData, hap, hll, pap) : null, [expData, hap, hll, pap, hasNew])
 
   const handleAutoFit = () => {
-    if (!expData || pap === null) return
-    const r = autoFitYmin(expData, pap)
-    if (r) { setHap(r.hap); setHll(r.hll) }
+    if (!expData) return
+    const papEff = pap !== null ? pap : Math.max(...expData.map(p => p.pel))
+    const r = autoFitYmin(expData, papEff)
+    if (r) {
+      setHap(r.hap)
+      setHll(r.hll)
+      if (pap === null) setPap(+papEff.toFixed(1))
+    }
   }
 
   const handleCSV = (file) => {
@@ -700,11 +787,14 @@ function YminTab() {
             ) : (
               <div style={{ fontSize: '0.8rem', color: '#9888B8', marginBottom: '0.5rem' }}>Load CSV to compute RMSE</div>
             )}
-            <button style={{ ...S.btn, background: expData ? '#1a4d1a' : '#B8C8B8', cursor: expData ? 'pointer' : 'not-allowed' }}
+            <button
+              style={{ ...S.btn, background: expData ? '#1a4d1a' : '#B8C8B8', cursor: expData ? 'pointer' : 'not-allowed' }}
               onClick={handleAutoFit} disabled={!expData}>
               ⚡ Auto-fit HAP / HLL (Least Squares)
             </button>
-            <div style={{ ...S.note, marginTop: '0.25rem' }}>Minimizes RMSE via 2-variable normal equations</div>
+            <div style={{ ...S.note, marginTop: '0.25rem' }}>
+              {expData && pap === null ? 'PAP = max(PEL) из данных' : 'Robust IRLS (Huber weights, 4 iter) — устойчив к выбросам'}
+            </div>
           </div>
 
           {/* CSV */}
@@ -770,7 +860,7 @@ function YminTab() {
               yaxis: { ...PL('PEL [MW]', 'YMIN [−]').yaxis, range: [0.1, 0.9] },
             }}
             config={PC}
-            style={{ width: '100%', height: 360 }}
+            style={{ width: '100%', height: 'calc(100vh - 380px)', minHeight: 320 }}
           />
         </div>
       </div>
@@ -844,11 +934,11 @@ export default function Sgt2000e() {
         ))}
       </div>
 
-      {/* Content */}
+      {/* Content — all tabs stay mounted to preserve state */}
       <div style={pg.content}>
-        {tab === 'sheet2' && <Sheet2Tab />}
-        {tab === 'lsvcal' && <LsvcalTab turbineId={turbineId} />}
-        {tab === 'ymin'   && <YminTab />}
+        <div style={{ display: tab === 'sheet2' ? 'block' : 'none' }}><Sheet2Tab /></div>
+        <div style={{ display: tab === 'lsvcal' ? 'block' : 'none' }}><LsvcalTab turbineId={turbineId} /></div>
+        <div style={{ display: tab === 'ymin'   ? 'block' : 'none' }}><YminTab /></div>
       </div>
     </div>
   )
