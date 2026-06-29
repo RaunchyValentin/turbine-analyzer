@@ -583,7 +583,7 @@ function Sheet2Tab({ turbineId }) {
               x: runupPts.map(p => p.x), y: runupPts.map(p => p.y),
               type: 'scatter', mode: 'lines+markers',
               line: { color: '#5C3D99', width: 2 }, marker: { size: 5 }, name: 'Setpoint [%]',
-            }]} layout={PL('Speed [%]', 'Setpoint [%]')} config={PC} style={{ width: 300, height: 300 }} />
+            }]} layout={PL('Speed [s⁻¹]', 'Setpoint [p.u.]', { xaxis: { range: [null, 70] } })} config={PC} style={{ width: 300, height: 300 }} />
           </div>
         </div>
 
