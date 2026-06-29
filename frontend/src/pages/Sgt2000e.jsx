@@ -346,13 +346,59 @@ const PC = { displayModeBar: false, responsive: true }
 // "MBY10DG010|HL130.A01" → "HL130.A01";  "MSPG.F4L.01" → "MSPG.F4L.01"
 const portOf = srel => srel.includes('|') ? srel.split('|')[1] : srel
 
-function Sheet2Tab() {
+function Sheet2Tab({ turbineId }) {
   const [startup,    setStartup]    = useState(() => STARTUP_PARAMS.map(p => ({ ...p })))
   const [baseload,   setBaseload]   = useState(() => BASELOAD_DATA.map(p => ({ ...p })))
   const [changeover, setChangeover] = useState(() => CHANGEOVER_DATA.map(p => ({ ...p })))
   const [vbTrip,     setVbTrip]     = useState('')
   const [pilotGas,   setPilotGas]   = useState(() => PILOT_GAS_DEFAULT.map(p => ({ ...p })))
   const [showSrel,   setShowSrel]   = useState(false)
+  const [runupPts,   setRunupPts]   = useState(() => RUNUP_LIMIT.map(p => ({ ...p })))
+  const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p })))
+  const [f6Pts,      setF6Pts]      = useState(() => F6_DATA.map(p => ({ ...p })))
+  const [premixPts,  setPremixPts]  = useState(() => PREMIX_KV.map(p => ({ ...p })))
+  const [loadNote,   setLoadNote]   = useState(null)
+
+  useEffect(() => {
+    if (!turbineId) return
+    const fetch1 = search =>
+      client.get('/parameters', { params: { turbine_id: turbineId, search, limit: 1 } })
+        .then(r => parseFloat(r.data?.[0]?.value)).catch(() => NaN)
+
+    const loadScalar = async (arr, setter) => {
+      const vals = await Promise.all(arr.map(r => fetch1(r.srel)))
+      setter(arr.map((r, i) => Number.isFinite(vals[i]) ? { ...r, value: vals[i] } : r))
+      return vals.filter(v => Number.isFinite(v)).length
+    }
+
+    const loadPoly = async (arr, setter, xField, yField) => {
+      const [xVals, yVals] = await Promise.all([
+        Promise.all(arr.map(r => fetch1(r.srelX))),
+        Promise.all(arr.map(r => fetch1(r.srelY))),
+      ])
+      setter(arr.map((r, i) => ({
+        ...r,
+        [xField]: Number.isFinite(xVals[i]) ? xVals[i] : r[xField],
+        [yField]: Number.isFinite(yVals[i]) ? yVals[i] : r[yField],
+      })))
+      return [...xVals, ...yVals].filter(v => Number.isFinite(v)).length
+    }
+
+    const loadAll = async () => {
+      const counts = await Promise.all([
+        loadScalar(STARTUP_PARAMS,  setStartup),
+        loadScalar(BASELOAD_DATA,   setBaseload),
+        loadScalar(CHANGEOVER_DATA, setChangeover),
+        loadPoly(RUNUP_LIMIT, setRunupPts,  'x',    'y'   ),
+        loadPoly(F4_DATA,     setF4Pts,     'x',    'y'   ),
+        loadPoly(F6_DATA,     setF6Pts,     'x',    'y'   ),
+        loadPoly(PREMIX_KV,   setPremixPts, 'flow', 'lfit'),
+      ])
+      const total = counts.reduce((a, b) => a + b, 0)
+      if (total > 0) setLoadNote(`${total} values loaded from project`)
+    }
+    loadAll()
+  }, [turbineId])
 
   const updRow = (setter, i, v) => setter(rows => rows.map((r, j) => j === i ? { ...r, value: v } : r))
   const updPG  = (i, field, v) => setPilotGas(pts => pts.map((r, j) => j === i ? { ...r, [field]: v } : r))
@@ -387,6 +433,7 @@ function Sheet2Tab() {
   return (
     <div>
       <div style={S.sectionHdr}>GT Final Parameter Setting — SGT-2000E</div>
+      {loadNote && <div style={{ fontSize: '0.68rem', color: '#5C3D99', marginBottom: '0.4rem' }}>✓ {loadNote}</div>}
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <ParamTable rows={startup}  setter={setStartup}  title="Start-up Settings" />
         <ParamTable rows={baseload} setter={setBaseload} title="Baseload Settings" />
@@ -476,7 +523,7 @@ function Sheet2Tab() {
                 {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Setpoint [%]</th>
               </tr></thead>
-              <tbody>{RUNUP_LIMIT.map((p, i) => (
+              <tbody>{runupPts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{portOf(p.srelX)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
@@ -488,7 +535,7 @@ function Sheet2Tab() {
               ))}</tbody>
             </table>
             <Plot data={[{
-              x: RUNUP_LIMIT.map(p => p.x), y: RUNUP_LIMIT.map(p => p.y),
+              x: runupPts.map(p => p.x), y: runupPts.map(p => p.y),
               type: 'scatter', mode: 'lines+markers',
               line: { color: '#5C3D99', width: 2 }, marker: { size: 5 }, name: 'Setpoint [%]',
             }]} layout={PL('Speed [%]', 'Setpoint [%]')} config={PC} style={{ width: 300, height: 300 }} />
@@ -511,7 +558,7 @@ function Sheet2Tab() {
                 {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
               </tr></thead>
-              <tbody>{F4_DATA.map((p, i) => (
+              <tbody>{f4Pts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{portOf(p.srelX)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
@@ -523,7 +570,7 @@ function Sheet2Tab() {
               ))}</tbody>
             </table>
             <Plot data={[{
-              x: F4_DATA.map(p => p.x), y: F4_DATA.map(p => p.y),
+              x: f4Pts.map(p => p.x), y: f4Pts.map(p => p.y),
               type: 'scatter', mode: 'lines+markers',
               line: { color: '#5C3D99', width: 2 }, marker: { size: 5 }, name: 'F4 Flow [kg/s]',
             }]} layout={PL('IGV [%]', 'Flow [kg/s]')} config={PC} style={{ width: 300, height: 300 }} />
@@ -546,7 +593,7 @@ function Sheet2Tab() {
                 {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Flow [kg/s]</th>
               </tr></thead>
-              <tbody>{F6_DATA.map((p, i) => (
+              <tbody>{f6Pts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{portOf(p.srelX)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
@@ -558,7 +605,7 @@ function Sheet2Tab() {
               ))}</tbody>
             </table>
             <Plot data={[{
-              x: F6_DATA.map(p => p.x), y: F6_DATA.map(p => p.y),
+              x: f6Pts.map(p => p.x), y: f6Pts.map(p => p.y),
               type: 'scatter', mode: 'lines+markers',
               line: { color: '#E06B00', width: 2 }, marker: { size: 5 }, name: 'F6 Flow [kg/s]',
             }]} layout={PL('ATK [°C]', 'Flow [kg/s]')} config={PC} style={{ width: 300, height: 300 }} />
@@ -581,7 +628,7 @@ function Sheet2Tab() {
                 {showSrel && <th style={S.thSrel}>SREL</th>}
                 <th style={{ ...S.th, textAlign: 'right' }}>Lfit [%]</th>
               </tr></thead>
-              <tbody>{PREMIX_KV.map((p, i) => (
+              <tbody>{premixPts.map((p, i) => (
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={S.tdPort}>{portOf(p.srelX)}</td>
                   {showSrel && <td style={S.tdSrel}>{p.srelX}</td>}
@@ -593,7 +640,7 @@ function Sheet2Tab() {
               ))}</tbody>
             </table>
             <Plot data={[{
-              x: PREMIX_KV.map(p => p.lfit), y: PREMIX_KV.map(p => p.flow),
+              x: premixPts.map(p => p.lfit), y: premixPts.map(p => p.flow),
               type: 'scatter', mode: 'lines+markers',
               line: { color: '#4caf7d', width: 2 }, marker: { size: 5 }, name: 'Flow [kg/s]',
             }]} layout={PL('Lfit [%]', 'Flow [kg/s]')} config={PC} style={{ width: 300, height: 300 }} />
@@ -619,18 +666,18 @@ function Sheet2Tab() {
                   <th style={{ ...S.th, textAlign: 'right' }}>F6 [kg/s]</th>
                   <th style={{ ...S.th, textAlign: 'right', background: '#3D2270' }}>F4+F6 [kg/s]</th>
                 </tr></thead>
-                <tbody>{F4_DATA.map((f4, i) => {
-                  const f6 = F6_DATA[i] ?? F6_DATA[F6_DATA.length - 1]
-                  const sum = +(f4.y + f6.y).toFixed(3)
+                <tbody>{f4Pts.map((p4, i) => {
+                  const p6 = f6Pts[i] ?? f6Pts[f6Pts.length - 1]
+                  const sum = +(p4.y + p6.y).toFixed(3)
                   return (
                     <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-                      <td style={S.tdPort}>{portOf(f4.srelY)}</td>
-                      {showSrel && <td style={S.tdSrel}>{f4.srelY}</td>}
-                      <td style={S.tdNum}>{f4.y.toFixed(3)}</td>
-                      <td style={S.tdNum}>{f6.x}</td>
-                      <td style={S.tdPort}>{portOf(f6.srelY)}</td>
-                      {showSrel && <td style={S.tdSrel}>{f6.srelY}</td>}
-                      <td style={S.tdNum}>{f6.y.toFixed(3)}</td>
+                      <td style={S.tdPort}>{portOf(p4.srelY)}</td>
+                      {showSrel && <td style={S.tdSrel}>{p4.srelY}</td>}
+                      <td style={S.tdNum}>{p4.y.toFixed(3)}</td>
+                      <td style={S.tdNum}>{p6.x}</td>
+                      <td style={S.tdPort}>{portOf(p6.srelY)}</td>
+                      {showSrel && <td style={S.tdSrel}>{p6.srelY}</td>}
+                      <td style={S.tdNum}>{p6.y.toFixed(3)}</td>
                       <td style={{ ...S.tdNum, fontWeight: 700, color: '#3D2270', background: '#F0EDFA' }}>{sum}</td>
                     </tr>
                   )
@@ -640,8 +687,8 @@ function Sheet2Tab() {
             </div>
             <Plot
               data={[{
-                x: F4_DATA.map((_, i) => (F6_DATA[i] ?? F6_DATA[F6_DATA.length - 1]).x),
-                y: F4_DATA.map((f4, i) => +(f4.y + (F6_DATA[i] ?? F6_DATA[F6_DATA.length - 1]).y).toFixed(3)),
+                x: f4Pts.map((_, i) => (f6Pts[i] ?? f6Pts[f6Pts.length - 1]).x),
+                y: f4Pts.map((p4, i) => +(p4.y + (f6Pts[i] ?? f6Pts[f6Pts.length - 1]).y).toFixed(3)),
                 type: 'scatter', mode: 'lines+markers',
                 line: { color: '#5C3D99', width: 2.5 }, marker: { size: 7, color: '#5C3D99' },
                 name: 'F4+F6 [kg/s]',
@@ -1246,7 +1293,7 @@ export default function Sgt2000e() {
 
       {/* Content — all tabs stay mounted to preserve state */}
       <div style={pg.content}>
-        <div className="sgt-tab-sheet2" style={{ display: tab === 'sheet2' ? 'block' : 'none' }}><Sheet2Tab /></div>
+        <div className="sgt-tab-sheet2" style={{ display: tab === 'sheet2' ? 'block' : 'none' }}><Sheet2Tab turbineId={turbineId} /></div>
         <div className="sgt-tab-lsvcal" style={{ display: tab === 'lsvcal' ? 'block' : 'none' }}><LsvcalTab turbineId={turbineId} /></div>
         <div className="sgt-tab-ymin"   style={{ display: tab === 'ymin'   ? 'block' : 'none' }}><YminTab /></div>
         <div className="sgt-tab-mba22"  style={{ display: tab === 'mba22'  ? 'block' : 'none' }}><MBA22Tab turbineId={turbineId} /></div>
