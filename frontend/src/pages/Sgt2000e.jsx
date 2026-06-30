@@ -38,57 +38,57 @@ const CHANGEOVER_DATA = [
 ]
 
 const PILOT_GAS_DATA = [
-  { port: 'A1',  nameX: '|HSP0.30',  portB: 'B1',  nameY: '|HSP0.40'  },
-  { port: 'A2',  nameX: '|HSP0.50',  portB: 'B2',  nameY: '|HSP0.60'  },
-  { port: 'A3',  nameX: '|HSP0.70',  portB: 'B3',  nameY: '|HSP0.80'  },
-  { port: 'A4',  nameX: '|HSP0.90',  portB: 'B4',  nameY: '|HSP0.100' },
-  { port: 'A5',  nameX: '|HSP0.110', portB: 'B5',  nameY: '|HSP0.120' },
-  { port: 'A6',  nameX: '|HSP0.130', portB: 'B6',  nameY: '|HSP0.140' },
-  { port: 'A7',  nameX: '|HSP0.150', portB: 'B7',  nameY: '|HSP0.160' },
-  { port: 'A8',  nameX: '|HSP0.170', portB: 'B8',  nameY: '|HSP0.180' },
-  { port: 'A9',  nameX: '|HSP0.190', portB: 'B9',  nameY: '|HSP0.200' },
-  { port: 'A10', nameX: '|HSP0.210', portB: 'B10', nameY: '|HSP0.220' },
-  { port: 'A11', nameX: '|HSP0.230', portB: 'B11', nameY: '|HSP0.240' },
-  { port: 'A12', nameX: '|HSP0.250', portB: 'B12', nameY: '|HSP0.260' },
-  { port: 'A13', nameX: '|HSP0.270', portB: 'B13', nameY: '|HSP0.280' },
-  { port: 'A14', nameX: '|HSP0.290', portB: 'B14', nameY: '|HSP0.300' },
-  { port: 'A15', nameX: '|HSP0.310', portB: 'B15', nameY: '|HSP0.320' },
-  { port: 'A16', nameX: '|HSP0.330', portB: 'B16', nameY: '|HSP0.340' },
-  { port: 'A17', nameX: '|HSP0.350', portB: 'B17', nameY: '|HSP0.360' },
+  { port: 'A1',  nameX: '|HSP0.20',  portB: 'B1',  nameY: '|HSP0.30'  },
+  { port: 'A2',  nameX: '|HSP0.40',  portB: 'B2',  nameY: '|HSP0.50'  },
+  { port: 'A3',  nameX: '|HSP0.60',  portB: 'B3',  nameY: '|HSP0.70'  },
+  { port: 'A4',  nameX: '|HSP0.80',  portB: 'B4',  nameY: '|HSP0.90'  },
+  { port: 'A5',  nameX: '|HSP0.100', portB: 'B5',  nameY: '|HSP0.110' },
+  { port: 'A6',  nameX: '|HSP0.120', portB: 'B6',  nameY: '|HSP0.130' },
+  { port: 'A7',  nameX: '|HSP0.140', portB: 'B7',  nameY: '|HSP0.150' },
+  { port: 'A8',  nameX: '|HSP0.160', portB: 'B8',  nameY: '|HSP0.170' },
+  { port: 'A9',  nameX: '|HSP0.180', portB: 'B9',  nameY: '|HSP0.190' },
+  { port: 'A10', nameX: '|HSP0.200', portB: 'B10', nameY: '|HSP0.210' },
+  { port: 'A11', nameX: '|HSP0.220', portB: 'B11', nameY: '|HSP0.230' },
+  { port: 'A12', nameX: '|HSP0.240', portB: 'B12', nameY: '|HSP0.250' },
+  { port: 'A13', nameX: '|HSP0.260', portB: 'B13', nameY: '|HSP0.270' },
+  { port: 'A14', nameX: '|HSP0.280', portB: 'B14', nameY: '|HSP0.290' },
+  { port: 'A15', nameX: '|HSP0.300', portB: 'B15', nameY: '|HSP0.310' },
+  { port: 'A16', nameX: '|HSP0.320', portB: 'B16', nameY: '|HSP0.330' },
+  { port: 'A17', nameX: '|HSP0.340', portB: 'B17', nameY: '|HSP0.350' },
 ]
 
 const RUNUP_LIMIT = [
-  { port: 'A1', nameX: '|HL130.30',  portB: 'B1', nameY: '|HL130.40',  x: 0,   y: 0.03 },
-  { port: 'A2', nameX: '|HL130.50',  portB: 'B2', nameY: '|HL130.60',  x: 16,  y: 0.07 },
-  { port: 'A3', nameX: '|HL130.70',  portB: 'B3', nameY: '|HL130.80',  x: 32,  y: 0.11 },
-  { port: 'A4', nameX: '|HL130.90',  portB: 'B4', nameY: '|HL130.100', x: 48,  y: 0.26 },
-  { port: 'A5', nameX: '|HL130.110', portB: 'B5', nameY: '|HL130.120', x: 60,  y: 0.3  },
-  { port: 'A6', nameX: '|HL130.130', portB: 'B6', nameY: '|HL130.140', x: 200, y: 0.3  },
+  { port: 'A1', nameX: '|HL130.20',  portB: 'B1', nameY: '|HL130.30',  x: 0,   y: 0.03 },
+  { port: 'A2', nameX: '|HL130.40',  portB: 'B2', nameY: '|HL130.50',  x: 16,  y: 0.07 },
+  { port: 'A3', nameX: '|HL130.60',  portB: 'B3', nameY: '|HL130.70',  x: 32,  y: 0.11 },
+  { port: 'A4', nameX: '|HL130.80',  portB: 'B4', nameY: '|HL130.90',  x: 48,  y: 0.26 },
+  { port: 'A5', nameX: '|HL130.100', portB: 'B5', nameY: '|HL130.110', x: 60,  y: 0.3  },
+  { port: 'A6', nameX: '|HL130.120', portB: 'B6', nameY: '|HL130.130', x: 200, y: 0.3  },
 ]
 const F4_DATA = [
-  { port: 'A1', nameX: '|F4.30',  portB: 'B1', nameY: '|F4.40',  x: 0,   y: 0.58 },
-  { port: 'A2', nameX: '|F4.50',  portB: 'B2', nameY: '|F4.60',  x: 20,  y: 0.39 },
-  { port: 'A3', nameX: '|F4.70',  portB: 'B3', nameY: '|F4.80',  x: 40,  y: 0.39 },
-  { port: 'A4', nameX: '|F4.90',  portB: 'B4', nameY: '|F4.100', x: 60,  y: 0.39 },
-  { port: 'A5', nameX: '|F4.110', portB: 'B5', nameY: '|F4.120', x: 80,  y: 0.36 },
-  { port: 'A6', nameX: '|F4.130', portB: 'B6', nameY: '|F4.140', x: 100, y: 0.36 },
+  { port: 'A1', nameX: '|F4.20',  portB: 'B1', nameY: '|F4.30',  x: 0,   y: 0.58 },
+  { port: 'A2', nameX: '|F4.40',  portB: 'B2', nameY: '|F4.50',  x: 20,  y: 0.39 },
+  { port: 'A3', nameX: '|F4.60',  portB: 'B3', nameY: '|F4.70',  x: 40,  y: 0.39 },
+  { port: 'A4', nameX: '|F4.80',  portB: 'B4', nameY: '|F4.90',  x: 60,  y: 0.39 },
+  { port: 'A5', nameX: '|F4.100', portB: 'B5', nameY: '|F4.110', x: 80,  y: 0.36 },
+  { port: 'A6', nameX: '|F4.120', portB: 'B6', nameY: '|F4.130', x: 100, y: 0.36 },
 ]
 const F6_DATA = [
-  { port: 'A1', nameX: '|F6.30',  portB: 'B1', nameY: '|F6.40',  x: 300, y: 1    },
-  { port: 'A2', nameX: '|F6.50',  portB: 'B2', nameY: '|F6.60',  x: 360, y: 0.82 },
-  { port: 'A3', nameX: '|F6.70',  portB: 'B3', nameY: '|F6.80',  x: 380, y: 0.77 },
-  { port: 'A4', nameX: '|F6.90',  portB: 'B4', nameY: '|F6.100', x: 430, y: 0.69 },
-  { port: 'A5', nameX: '|F6.110', portB: 'B5', nameY: '|F6.120', x: 500, y: 0.42 },
-  { port: 'A6', nameX: '|F6.130', portB: 'B6', nameY: '|F6.140', x: 520, y: 0.2  },
-  { port: 'A7', nameX: '|F6.150', portB: 'B7', nameY: '|F6.160', x: 530, y: 0    },
+  { port: 'A1', nameX: '|F6.20',  portB: 'B1', nameY: '|F6.30',  x: 300, y: 1    },
+  { port: 'A2', nameX: '|F6.40',  portB: 'B2', nameY: '|F6.50',  x: 360, y: 0.82 },
+  { port: 'A3', nameX: '|F6.60',  portB: 'B3', nameY: '|F6.70',  x: 380, y: 0.77 },
+  { port: 'A4', nameX: '|F6.80',  portB: 'B4', nameY: '|F6.90',  x: 430, y: 0.69 },
+  { port: 'A5', nameX: '|F6.100', portB: 'B5', nameY: '|F6.110', x: 500, y: 0.42 },
+  { port: 'A6', nameX: '|F6.120', portB: 'B6', nameY: '|F6.130', x: 520, y: 0.2  },
+  { port: 'A7', nameX: '|F6.140', portB: 'B7', nameY: '|F6.150', x: 530, y: 0    },
 ]
 const PREMIX_KV = [
-  { port: 'A1', nameX: '|HSG0.30',  portB: 'B1', nameY: '|HSG0.40',  flow: 0,       lfit: 0   },
-  { port: 'A2', nameX: '|HSG0.50',  portB: 'B2', nameY: '|HSG0.60',  flow: 2.8,     lfit: 3   },
-  { port: 'A3', nameX: '|HSG0.70',  portB: 'B3', nameY: '|HSG0.80',  flow: 5.597,   lfit: 10  },
-  { port: 'A4', nameX: '|HSG0.90',  portB: 'B4', nameY: '|HSG0.100', flow: 7.83,    lfit: 13  },
-  { port: 'A5', nameX: '|HSG0.110', portB: 'B5', nameY: '|HSG0.120', flow: 111.323, lfit: 65  },
-  { port: 'A6', nameX: '|HSG0.130', portB: 'B6', nameY: '|HSG0.140', flow: 139.886, lfit: 100 },
+  { port: 'A1', nameX: '|HSG0.20',  portB: 'B1', nameY: '|HSG0.30',  flow: 0,       lfit: 0   },
+  { port: 'A2', nameX: '|HSG0.40',  portB: 'B2', nameY: '|HSG0.50',  flow: 2.8,     lfit: 3   },
+  { port: 'A3', nameX: '|HSG0.60',  portB: 'B3', nameY: '|HSG0.70',  flow: 5.597,   lfit: 10  },
+  { port: 'A4', nameX: '|HSG0.80',  portB: 'B4', nameY: '|HSG0.90',  flow: 7.83,    lfit: 13  },
+  { port: 'A5', nameX: '|HSG0.100', portB: 'B5', nameY: '|HSG0.110', flow: 111.323, lfit: 65  },
+  { port: 'A6', nameX: '|HSG0.120', portB: 'B6', nameY: '|HSG0.130', flow: 139.886, lfit: 100 },
 ]
 
 const LSVCAL_OLD = [
@@ -403,7 +403,21 @@ function Sheet2Tab({ turbineId }) {
       return [...xVals, ...yVals].filter(v => Number.isFinite(v)).length
     }
 
-    const loadRunup = async () => {
+    // Fetch SREL Parameter Key values for PLI poly points (Excel SREL import).
+    // Names in DB: "{param_key}|A1", "{param_key}|B2" etc. — kks = param_key.
+    const loadSrelKeys = async (tagSuffix, nRows) => {
+      const { data } = await client.get('/parameters', {
+        params: { turbine_id: turbineId, tag_search: tagSuffix, source: 'srel', limit: 200 }
+      }).catch(() => ({ data: [] }))
+      if (!data || data.length === 0) return null
+      const reA = /\|[AX](\d+)$/, reB = /\|[BY](\d+)$/
+      const aP = data.filter(p => reA.test(p.name)).sort((a, b) => +a.name.match(reA)[1] - +b.name.match(reA)[1])
+      const bP = data.filter(p => reB.test(p.name)).sort((a, b) => +a.name.match(reB)[1] - +b.name.match(reB)[1])
+      if (aP.length === 0 && bP.length === 0) return null
+      return Array.from({ length: nRows }, (_, i) => ({ xSrel: aP[i]?.kks || null, ySrel: bP[i]?.kks || null }))
+    }
+
+    const loadRunup = async (allCurves) => {
       const { data } = await client.get('/parameters', {
         params: { turbine_id: turbineId, search: '|HL130.', limit: 100 }
       })
@@ -417,14 +431,27 @@ function Sheet2Tab({ turbineId }) {
         const rx = findRow(r.nameX), ry = findRow(r.nameY)
         return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
       })
+      const found = pts.filter(p => p.x != null || p.y != null).length
+      if (found === 0 && allCurves) {
+        const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'HL130')
+        if (curve) {
+          const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
+          if (cpts && cpts.length > 0) {
+            const sorted = [...cpts].sort((a, b) => a.order - b.order)
+            const sk = await loadSrelKeys('|HL130', RUNUP_LIMIT.length)
+            setRunupPts(RUNUP_LIMIT.map((r, i) => ({ ...r, x: sorted[i]?.x ?? null, y: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            return sorted.length
+          }
+        }
+      }
       setRunupPts(pts)
-      return pts.filter(p => p.x != null || p.y != null).length
+      return found
     }
 
-    const loadPremix = async () => {
+    const loadPremix = async (allCurves) => {
       const [{ data: hsgData }, { data: fegData }] = await Promise.all([
-        client.get('/parameters', { params: { turbine_id: turbineId, search: 'MBP03DU003|HSG0.', limit: 100 } }),
-        client.get('/parameters', { params: { turbine_id: turbineId, search: 'MBP03DU003|FEG12.10', limit: 5 } }),
+        client.get('/parameters', { params: { turbine_id: turbineId, search: '|HSG0.', limit: 100 } }),
+        client.get('/parameters', { params: { turbine_id: turbineId, search: '|FEG12.10', limit: 5 } }),
       ])
       const rows = hsgData || []
       const findRow = suffix => {
@@ -446,13 +473,26 @@ function Sheet2Tab({ turbineId }) {
         }
         return { ...r, flow, lfit: Number.isFinite(ry.value) ? ry.value : null, srelX, srelY: ry.srel }
       })
+      const found = pts.filter(p => p.flow != null || p.lfit != null).length
+      if (found === 0 && allCurves) {
+        const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'HSG0')
+        if (curve) {
+          const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
+          if (cpts && cpts.length > 0) {
+            const sorted = [...cpts].sort((a, b) => a.order - b.order)
+            const sk = await loadSrelKeys('|HSG0', PREMIX_KV.length)
+            setPremixPts(PREMIX_KV.map((r, i) => ({ ...r, flow: sorted[i]?.x ?? null, lfit: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            return sorted.length
+          }
+        }
+      }
       setPremixPts(pts)
-      return pts.filter(p => p.flow != null || p.lfit != null).length
+      return found
     }
 
-    const loadF6 = async () => {
+    const loadF6 = async (allCurves) => {
       const { data } = await client.get('/parameters', {
-        params: { turbine_id: turbineId, search: 'MBP15DG010|F6.', limit: 100 }
+        params: { turbine_id: turbineId, search: '|F6.', limit: 100 }
       })
       const rows = data || []
       const findRow = suffix => {
@@ -464,13 +504,26 @@ function Sheet2Tab({ turbineId }) {
         const rx = findRow(r.nameX), ry = findRow(r.nameY)
         return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
       })
+      const found = pts.filter(p => p.x != null || p.y != null).length
+      if (found === 0 && allCurves) {
+        const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'F6')
+        if (curve) {
+          const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
+          if (cpts && cpts.length > 0) {
+            const sorted = [...cpts].sort((a, b) => a.order - b.order)
+            const sk = await loadSrelKeys('|F6', F6_DATA.length)
+            setF6Pts(F6_DATA.map((r, i) => ({ ...r, x: sorted[i]?.x ?? null, y: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            return sorted.length
+          }
+        }
+      }
       setF6Pts(pts)
-      return pts.filter(p => p.x != null || p.y != null).length
+      return found
     }
 
-    const loadF4 = async () => {
+    const loadF4 = async (allCurves) => {
       const { data } = await client.get('/parameters', {
-        params: { turbine_id: turbineId, search: 'MBP15DG010|F4.', limit: 100 }
+        params: { turbine_id: turbineId, search: '|F4.', limit: 100 }
       })
       const rows = data || []
       const findRow = suffix => {
@@ -482,8 +535,21 @@ function Sheet2Tab({ turbineId }) {
         const rx = findRow(r.nameX), ry = findRow(r.nameY)
         return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
       })
+      const found = pts.filter(p => p.x != null || p.y != null).length
+      if (found === 0 && allCurves) {
+        const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'F4')
+        if (curve) {
+          const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
+          if (cpts && cpts.length > 0) {
+            const sorted = [...cpts].sort((a, b) => a.order - b.order)
+            const sk = await loadSrelKeys('|F4', F4_DATA.length)
+            setF4Pts(F4_DATA.map((r, i) => ({ ...r, x: sorted[i]?.x ?? null, y: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            return sorted.length
+          }
+        }
+      }
       setF4Pts(pts)
-      return pts.filter(p => p.x != null || p.y != null).length
+      return found
     }
 
     const loadAtkkor = async () => {
@@ -500,9 +566,9 @@ function Sheet2Tab({ turbineId }) {
       return [a5v, b5v, a6v, b6v].filter(v => Number.isFinite(v.value)).length
     }
 
-    const loadHsp0 = async () => {
+    const loadHsp0 = async (allCurves) => {
       const { data } = await client.get('/parameters', {
-        params: { turbine_id: turbineId, search: 'MBP15DG010|HSP0.', limit: 100 }
+        params: { turbine_id: turbineId, search: '|HSP0.', limit: 100 }
       })
       const rows = data || []
       const findRow = suffix => {
@@ -510,25 +576,44 @@ function Sheet2Tab({ turbineId }) {
         const kks = row?.kks || null, name = row?.name || null
         return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
       }
-      const pts = PILOT_GAS_DATA.map(r => {
+      let pts = PILOT_GAS_DATA.map(r => {
         const rx = findRow(r.nameX), ry = findRow(r.nameY)
         return { ...r, flow: Number.isFinite(rx.value) ? rx.value : null, lfit: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
       })
+      // Trim trailing empty PLI slots (flow=0 && lfit=0 beyond real data, keeping A1)
+      let end = pts.length
+      while (end > 1 && pts[end - 1]?.flow === 0 && pts[end - 1]?.lfit === 0) end--
+      if (end < pts.length) pts = pts.slice(0, end)
+      const found = pts.filter(p => p.flow != null || p.lfit != null).length
+      if (found === 0 && allCurves) {
+        const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'HSP0')
+        if (curve) {
+          const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
+          if (cpts && cpts.length > 0) {
+            const sorted = [...cpts].sort((a, b) => a.order - b.order)
+            const sk = await loadSrelKeys('|HSP0', PILOT_GAS_DATA.length)
+            setPilotGas(PILOT_GAS_DATA.map((r, i) => ({ ...r, flow: sorted[i]?.x ?? null, lfit: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            return sorted.length
+          }
+        }
+      }
       setPilotGas(pts)
-      return pts.filter(p => p.flow != null || p.lfit != null).length
+      return found
     }
 
     const loadAll = async () => {
+      const curvesRes = await client.get('/curves', { params: { turbine_id: turbineId } }).catch(() => ({ data: [] }))
+      const allCurves = curvesRes.data || []
       const counts = await Promise.all([
         loadScalar(STARTUP_PARAMS,  setStartup),
         loadScalar(BASELOAD_DATA,   setBaseload),
         loadScalar(CHANGEOVER_DATA, setChangeover),
-        loadRunup(),
-        loadF4(),
-        loadF6(),
-        loadPremix(),
+        loadRunup(allCurves),
+        loadF4(allCurves),
+        loadF6(allCurves),
+        loadPremix(allCurves),
         loadAtkkor(),
-        loadHsp0(),
+        loadHsp0(allCurves),
       ])
       const total = counts.reduce((a, b) => a + b, 0)
       if (total > 0) setLoadNote(`${total} values loaded from project`)
@@ -892,9 +977,10 @@ function Sheet2Tab({ turbineId }) {
 // ── Tab 2: IGV LSVCAL ────────────────────────────────────────────────────────
 
 function LsvcalTab({ turbineId }) {
-  const showSrel = true
-  const [lsvcalOld, setLsvcalOld] = useState(() => LSVCAL_OLD.map(p => ({ ...p })))
-  const [lsvcalNew, setLsvcalNew] = useState(() => LSVCAL_OLD.map(p => ({ x: p.x, y: null })))
+  const [showSrel,  setShowSrel]  = useState(false)
+  const [lsvcalOld, setLsvcalOld] = useState(() => Array(6).fill(null).map(() => ({ x: null, y: null })))
+  const [lsvcalNew, setLsvcalNew] = useState(() => Array(6).fill(null).map(() => ({ x: null, y: null })))
+  const [lsvcalSrels, setLsvcalSrels] = useState([]) // [{xSrel, ySrel}, ...] per point
   const [newSize,   setNewSize]   = useState(6)
   const [expData,   setExpData]   = useState(null)
   const [fitDone,   setFitDone]   = useState(false)
@@ -903,6 +989,7 @@ function LsvcalTab({ turbineId }) {
   const [editMode,  setEditMode]  = useState(false)
   const [plotEl,    setPlotEl]    = useState(null)
   const [foundPortName, setFoundPortName] = useState(null)  // 'LSVCAL' or 'V300' (null = not found yet)
+  const [foundCurveName, setFoundCurveName] = useState(null) // full curve name e.g. '12MBP15DG010|LSVCAL'
   const fileRef  = useRef()
   const dragRef  = useRef(null)
   const hoverRef = useRef(null)
@@ -939,30 +1026,59 @@ function LsvcalTab({ turbineId }) {
   useEffect(() => {
     if (!turbineId) return
     setDbLoading(true)
-    // Load LSVCAL or V300 polynomial from curves table (works for JAR and SREL imports)
-    let foundCurve = null
-    client.get('/curves', { params: { turbine_id: turbineId } })
-      .then(r => {
-        const allCurves = r.data || []
-        foundCurve = allCurves.find(c => {
-          const pn = (c.name || '').split('|').pop()
-          return pn === 'LSVCAL' || pn === 'V300'
+    const run = async () => {
+      const { data: allCurves } = await client.get('/curves', { params: { turbine_id: turbineId } })
+      const foundCurve = (allCurves || []).find(c => {
+        const pn = (c.name || '').split('|').pop()
+        return pn === 'LSVCAL' || pn === 'V300'
+      })
+      if (!foundCurve) return
+      const cName = foundCurve.name
+      setFoundPortName(cName.split('|').pop())
+      setFoundCurveName(cName)
+
+      const { data: cpts } = await client.get(`/curves/${foundCurve.id}/points`)
+      const pts = (cpts || []).sort((a, b) => a.order - b.order)
+      if (pts.length >= 2) {
+        setLsvcalOld(pts.map(p => ({ x: p.x, y: p.y })))
+        setLsvcalNew(pts.map(p => ({ x: p.x, y: null })))
+        setNewSize(pts.length)
+      }
+
+      // Load SREL keys per point
+      // Try JAR format first: {cName}.30, .40, .50... (Port-ID based)
+      const { data: jarP } = await client.get('/parameters', {
+        params: { turbine_id: turbineId, search: cName + '.', limit: 200 }
+      }).catch(() => ({ data: [] }))
+
+      if (jarP && jarP.length > 0) {
+        const srels = pts.map((_, i) => {
+          const xId = 30 + i * 20, yId = 40 + i * 20
+          const xP = jarP.find(p => p.name === `${cName}.${xId}`)
+          const yP = jarP.find(p => p.name === `${cName}.${yId}`)
+          const srel = p => p ? (p.kks && p.kks !== p.name ? p.kks : p.name.split('|').pop()) : null
+          return { xSrel: srel(xP), ySrel: srel(yP) }
         })
-        if (!foundCurve) return null
-        setFoundPortName(foundCurve.name.split('|').pop())
-        return client.get(`/curves/${foundCurve.id}/points`)
-      })
-      .then(r => {
-        if (!r) return
-        const pts = (r.data || []).sort((a, b) => a.order - b.order)
-        if (pts.length >= 2) {
-          setLsvcalOld(pts.map(p => ({ x: p.x, y: p.y })))
-          setLsvcalNew(pts.map(p => ({ x: p.x, y: null })))
-          setNewSize(pts.length)
+        setLsvcalSrels(srels)
+      } else {
+        // SREL format: {cName}|X1, |X2... and |Y1, |Y2...
+        const [{ data: srelX }, { data: srelY }] = await Promise.all([
+          client.get('/parameters', { params: { turbine_id: turbineId, search: cName + '|X', limit: 100 } }).catch(() => ({ data: [] })),
+          client.get('/parameters', { params: { turbine_id: turbineId, search: cName + '|Y', limit: 100 } }).catch(() => ({ data: [] })),
+        ])
+        const allSP = [...(srelX || []), ...(srelY || [])]
+        if (allSP.length > 0) {
+          const srels = pts.map((_, i) => {
+            const xP = allSP.find(p => p.name.endsWith(`|X${i + 1}`))
+            const yP = allSP.find(p => p.name.endsWith(`|Y${i + 1}`))
+            const srel = p => p ? (p.kks && p.kks !== p.name ? p.kks : p.name.split('|').pop()) : null
+            return { xSrel: srel(xP), ySrel: srel(yP) }
+          })
+          setLsvcalSrels(srels)
         }
-      })
-      .catch(() => { /* keep LSVCAL_OLD defaults on error */ })
-      .finally(() => setDbLoading(false))
+      }
+    }
+    run().catch(() => {}).finally(() => setDbLoading(false))
   }, [turbineId])
 
   const updNew = (i, field, v) => setLsvcalNew(pts => pts.map((r, j) => j === i ? { ...r, [field]: v } : r))
@@ -1028,28 +1144,43 @@ function LsvcalTab({ turbineId }) {
   return (
     <div>
       <div style={S.sectionHdr}>IGV Precontrol — LSVCAL/V300 Polynomial</div>
+      <div className="no-print" style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <button
+          onClick={() => setShowSrel(v => !v)}
+          style={{ fontSize: '0.68rem', padding: '0.06rem 0.42rem', borderRadius: 3, border: '1px solid #9888B8', background: showSrel ? '#EDE3F8' : 'transparent', color: '#6A50A0', cursor: 'pointer', fontFamily: 'monospace', lineHeight: 1.5 }}
+        >{showSrel ? '[ − SREL ]' : '[ + SREL ]'}</button>
+        {!dbLoading && foundCurveName && <span style={{ fontSize: '0.68rem', color: '#9888B8', fontFamily: 'monospace' }}>{foundCurveName}</span>}
+      </div>
       <div className="sgt-lsvcal-tables" style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
 
         {/* OLD (from DB) */}
         <div style={{ flexShrink: 0 }}>
           <div style={S.tableTitle}>
-            {foundPortName ? `${foundPortName} current` : 'current (default)'}
+            {foundPortName ? `${foundPortName} current` : 'current'}
             {dbLoading && <span style={{ fontWeight: 400, fontSize: '0.7rem', color: '#9888B8', marginLeft: 6 }}>loading…</span>}
-            {!dbLoading && !foundPortName && <span style={{ fontWeight: 400, fontSize: '0.7rem', color: '#cc6600', marginLeft: 6 }}>not in DB</span>}
+            {!dbLoading && !turbineId && <span style={{ fontWeight: 400, fontSize: '0.7rem', color: '#9888B8', marginLeft: 6 }}>select turbine</span>}
+            {!dbLoading && turbineId && !foundPortName && <span style={{ fontWeight: 400, fontSize: '0.7rem', color: '#cc6600', marginLeft: 6 }}>not in DB</span>}
           </div>
           <table style={S.table}>
             <thead><tr>
               <th style={S.th}>#</th>
               <th style={{ ...S.th, textAlign: 'right' }}>YMINCAL</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>{foundPortName || 'LSVSW'}</th>
+              {showSrel && <th style={S.thSrel}>SREL</th>}
+              <th style={{ ...S.th, textAlign: 'right' }}>LSVSW</th>
+              {showSrel && <th style={S.thSrel}>SREL</th>}
             </tr></thead>
-            <tbody>{lsvcalOld.map((p, i) => (
-              <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
-                <td style={{ ...S.td, color: '#9888B8' }}>{i + 1}</td>
-                <td style={S.tdNum}>{p.x !== null ? p.x.toFixed(3) : <span style={{ color: '#B8A8DA' }}>—</span>}</td>
-                <td style={S.tdNum}>{p.y !== null ? p.y.toFixed(3) : <span style={{ color: '#B8A8DA' }}>—</span>}</td>
-              </tr>
-            ))}</tbody>
+            <tbody>{lsvcalOld.map((p, i) => {
+              const sr = lsvcalSrels[i] || {}
+              return (
+                <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
+                  <td style={{ ...S.td, color: '#9888B8' }}>{i + 1}</td>
+                  <td style={S.tdNum}>{p.x !== null ? p.x.toFixed(3) : <span style={{ color: '#B8A8DA' }}>—</span>}</td>
+                  {showSrel && <td style={S.tdSrel}>{sr.xSrel || '—'}</td>}
+                  <td style={S.tdNum}>{p.y !== null ? p.y.toFixed(3) : <span style={{ color: '#B8A8DA' }}>—</span>}</td>
+                  {showSrel && <td style={S.tdSrel}>{sr.ySrel || '—'}</td>}
+                </tr>
+              )
+            })}</tbody>
           </table>
         </div>
 
@@ -1072,7 +1203,7 @@ function LsvcalTab({ turbineId }) {
             <thead><tr>
               <th style={S.th}>#</th>
               <th style={{ ...S.th, textAlign: 'right' }}>YMINCAL</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>{foundPortName || 'LSVSW'}</th>
+              <th style={{ ...S.th, textAlign: 'right' }}>LSVSW</th>
             </tr></thead>
             <tbody>{lsvcalNew.map((p, i) => (
               <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
@@ -1140,7 +1271,7 @@ function LsvcalTab({ turbineId }) {
       {/* Chart */}
       <div className="sgt-lsvcal-wrap" style={{ marginTop: '1.25rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-          <div style={S.chartTitle}>{foundPortName || 'LSVCAL/V300'} — YMINCAL vs {foundPortName || 'LSVSW'}</div>
+          <div style={S.chartTitle}>IGV PRECONTRL (LSVCAL/V300)</div>
           {validNew.length >= 1 && (
             <button
               onClick={() => { setEditMode(m => !m); hoverRef.current = null; dragRef.current = null; if (plotEl) plotEl.style.cursor = '' }}
@@ -1153,15 +1284,15 @@ function LsvcalTab({ turbineId }) {
               }}
             >{editMode ? '✎ Drag mode ON — click off to zoom' : '✎ Drag NEW points'}</button>
           )}
-          {editMode && <span style={{ fontSize: '0.68rem', color: '#CC2222' }}>drag markers up/down to adjust {foundPortName || 'LSVSW'}</span>}
+          {editMode && <span style={{ fontSize: '0.68rem', color: '#CC2222' }}>drag markers up/down to adjust LSVSW</span>}
         </div>
         <Plot
           data={[
             ...(expData ? [{ x: expData.map(p => p.ymincal), y: expData.map(p => p.lsvsw), type: 'scatter', mode: 'lines+markers', line: { color: '#E06B00', width: 1 }, marker: { color: '#E06B00', size: 4, opacity: 0.75 }, name: 'Experimental' }] : []),
-            ...(validOld.length >= 2 ? [{ x: validOld.map(p => p.x), y: validOld.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#5B8BC8', width: 2 }, marker: { color: '#5B8BC8', size: 7, symbol: 'square' }, name: `${foundPortName || 'LSVCAL'} current` }] : []),
-            ...(validNew.length >= 2 ? [{ x: validNew.map(p => p.x), y: validNew.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#CC2222', width: 2 }, marker: { color: '#CC2222', size: editMode ? 10 : 6 }, name: `${foundPortName || 'LSVCAL'} new` }] : []),
+            ...(validOld.length >= 2 ? [{ x: validOld.map(p => p.x), y: validOld.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#5B8BC8', width: 2 }, marker: { color: '#5B8BC8', size: 7, symbol: 'square' }, name: 'LSVCAL/V300 current' }] : []),
+            ...(validNew.length >= 2 ? [{ x: validNew.map(p => p.x), y: validNew.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#CC2222', width: 2 }, marker: { color: '#CC2222', size: editMode ? 10 : 6 }, name: 'LSVCAL/V300 new' }] : []),
           ]}
-          layout={{ ...PL('YMINCAL', foundPortName || 'LSVSW'), dragmode: editMode ? false : 'zoom', uirevision: 'lsvcal' }}
+          layout={{ ...PL('YMINCAL', 'LSVSW'), dragmode: editMode ? false : 'zoom', uirevision: 'lsvcal' }}
           config={PC}
           onInitialized={(_, el) => setPlotEl(el)}
           onHover={(data) => {

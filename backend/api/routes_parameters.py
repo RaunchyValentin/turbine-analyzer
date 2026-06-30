@@ -47,6 +47,7 @@ async def list_parameters(
     search: str | None = Query(None),
     tag_prefix: str | None = Query(None),
     tag_search: str | None = Query(None),
+    source: str | None = Query(None),
     annotated_only: bool = Query(False),
     limit: int = Query(1000, le=_MAX_ROWS),
     offset: int = Query(0, ge=0),
@@ -55,6 +56,8 @@ async def list_parameters(
     q = select(Parameter).where(Parameter.turbine_id == turbine_id)
     if group:
         q = q.where(Parameter.group == group)
+    if source:
+        q = q.where(Parameter.source == source)
     if search:
         like = f"%{search}%"
         q = q.where(Parameter.kks.ilike(like) | Parameter.name.ilike(like))
