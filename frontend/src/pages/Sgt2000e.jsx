@@ -537,6 +537,7 @@ function Sheet2Tab({ turbineId }) {
       })
       const found = pts.filter(p => p.x != null || p.y != null).length
       if (found === 0 && allCurves) {
+        // JAR curves fallback
         const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'F4')
         if (curve) {
           const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
@@ -547,23 +548,69 @@ function Sheet2Tab({ turbineId }) {
             return sorted.length
           }
         }
+        // SREL params fallback: when srel_parser didn't create a F4 curve (e.g. A1 without B1)
+        // Match by port NUMBER (A1↔B1, A2↔B2, ...) to avoid index drift when B1 is missing
+        const { data: srelF4 } = await client.get('/parameters', {
+          params: { turbine_id: turbineId, tag_search: '|F4', source: 'srel', limit: 200 }
+        }).catch(() => ({ data: [] }))
+        if (srelF4 && srelF4.length > 0) {
+          const reA = /\|[AX](\d+)$/, reB = /\|[BY](\d+)$/
+          const aMap = Object.fromEntries(srelF4.filter(p => reA.test(p.name)).map(p => [+p.name.match(reA)[1], p]))
+          const bMap = Object.fromEntries(srelF4.filter(p => reB.test(p.name)).map(p => [+p.name.match(reB)[1], p]))
+          if (Object.keys(aMap).length > 0 || Object.keys(bMap).length > 0) {
+            setF4Pts(F4_DATA.map((r, i) => {
+              const pn = i + 1, aP = aMap[pn], bP = bMap[pn]
+              return {
+                ...r,
+                x:     aP?.value != null ? parseFloat(aP.value) : null,
+                y:     bP?.value != null ? parseFloat(bP.value) : null,
+                srelX: aP?.kks || null,
+                srelY: bP?.kks || null,
+              }
+            }))
+            return Object.keys(aMap).length + Object.keys(bMap).length
+          }
+        }
       }
       setF4Pts(pts)
       return found
     }
 
-    const loadAtkkor = async () => {
+    const loadAtkkor = async (allCurves) => {
+      // pid100=A5(X), pid110=B5(Y), pid120=A6(X), pid130=B6(Y) — offset layout same as all PLI
       const [a5v, b5v, a6v, b6v] = await Promise.all([
-        fetchFull('ATKKOR.110'), fetchFull('ATKKOR.120'),
-        fetchFull('ATKKOR.130'), fetchFull('ATKKOR.140'),
+        fetchFull('ATKKOR.100'), fetchFull('ATKKOR.110'),
+        fetchFull('ATKKOR.120'), fetchFull('ATKKOR.130'),
       ])
-      setAtk56({
-        a5: { srel: a5v.srel, value: Number.isFinite(a5v.value) ? a5v.value : null },
-        b5: { srel: b5v.srel, value: Number.isFinite(b5v.value) ? b5v.value : null },
-        a6: { srel: a6v.srel, value: Number.isFinite(a6v.value) ? a6v.value : null },
-        b6: { srel: b6v.srel, value: Number.isFinite(b6v.value) ? b6v.value : null },
-      })
-      return [a5v, b5v, a6v, b6v].filter(v => Number.isFinite(v.value)).length
+      const found = [a5v, b5v, a6v, b6v].filter(v => Number.isFinite(v.value)).length
+      if (found > 0) {
+        setAtk56({
+          a5: { srel: a5v.srel, value: Number.isFinite(a5v.value) ? a5v.value : null },
+          b5: { srel: b5v.srel, value: Number.isFinite(b5v.value) ? b5v.value : null },
+          a6: { srel: a6v.srel, value: Number.isFinite(a6v.value) ? a6v.value : null },
+          b6: { srel: b6v.srel, value: Number.isFinite(b6v.value) ? b6v.value : null },
+        })
+        return found
+      }
+      // Curves fallback (SREL turbine): find ATKKOR curve for MBP03, take points 5 and 6
+      const curve = (allCurves || []).find(c => (c.name || '').split('|').pop() === 'ATKKOR' && c.name.includes('MBP03'))
+      if (curve) {
+        const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
+        if (cpts && cpts.length >= 6) {
+          const sorted = [...cpts].sort((a, b) => a.order - b.order)
+          // Use curve name prefix to scope tag_search so MBN04|ATKKOR params don't interfere
+          const curvePfx = curve.name.replace(/^12/, '')  // e.g. "MBP03DU002C|ATKKOR"
+          const sk = await loadSrelKeys(curvePfx, 10)
+          setAtk56({
+            a5: { srel: sk?.[4]?.xSrel || null, value: sorted[4]?.x ?? null },
+            b5: { srel: sk?.[4]?.ySrel || null, value: sorted[4]?.y ?? null },
+            a6: { srel: sk?.[5]?.xSrel || null, value: sorted[5]?.x ?? null },
+            b6: { srel: sk?.[5]?.ySrel || null, value: sorted[5]?.y ?? null },
+          })
+          return 2
+        }
+      }
+      return 0
     }
 
     const loadHsp0 = async (allCurves) => {
@@ -612,7 +659,7 @@ function Sheet2Tab({ turbineId }) {
         loadF4(allCurves),
         loadF6(allCurves),
         loadPremix(allCurves),
-        loadAtkkor(),
+        loadAtkkor(allCurves),
         loadHsp0(allCurves),
       ])
       const total = counts.reduce((a, b) => a + b, 0)
