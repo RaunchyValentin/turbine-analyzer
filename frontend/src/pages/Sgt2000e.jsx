@@ -475,12 +475,16 @@ function Sheet2Tab({ turbineId }) {
       })
       const found = pts.filter(p => p.flow != null || p.lfit != null).length
       if (found === 0 && allCurves) {
-        const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'HSG0')
+        const popName = c => (c.name || '').split('|').pop()
+        const curve = allCurves.find(c => popName(c) === 'HSG0')
+          // EG240 fallback: turbine variants where premix gas function is named EG240
+          || allCurves.find(c => popName(c) === 'EG240')
         if (curve) {
           const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
           if (cpts && cpts.length > 0) {
             const sorted = [...cpts].sort((a, b) => a.order - b.order)
-            const sk = await loadSrelKeys('|HSG0', PREMIX_KV.length)
+            const blockSuffix = curve.name.replace(/^\d+/, '')
+            const sk = await loadSrelKeys(blockSuffix, PREMIX_KV.length)
             setPremixPts(PREMIX_KV.map((r, i) => ({ ...r, flow: sorted[i]?.x ?? null, lfit: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
             return sorted.length
           }
@@ -506,12 +510,17 @@ function Sheet2Tab({ turbineId }) {
       })
       const found = pts.filter(p => p.x != null || p.y != null).length
       if (found === 0 && allCurves) {
-        const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'F6')
+        const popName = c => (c.name || '').split('|').pop()
+        // F6H/F6L fallback: turbine variants with separate high/low F6 curves
+        const curve = allCurves.find(c => popName(c) === 'F6')
+          || allCurves.find(c => popName(c) === 'F6H')
+          || allCurves.find(c => popName(c) === 'F6L')
         if (curve) {
           const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
           if (cpts && cpts.length > 0) {
             const sorted = [...cpts].sort((a, b) => a.order - b.order)
-            const sk = await loadSrelKeys('|F6', F6_DATA.length)
+            const blockSuffix = curve.name.replace(/^\d+/, '')
+            const sk = await loadSrelKeys(blockSuffix, F6_DATA.length)
             setF6Pts(F6_DATA.map((r, i) => ({ ...r, x: sorted[i]?.x ?? null, y: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
             return sorted.length
           }
@@ -577,40 +586,24 @@ function Sheet2Tab({ turbineId }) {
     }
 
     const loadAtkkor = async (allCurves) => {
-      // pid100=A5(X), pid110=B5(Y), pid120=A6(X), pid130=B6(Y) — offset layout same as all PLI
-      const [a5v, b5v, a6v, b6v] = await Promise.all([
-        fetchFull('ATKKOR.100'), fetchFull('ATKKOR.110'),
-        fetchFull('ATKKOR.120'), fetchFull('ATKKOR.130'),
-      ])
-      const found = [a5v, b5v, a6v, b6v].filter(v => Number.isFinite(v.value)).length
-      if (found > 0) {
-        setAtk56({
-          a5: { srel: a5v.srel, value: Number.isFinite(a5v.value) ? a5v.value : null },
-          b5: { srel: b5v.srel, value: Number.isFinite(b5v.value) ? b5v.value : null },
-          a6: { srel: a6v.srel, value: Number.isFinite(a6v.value) ? a6v.value : null },
-          b6: { srel: b6v.srel, value: Number.isFinite(b6v.value) ? b6v.value : null },
-        })
-        return found
-      }
-      // Curves fallback (SREL turbine): find ATKKOR curve for MBP03, take points 5 and 6
-      const curve = (allCurves || []).find(c => (c.name || '').split('|').pop() === 'ATKKOR' && c.name.includes('MBP03'))
-      if (curve) {
-        const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
-        if (cpts && cpts.length >= 6) {
-          const sorted = [...cpts].sort((a, b) => a.order - b.order)
-          // Use curve name prefix to scope tag_search so MBN04|ATKKOR params don't interfere
-          const curvePfx = curve.name.replace(/^12/, '')  // e.g. "MBP03DU002C|ATKKOR"
-          const sk = await loadSrelKeys(curvePfx, 10)
-          setAtk56({
-            a5: { srel: sk?.[4]?.xSrel || null, value: sorted[4]?.x ?? null },
-            b5: { srel: sk?.[4]?.ySrel || null, value: sorted[4]?.y ?? null },
-            a6: { srel: sk?.[5]?.xSrel || null, value: sorted[5]?.x ?? null },
-            b6: { srel: sk?.[5]?.ySrel || null, value: sorted[5]?.y ?? null },
-          })
-          return 2
-        }
-      }
-      return 0
+      // Always use curves — avoids ATKKOR.100 vs ATKKOR.1000 ambiguity in JAR params
+      // Prefer MBP03 curve; fall back to any ATKKOR curve
+      const pop = c => (c.name || '').split('|').pop()
+      const curve = (allCurves || []).find(c => pop(c) === 'ATKKOR' && c.name.includes('MBP03'))
+        || (allCurves || []).find(c => pop(c) === 'ATKKOR')
+      if (!curve) return 0
+      const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
+      if (!cpts || cpts.length < 6) return 0
+      const sorted = [...cpts].sort((a, b) => a.order - b.order)
+      const blockSuffix = curve.name.replace(/^\d+/, '')  // strip unit prefix "12" or "22"
+      const sk = await loadSrelKeys(blockSuffix, 10)
+      setAtk56({
+        a5: { srel: sk?.[4]?.xSrel || null, value: sorted[4]?.x ?? null },
+        b5: { srel: sk?.[4]?.ySrel || null, value: sorted[4]?.y ?? null },
+        a6: { srel: sk?.[5]?.xSrel || null, value: sorted[5]?.x ?? null },
+        b6: { srel: sk?.[5]?.ySrel || null, value: sorted[5]?.y ?? null },
+      })
+      return 2
     }
 
     const loadHsp0 = async (allCurves) => {
@@ -633,12 +626,18 @@ function Sheet2Tab({ turbineId }) {
       if (end < pts.length) pts = pts.slice(0, end)
       const found = pts.filter(p => p.flow != null || p.lfit != null).length
       if (found === 0 && allCurves) {
-        const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'HSP0')
+        const popName = c => (c.name || '').split('|').pop()
+        // EG240 fallback: for turbines where pilot gas staging is EG240 (on a different diagram).
+        // Use the SECOND EG240 curve (Premix uses the first) when two exist; else same curve.
+        const eg240all = allCurves.filter(c => popName(c) === 'EG240')
+        const curve = allCurves.find(c => popName(c) === 'HSP0')
+          || (eg240all.length > 1 ? eg240all[1] : eg240all[0])
         if (curve) {
           const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
           if (cpts && cpts.length > 0) {
             const sorted = [...cpts].sort((a, b) => a.order - b.order)
-            const sk = await loadSrelKeys('|HSP0', PILOT_GAS_DATA.length)
+            const blockSuffix = curve.name.replace(/^\d+/, '')
+            const sk = await loadSrelKeys(blockSuffix, PILOT_GAS_DATA.length)
             setPilotGas(PILOT_GAS_DATA.map((r, i) => ({ ...r, flow: sorted[i]?.x ?? null, lfit: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
             return sorted.length
           }
