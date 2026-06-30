@@ -161,14 +161,17 @@ def parse_srel(file_bytes: bytes, filename: str = "") -> dict[str, Any]:
         sym_up = sym_type.upper()
 
         # ── PLI curve blocks ───────────────────────────────────────────────
+        # Accumulate X/Y breakpoints in curves_acc for inline curve building.
+        # Also fall through to parameter saving so detect-pli can re-scan later.
         if any(sym_up.startswith(p) for p in _PLI_PREFIXES):
-            m = re.match(r"^([AB])(\d+)$", port_nm, re.IGNORECASE)
+            # A/B format (A=X, B=Y) or X/Y format — both are valid in real exports
+            m = re.match(r"^([ABXY])(\d+)$", port_nm, re.IGNORECASE)
             if m:
-                axis = m.group(1).upper()
+                letter = m.group(1).upper()
+                axis = "A" if letter in ("A", "X") else "B"
                 idx = int(m.group(2))
                 key = f"{tag_name}\x00{sym_type}"
                 if key not in curves_acc:
-                    parts = tag_name.split("|")
                     curves_acc[key] = {
                         "name": tag_name,
                         "kks": diagram,
@@ -181,7 +184,7 @@ def parse_srel(file_bytes: bytes, filename: str = "") -> dict[str, Any]:
                     pt["x" if axis == "A" else "y"] = coord
                 except ValueError:
                     pass
-            continue
+            # Fall through — also save as parameter so detect-pli can re-scan
 
         # ── Regular parameter ──────────────────────────────────────────────
         # kks: Parameter Key takes priority (e.g. "S.TURB.09") — used by

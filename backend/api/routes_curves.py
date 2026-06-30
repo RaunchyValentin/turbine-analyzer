@@ -1,5 +1,6 @@
 import json
 import os.path
+import re
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -440,6 +441,92 @@ async def detect_pli_curves(turbine_id: int, force: bool = False, db: AsyncSessi
         for pt in points:
             db.add(CurvePoint(curve_id=curve.id, **pt))
 
+        existing_names.add(curve_name)
+        created += 1
+
+    # ── SREL phase: scan srel parameters for PLI10/PLI20/POLY blocks ─────────
+    # SREL exports carry Symbol-Type = PLI10/PLI20/POLY and port names A1/B1
+    # (A=X, B=Y) or X1/Y1.  These rows are saved as parameters during import so
+    # they can be re-detected here without re-importing the file.
+    srel_result = await db.execute(
+        select(Parameter).where(Parameter.turbine_id == turbine_id, Parameter.source == "srel")
+    )
+    srel_params = srel_result.scalars().all()
+
+    srel_groups: dict[str, dict] = {}  # "{tag_name}\x00{sym_type}" → accum dict
+
+    for p in srel_params:
+        if not p.raw_data:
+            continue
+        try:
+            rd = json.loads(p.raw_data)
+        except Exception:
+            continue
+
+        sym_type = rd.get("Symbol-Type", "").strip()
+        sym_up = sym_type.upper()
+        if not (sym_up.startswith("PLI") or sym_up == "POLY"):
+            continue
+
+        tag = rd.get("Tag-Name", "").strip()
+        port_nm = (rd.get("Port-Name") or "").strip()
+        value = p.value or rd.get("Value", "")
+        if not tag or not port_nm:
+            continue
+
+        m = re.match(r"^([ABXY])(\d+)$", port_nm, re.IGNORECASE)
+        if not m:
+            continue
+
+        letter = m.group(1).upper()
+        axis = "x" if letter in ("A", "X") else "y"
+        idx = int(m.group(2))
+
+        gkey = f"{tag}\x00{sym_type}"
+        grp = srel_groups.setdefault(gkey, {"sym_type": sym_type, "points": {}})
+        pt_entry = grp["points"].setdefault(idx, {})
+        try:
+            pt_entry[axis] = float(str(value).replace(",", "."))
+        except (ValueError, TypeError):
+            pass
+
+    for gkey, grp in srel_groups.items():
+        tag = gkey.split("\x00")[0]
+        sym_type = grp["sym_type"]
+        curve_name = tag
+
+        if curve_name in existing_names:
+            skipped += 1
+            continue
+
+        common_idx = sorted(
+            i for i, pt in grp["points"].items() if "x" in pt and "y" in pt
+        )
+        if len(common_idx) < 2:
+            continue
+
+        pts_map = grp["points"]
+        points = [
+            {"x": pts_map[i]["x"], "y": pts_map[i]["y"], "order": ord_i}
+            for ord_i, i in enumerate(common_idx)
+        ]
+
+        xs = [p["x"] for p in points]
+        ys = [p["y"] for p in points]
+        if max(xs) == min(xs) or max(ys) == min(ys):
+            continue
+
+        n = len(points)
+        curve = Curve(
+            turbine_id=turbine_id,
+            name=curve_name,
+            poly_order=n,
+            description=f"{sym_type.upper()}(n={n})",
+        )
+        db.add(curve)
+        await db.flush()
+        for pt in points:
+            db.add(CurvePoint(curve_id=curve.id, **pt))
         existing_names.add(curve_name)
         created += 1
 
