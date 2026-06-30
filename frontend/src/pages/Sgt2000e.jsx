@@ -1315,13 +1315,11 @@ function LsvcalTab({ turbineId }) {
 
 // ── Tab 3: YMIN ───────────────────────────────────────────────────────────────
 
-const HAP_OLD = 0.8, HLL_OLD = 0.2, PAP_OLD = 113.4
-
 function YminTab({ turbineId }) {
   const showSrel = true
-  const [hapOld, setHapOld] = useState(HAP_OLD)
-  const [hllOld, setHllOld] = useState(HLL_OLD)
-  const [papOld, setPapOld] = useState(PAP_OLD)
+  const [hapOld, setHapOld] = useState(null)
+  const [hllOld, setHllOld] = useState(null)
+  const [papOld, setPapOld] = useState(null)
   const [hapSrel,   setHapSrel]   = useState(null)
   const [hllSrel,   setHllSrel]   = useState(null)
   const [papSrel,   setPapSrel]   = useState(null)
@@ -1334,34 +1332,44 @@ function YminTab({ turbineId }) {
   const fileRef = useRef()
 
   useEffect(() => {
+    // Reset on turbine change so stale values don't persist
+    setHapOld(null); setHllOld(null); setPapOld(null)
+    setHapSrel(null); setHllSrel(null); setPapSrel(null); setCaldnSrel(null)
     if (!turbineId) return
     const loadAll = async () => {
-      // Fetch all MBY10DU050 block parameters via raw_data Tag-Name search
-      // Works for both JAR (Tag-Name in raw_data) and SREL imports
-      const { data: params } = await client.get('/parameters', {
-        params: { turbine_id: turbineId, tag_search: 'MBY10DU050', limit: 100 }
-      })
-      const findByTag = (portName) => {
-        return (params || []).find(p => {
-          try {
-            const rd = typeof p.raw_data === 'string' ? JSON.parse(p.raw_data) : (p.raw_data || {})
-            const tag = rd['Tag-Name'] || ''
-            return tag.includes('DU050') && tag.endsWith(`|${portName}`)
-          } catch { return false }
-        })
-      }
+      // 5 parallel calls: SREL (all DU050C|* ports) + JAR per-port targeted searches
+      const safeGet = (...a) => client.get(...a).catch(() => ({ data: [] }))
+      const [{ data: srelP }, { data: jHap }, { data: jHll }, { data: jPap }, { data: jCaldn }] = await Promise.all([
+        safeGet('/parameters', { params: { turbine_id: turbineId, tag_search: 'MBY10DU050C|', source: 'srel', limit: 50 } }),
+        safeGet('/parameters', { params: { turbine_id: turbineId, search: 'DU050C|HAP.', limit: 5 } }),
+        safeGet('/parameters', { params: { turbine_id: turbineId, search: 'DU050C|HLL.', limit: 5 } }),
+        safeGet('/parameters', { params: { turbine_id: turbineId, search: 'DU050C|PAP.', limit: 5 } }),
+        safeGet('/parameters', { params: { turbine_id: turbineId, search: 'DU050C|CALDN.', limit: 5 } }),
+      ])
+
       const pf = p => { const n = parseFloat(p?.value); return Number.isFinite(n) ? n : null }
       const kksOf = p => (p?.kks && p.kks !== p?.name) ? p.kks : null
 
-      const hapP   = findByTag('HAP')
-      const hllP   = findByTag('HLL')
-      const papP   = findByTag('PAP')
-      const caldnP = findByTag('CALDN')
+      // SREL: Tag-Name ends with |portName
+      const findSrel = (portName) => (srelP || []).find(p => {
+        try {
+          const rd = typeof p.raw_data === 'string' ? JSON.parse(p.raw_data) : (p.raw_data || {})
+          return (rd['Tag-Name'] || '').endsWith(`|${portName}`)
+        } catch { return false }
+      })
+
+      // JAR: pid10 or pid20 from the targeted result set
+      const jarFirst = (arr) => (arr || []).find(p => p.name && (p.name.endsWith('.10') || p.name.endsWith('.20')))
+
+      const hapP   = findSrel('HAP')    || jarFirst(jHap)
+      const hllP   = findSrel('HLL')    || jarFirst(jHll)
+      const papP   = findSrel('PAP')    || jarFirst(jPap)
+      const caldnP = findSrel('CALDN')  || jarFirst(jCaldn)
 
       if (pf(hapP)  !== null) { setHapOld(pf(hapP));  setHapSrel(kksOf(hapP)) }
       if (pf(hllP)  !== null) { setHllOld(pf(hllP));  setHllSrel(kksOf(hllP)) }
       if (pf(papP)  !== null) { setPapOld(pf(papP));  setPapSrel(kksOf(papP)) }
-      if (caldnP?.kks) setCaldnSrel(kksOf(caldnP))
+      if (caldnP)             { setCaldnSrel(kksOf(caldnP)) }
     }
     loadAll().catch(() => {})
   }, [turbineId])
@@ -1395,7 +1403,8 @@ function YminTab({ turbineId }) {
     reader.readAsText(file)
   }
 
-  const lineOld = [0, papOld].map(pel => ({ pel, ymin: yminAt(pel, hapOld, hllOld, papOld) }))
+  const hasOld = hapOld !== null && hllOld !== null && papOld !== null
+  const lineOld = hasOld ? [0, papOld].map(pel => ({ pel, ymin: yminAt(pel, hapOld, hllOld, papOld) })) : []
   const lineNew = hasNew ? [0, pap].map(pel => ({ pel, ymin: yminAt(pel, hap, hll, pap) })) : []
 
   return (
@@ -1428,7 +1437,7 @@ function YminTab({ turbineId }) {
                 <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
                   <td style={{ ...S.td, fontFamily: 'monospace', fontWeight: 700, color: '#5C3D99' }}>{p}</td>
                   {showSrel && <td style={S.tdSrel}>{srel || '—'}</td>}
-                  <td style={{ ...S.tdNum, color: '#9888B8' }}>{old.toFixed(dec)}</td>
+                  <td style={{ ...S.tdNum, color: '#9888B8' }}>{old != null ? old.toFixed(dec) : <span style={{ color: '#C0B0D8' }}>—</span>}</td>
                   <td style={{ ...S.tdNum, background: '#F0F4FF' }}>
                     {set ? <EditCell value={val} onChange={set} dec={dec} /> : (val !== null ? <strong>{val.toFixed(dec)}</strong> : <span style={{ color: '#B8A8DA' }}>—</span>)}
                   </td>
@@ -1438,7 +1447,7 @@ function YminTab({ turbineId }) {
               <tr style={{ borderTop: '2px solid #D0C4E8' }}>
                 <td style={{ ...S.td, fontWeight: 700, color: '#6A50A0' }}>CALDN</td>
                 {showSrel && <td style={S.tdSrel}>{caldnSrel || '—'}</td>}
-                <td style={{ ...S.tdNum, color: '#9888B8' }}>{calDN(hapOld, hllOld).toFixed(4)}</td>
+                <td style={{ ...S.tdNum, color: '#9888B8' }}>{hasOld ? calDN(hapOld, hllOld).toFixed(4) : <span style={{ color: '#C0B0D8' }}>—</span>}</td>
                 <td style={{ ...S.tdNum, background: '#f0fff4', fontWeight: 700, color: '#1a4d1a' }}>{hasNew ? calDN(hap, hll).toFixed(4) : <span style={{ color: '#B8A8DA' }}>—</span>}</td>
                 <td style={{ ...S.td, color: '#9888B8' }}>—</td>
               </tr>
@@ -1508,7 +1517,7 @@ function YminTab({ turbineId }) {
                 x: lineOld.map(p => p.pel), y: lineOld.map(p => p.ymin),
                 type: 'scatter', mode: 'lines',
                 line: { color: '#9888B8', width: 2, dash: 'dash' },
-                name: `Old: HAP=${hapOld}, HLL=${hllOld}`,
+                name: hasOld ? `Old: HAP=${hapOld}, HLL=${hllOld}` : 'Old (no data)',
               },
               ...(lineNew.length ? [{
                 x: lineNew.map(p => p.pel), y: lineNew.map(p => p.ymin),
