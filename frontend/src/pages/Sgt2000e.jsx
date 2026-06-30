@@ -360,29 +360,26 @@ function Sheet2Tab({ turbineId }) {
   const [baseload,   setBaseload]   = useState(() => BASELOAD_DATA.map(p => ({ ...p, value: null })))
   const [changeover, setChangeover] = useState(() => CHANGEOVER_DATA.map(p => ({ ...p, value: null })))
   const [vbTrip,     setVbTrip]     = useState('')
-  const [pilotGas,   setPilotGas]   = useState(() => PILOT_GAS_DATA.map(p => ({ ...p, flow: null, lfit: null, srelX: null, srelY: null })))
+  const [pilotGas,   setPilotGas]   = useState([])
   const [showSrel,   setShowSrel]   = useState(false)
-  const [runupPts,   setRunupPts]   = useState(() => RUNUP_LIMIT.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
-  const [f4Pts,      setF4Pts]      = useState(() => F4_DATA.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
-  const [f6Pts,      setF6Pts]      = useState(() => F6_DATA.map(p => ({ ...p, x: null, y: null, srelX: null, srelY: null })))
-  const [premixPts,  setPremixPts]  = useState(() => PREMIX_KV.map(p => ({ ...p, flow: null, lfit: null, srelX: null, srelY: null })))
+  const [runupPts,   setRunupPts]   = useState([])
+  const [f4Pts,      setF4Pts]      = useState([])
+  const [f6Pts,      setF6Pts]      = useState([])
+  const [premixPts,  setPremixPts]  = useState([])
   const [atk56,      setAtk56]      = useState({ a5: { srel: null, value: null }, b5: { srel: null, value: null }, a6: { srel: null, value: null }, b6: { srel: null, value: null } })
   const [loadNote,   setLoadNote]   = useState(null)
 
   useEffect(() => {
+    setRunupPts([])
+    setF4Pts([])
+    setF6Pts([])
+    setPremixPts([])
+    setPilotGas([])
+    setLoadNote(null)
     if (!turbineId) return
     const fetch1 = search =>
       client.get('/parameters', { params: { turbine_id: turbineId, search, limit: 1 } })
         .then(r => parseFloat(r.data?.[0]?.value)).catch(() => NaN)
-
-    const fetchFull = search =>
-      client.get('/parameters', { params: { turbine_id: turbineId, search, limit: 1 } })
-        .then(r => {
-          const row = r.data?.[0]
-          const kks = row?.kks || null; const name = row?.name || null
-          return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
-        })
-        .catch(() => ({ value: NaN, srel: null }))
 
     const loadScalar = async (arr, setter) => {
       const vals = await Promise.all(arr.map(r => fetch1(r.srel)))
@@ -417,20 +414,37 @@ function Sheet2Tab({ turbineId }) {
       return Array.from({ length: nRows }, (_, i) => ({ xSrel: aP[i]?.kks || null, ySrel: bP[i]?.kks || null }))
     }
 
+    // Build dynamic rows from JAR PLI params (pid offset: X=20,40,60,... Y=30,50,70,...).
+    // Returns { port:'A1', portB:'B1', x, y, srelX, srelY } for each found pair.
+    const buildXYRows = (rows) => {
+      const rePid = /\.(\d+)$/
+      const pVal = p => { const v = parseFloat(p?.value); return Number.isFinite(v) ? v : null }
+      const kksOf = p => { const k = p?.kks || null, n = p?.name || null; return (k && k !== n) ? k : null }
+      const isX = p => { const m = p.name.match(rePid); return m && (+m[1] - 20) % 20 === 0 && +m[1] >= 20 && +m[1] < 1000 }
+      const isY = p => { const m = p.name.match(rePid); return m && (+m[1] - 30) % 20 === 0 && +m[1] >= 30 && +m[1] < 1000 }
+      const byPid = (a, b) => +a.name.match(rePid)[1] - +b.name.match(rePid)[1]
+      const xPs = rows.filter(isX).sort(byPid)
+      const yPs = rows.filter(isY).sort(byPid)
+      const n = Math.max(xPs.length, yPs.length)
+      return Array.from({ length: n }, (_, i) => ({
+        port: `A${i + 1}`, portB: `B${i + 1}`,
+        x: pVal(xPs[i]), y: pVal(yPs[i]),
+        srelX: kksOf(xPs[i]), srelY: kksOf(yPs[i]),
+      }))
+    }
+    const buildFlowRows = rows => buildXYRows(rows).map(({ port, portB, x, y, srelX, srelY }) => ({ port, portB, flow: x, lfit: y, srelX, srelY }))
+    const curveRows = (sorted, sk, xyMode = true) =>
+      sorted.map((pt, i) => ({
+        port: `A${i + 1}`, portB: `B${i + 1}`,
+        ...(xyMode ? { x: pt.x ?? null, y: pt.y ?? null } : { flow: pt.x ?? null, lfit: pt.y ?? null }),
+        srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null,
+      }))
+
     const loadRunup = async (allCurves) => {
       const { data } = await client.get('/parameters', {
         params: { turbine_id: turbineId, search: '|HL130.', limit: 100 }
       })
-      const rows = data || []
-      const findRow = suffix => {
-        const row = rows.find(p => p.name.endsWith(suffix))
-        const kks = row?.kks || null, name = row?.name || null
-        return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
-      }
-      const pts = RUNUP_LIMIT.map(r => {
-        const rx = findRow(r.nameX), ry = findRow(r.nameY)
-        return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
-      })
+      const pts = buildXYRows(data || [])
       const found = pts.filter(p => p.x != null || p.y != null).length
       if (found === 0 && allCurves) {
         const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'HL130')
@@ -438,8 +452,8 @@ function Sheet2Tab({ turbineId }) {
           const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
           if (cpts && cpts.length > 0) {
             const sorted = [...cpts].sort((a, b) => a.order - b.order)
-            const sk = await loadSrelKeys('|HL130', RUNUP_LIMIT.length)
-            setRunupPts(RUNUP_LIMIT.map((r, i) => ({ ...r, x: sorted[i]?.x ?? null, y: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            const sk = await loadSrelKeys('|HL130', sorted.length)
+            setRunupPts(curveRows(sorted, sk))
             return sorted.length
           }
         }
@@ -453,39 +467,31 @@ function Sheet2Tab({ turbineId }) {
         client.get('/parameters', { params: { turbine_id: turbineId, search: '|HSG0.', limit: 100 } }),
         client.get('/parameters', { params: { turbine_id: turbineId, search: '|FEG12.10', limit: 5 } }),
       ])
-      const rows = hsgData || []
-      const findRow = suffix => {
-        const row = rows.find(p => p.name.endsWith(suffix))
-        const kks = row?.kks || null, name = row?.name || null
-        return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
-      }
+      const pts = buildFlowRows(hsgData || [])
+      // FEG12 fallback for row A6 (JAR-specific: A6 may use |FEG12.10 param)
       const fegRow = (fegData || []).find(p => p.name.endsWith('|FEG12.10'))
-      const fegSrel = fegRow ? (fegRow.kks !== fegRow.name ? fegRow.kks : null) : null
-      const fegVal = fegRow ? parseFloat(fegRow.value) : null
-
-      const pts = PREMIX_KV.map(r => {
-        const rx = findRow(r.nameX), ry = findRow(r.nameY)
-        let flow = Number.isFinite(rx.value) ? rx.value : null
-        let srelX = rx.srel
-        if (r.port === 'A6' && (flow == null || flow === 0) && Number.isFinite(fegVal)) {
-          flow = fegVal
-          srelX = fegSrel
+      if (fegRow) {
+        const fegVal = parseFloat(fegRow.value)
+        const fegSrel = fegRow.kks !== fegRow.name ? fegRow.kks : null
+        const a6 = pts[5]
+        if (a6 && (a6.flow == null || a6.flow === 0) && Number.isFinite(fegVal)) {
+          pts[5] = { ...a6, flow: fegVal, srelX: fegSrel }
+        } else if (!a6 && Number.isFinite(fegVal)) {
+          pts.push({ port: 'A6', portB: 'B6', flow: fegVal, lfit: null, srelX: fegSrel, srelY: null })
         }
-        return { ...r, flow, lfit: Number.isFinite(ry.value) ? ry.value : null, srelX, srelY: ry.srel }
-      })
+      }
       const found = pts.filter(p => p.flow != null || p.lfit != null).length
       if (found === 0 && allCurves) {
         const popName = c => (c.name || '').split('|').pop()
         const curve = allCurves.find(c => popName(c) === 'HSG0')
-          // EG240 fallback: turbine variants where premix gas function is named EG240
           || allCurves.find(c => popName(c) === 'EG240')
         if (curve) {
           const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
           if (cpts && cpts.length > 0) {
             const sorted = [...cpts].sort((a, b) => a.order - b.order)
             const blockSuffix = curve.name.replace(/^\d+/, '')
-            const sk = await loadSrelKeys(blockSuffix, PREMIX_KV.length)
-            setPremixPts(PREMIX_KV.map((r, i) => ({ ...r, flow: sorted[i]?.x ?? null, lfit: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            const sk = await loadSrelKeys(blockSuffix, sorted.length)
+            setPremixPts(curveRows(sorted, sk, false))
             return sorted.length
           }
         }
@@ -498,20 +504,10 @@ function Sheet2Tab({ turbineId }) {
       const { data } = await client.get('/parameters', {
         params: { turbine_id: turbineId, search: '|F6.', limit: 100 }
       })
-      const rows = data || []
-      const findRow = suffix => {
-        const row = rows.find(p => p.name.endsWith(suffix))
-        const kks = row?.kks || null, name = row?.name || null
-        return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
-      }
-      const pts = F6_DATA.map(r => {
-        const rx = findRow(r.nameX), ry = findRow(r.nameY)
-        return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
-      })
+      const pts = buildXYRows(data || [])
       const found = pts.filter(p => p.x != null || p.y != null).length
       if (found === 0 && allCurves) {
         const popName = c => (c.name || '').split('|').pop()
-        // F6H/F6L fallback: turbine variants with separate high/low F6 curves
         const curve = allCurves.find(c => popName(c) === 'F6')
           || allCurves.find(c => popName(c) === 'F6H')
           || allCurves.find(c => popName(c) === 'F6L')
@@ -520,8 +516,8 @@ function Sheet2Tab({ turbineId }) {
           if (cpts && cpts.length > 0) {
             const sorted = [...cpts].sort((a, b) => a.order - b.order)
             const blockSuffix = curve.name.replace(/^\d+/, '')
-            const sk = await loadSrelKeys(blockSuffix, F6_DATA.length)
-            setF6Pts(F6_DATA.map((r, i) => ({ ...r, x: sorted[i]?.x ?? null, y: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            const sk = await loadSrelKeys(blockSuffix, sorted.length)
+            setF6Pts(curveRows(sorted, sk))
             return sorted.length
           }
         }
@@ -534,31 +530,22 @@ function Sheet2Tab({ turbineId }) {
       const { data } = await client.get('/parameters', {
         params: { turbine_id: turbineId, search: '|F4.', limit: 100 }
       })
-      const rows = data || []
-      const findRow = suffix => {
-        const row = rows.find(p => p.name.endsWith(suffix))
-        const kks = row?.kks || null, name = row?.name || null
-        return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
-      }
-      const pts = F4_DATA.map(r => {
-        const rx = findRow(r.nameX), ry = findRow(r.nameY)
-        return { ...r, x: Number.isFinite(rx.value) ? rx.value : null, y: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
-      })
+      const pts = buildXYRows(data || [])
       const found = pts.filter(p => p.x != null || p.y != null).length
       if (found === 0 && allCurves) {
-        // JAR curves fallback
+        // Curves fallback (JAR turbine)
         const curve = allCurves.find(c => (c.name || '').split('|').pop() === 'F4')
         if (curve) {
           const { data: cpts } = await client.get(`/curves/${curve.id}/points`).catch(() => ({ data: [] }))
           if (cpts && cpts.length > 0) {
             const sorted = [...cpts].sort((a, b) => a.order - b.order)
-            const sk = await loadSrelKeys('|F4', F4_DATA.length)
-            setF4Pts(F4_DATA.map((r, i) => ({ ...r, x: sorted[i]?.x ?? null, y: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            const sk = await loadSrelKeys('|F4', sorted.length)
+            setF4Pts(curveRows(sorted, sk))
             return sorted.length
           }
         }
-        // SREL params fallback: when srel_parser didn't create a F4 curve (e.g. A1 without B1)
-        // Match by port NUMBER (A1↔B1, A2↔B2, ...) to avoid index drift when B1 is missing
+        // SREL params fallback: srel_parser may not create F4 curve (A1 without B1 → <10 pairs)
+        // Match by port NUMBER to avoid index drift when B1 is missing
         const { data: srelF4 } = await client.get('/parameters', {
           params: { turbine_id: turbineId, tag_search: '|F4', source: 'srel', limit: 200 }
         }).catch(() => ({ data: [] }))
@@ -566,18 +553,13 @@ function Sheet2Tab({ turbineId }) {
           const reA = /\|[AX](\d+)$/, reB = /\|[BY](\d+)$/
           const aMap = Object.fromEntries(srelF4.filter(p => reA.test(p.name)).map(p => [+p.name.match(reA)[1], p]))
           const bMap = Object.fromEntries(srelF4.filter(p => reB.test(p.name)).map(p => [+p.name.match(reB)[1], p]))
-          if (Object.keys(aMap).length > 0 || Object.keys(bMap).length > 0) {
-            setF4Pts(F4_DATA.map((r, i) => {
-              const pn = i + 1, aP = aMap[pn], bP = bMap[pn]
-              return {
-                ...r,
-                x:     aP?.value != null ? parseFloat(aP.value) : null,
-                y:     bP?.value != null ? parseFloat(bP.value) : null,
-                srelX: aP?.kks || null,
-                srelY: bP?.kks || null,
-              }
+          const allNums = [...new Set([...Object.keys(aMap), ...Object.keys(bMap)].map(Number))].sort((a, b) => a - b)
+          if (allNums.length > 0) {
+            setF4Pts(allNums.map(pn => {
+              const aP = aMap[pn], bP = bMap[pn]
+              return { port: `A${pn}`, portB: `B${pn}`, x: aP?.value != null ? parseFloat(aP.value) : null, y: bP?.value != null ? parseFloat(bP.value) : null, srelX: aP?.kks || null, srelY: bP?.kks || null }
             }))
-            return Object.keys(aMap).length + Object.keys(bMap).length
+            return allNums.length
           }
         }
       }
@@ -610,25 +592,10 @@ function Sheet2Tab({ turbineId }) {
       const { data } = await client.get('/parameters', {
         params: { turbine_id: turbineId, search: '|HSP0.', limit: 100 }
       })
-      const rows = data || []
-      const findRow = suffix => {
-        const row = rows.find(p => p.name.endsWith(suffix))
-        const kks = row?.kks || null, name = row?.name || null
-        return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
-      }
-      let pts = PILOT_GAS_DATA.map(r => {
-        const rx = findRow(r.nameX), ry = findRow(r.nameY)
-        return { ...r, flow: Number.isFinite(rx.value) ? rx.value : null, lfit: Number.isFinite(ry.value) ? ry.value : null, srelX: rx.srel, srelY: ry.srel }
-      })
-      // Trim trailing empty PLI slots (flow=0 && lfit=0 beyond real data, keeping A1)
-      let end = pts.length
-      while (end > 1 && pts[end - 1]?.flow === 0 && pts[end - 1]?.lfit === 0) end--
-      if (end < pts.length) pts = pts.slice(0, end)
+      const pts = buildFlowRows(data || [])
       const found = pts.filter(p => p.flow != null || p.lfit != null).length
       if (found === 0 && allCurves) {
         const popName = c => (c.name || '').split('|').pop()
-        // EG240 fallback: for turbines where pilot gas staging is EG240 (on a different diagram).
-        // Use the SECOND EG240 curve (Premix uses the first) when two exist; else same curve.
         const eg240all = allCurves.filter(c => popName(c) === 'EG240')
         const curve = allCurves.find(c => popName(c) === 'HSP0')
           || (eg240all.length > 1 ? eg240all[1] : eg240all[0])
@@ -637,8 +604,8 @@ function Sheet2Tab({ turbineId }) {
           if (cpts && cpts.length > 0) {
             const sorted = [...cpts].sort((a, b) => a.order - b.order)
             const blockSuffix = curve.name.replace(/^\d+/, '')
-            const sk = await loadSrelKeys(blockSuffix, PILOT_GAS_DATA.length)
-            setPilotGas(PILOT_GAS_DATA.map((r, i) => ({ ...r, flow: sorted[i]?.x ?? null, lfit: sorted[i]?.y ?? null, srelX: sk?.[i]?.xSrel ?? null, srelY: sk?.[i]?.ySrel ?? null })))
+            const sk = await loadSrelKeys(blockSuffix, sorted.length)
+            setPilotGas(curveRows(sorted, sk, false))
             return sorted.length
           }
         }
