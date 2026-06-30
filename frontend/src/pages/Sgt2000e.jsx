@@ -902,6 +902,7 @@ function LsvcalTab({ turbineId }) {
   const [dbLoading, setDbLoading] = useState(false)
   const [editMode,  setEditMode]  = useState(false)
   const [plotEl,    setPlotEl]    = useState(null)
+  const [foundPortName, setFoundPortName] = useState(null)  // 'LSVCAL' or 'V300' (null = not found yet)
   const fileRef  = useRef()
   const dragRef  = useRef(null)
   const hoverRef = useRef(null)
@@ -938,30 +939,29 @@ function LsvcalTab({ turbineId }) {
   useEffect(() => {
     if (!turbineId) return
     setDbLoading(true)
-    const pf = s => { const n = parseFloat(String(s || '').replace(',', '.')); return Number.isFinite(n) ? n : null }
-    const find = (params, suf) => {
-      const p = params.find(p =>
-        (p.name || '').toUpperCase().endsWith(suf.toUpperCase()) ||
-        (p.kks  || '').toUpperCase().endsWith(suf.toUpperCase())
-      )
-      return p ? pf(p.value) : null
-    }
-    Promise.all([
-      client.get('/parameters', { params: { turbine_id: turbineId, search: 'LSVCAL', limit: 50 } }),
-      client.get('/parameters', { params: { turbine_id: turbineId, search: 'V300',   limit: 50 } }),
-    ]).then(([r1, r2]) => {
-        const params = [...(r1.data || []), ...(r2.data || [])]
-        const old = Array.from({ length: 6 }, (_, i) => ({
-          x: find(params, `A${i + 1}`),
-          y: find(params, `B${i + 1}`),
-        }))
-        if (old.some(p => p.x !== null || p.y !== null)) {
-          setLsvcalOld(old)
-          setLsvcalNew(old.map(p => ({ x: p.x, y: null })))
-        }
-        // else: keep LSVCAL_OLD defaults already set as initial state
+    // Load LSVCAL or V300 polynomial from curves table (works for JAR and SREL imports)
+    let foundCurve = null
+    client.get('/curves', { params: { turbine_id: turbineId } })
+      .then(r => {
+        const allCurves = r.data || []
+        foundCurve = allCurves.find(c => {
+          const pn = (c.name || '').split('|').pop()
+          return pn === 'LSVCAL' || pn === 'V300'
+        })
+        if (!foundCurve) return null
+        setFoundPortName(foundCurve.name.split('|').pop())
+        return client.get(`/curves/${foundCurve.id}/points`)
       })
-      .catch(() => { /* keep defaults on error */ })
+      .then(r => {
+        if (!r) return
+        const pts = (r.data || []).sort((a, b) => a.order - b.order)
+        if (pts.length >= 2) {
+          setLsvcalOld(pts.map(p => ({ x: p.x, y: p.y })))
+          setLsvcalNew(pts.map(p => ({ x: p.x, y: null })))
+          setNewSize(pts.length)
+        }
+      })
+      .catch(() => { /* keep LSVCAL_OLD defaults on error */ })
       .finally(() => setDbLoading(false))
   }, [turbineId])
 
@@ -1027,20 +1027,21 @@ function LsvcalTab({ turbineId }) {
 
   return (
     <div>
-      <div style={S.sectionHdr}>IGV Precontrol — LSVCAL Polynomial</div>
+      <div style={S.sectionHdr}>IGV Precontrol — LSVCAL/V300 Polynomial</div>
       <div className="sgt-lsvcal-tables" style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', alignItems: 'flex-start' }}>
 
         {/* OLD (from DB) */}
         <div style={{ flexShrink: 0 }}>
           <div style={S.tableTitle}>
-            LSVCAL old
+            {foundPortName ? `${foundPortName} current` : 'current (default)'}
             {dbLoading && <span style={{ fontWeight: 400, fontSize: '0.7rem', color: '#9888B8', marginLeft: 6 }}>loading…</span>}
+            {!dbLoading && !foundPortName && <span style={{ fontWeight: 400, fontSize: '0.7rem', color: '#cc6600', marginLeft: 6 }}>not in DB</span>}
           </div>
           <table style={S.table}>
             <thead><tr>
               <th style={S.th}>#</th>
               <th style={{ ...S.th, textAlign: 'right' }}>YMINCAL</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>LSVSW</th>
+              <th style={{ ...S.th, textAlign: 'right' }}>{foundPortName || 'LSVSW'}</th>
             </tr></thead>
             <tbody>{lsvcalOld.map((p, i) => (
               <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
@@ -1055,7 +1056,7 @@ function LsvcalTab({ turbineId }) {
         {/* NEW (editable) */}
         <div style={{ flexShrink: 0 }}>
           <div style={{ ...S.tableTitle, background: '#E8F5E9', color: '#1a4d1a', borderBottom: '1px solid #4caf7d44', display: 'flex', alignItems: 'center', gap: 6 }}>
-            LSVCAL new
+            {foundPortName ? `${foundPortName} new` : 'new'}
             {fitDone && <span style={{ fontWeight: 400, fontSize: '0.7rem', color: '#4caf7d' }}>✓ fitted</span>}
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 3 }}>
               {[6, 10].map(n => (
@@ -1071,7 +1072,7 @@ function LsvcalTab({ turbineId }) {
             <thead><tr>
               <th style={S.th}>#</th>
               <th style={{ ...S.th, textAlign: 'right' }}>YMINCAL</th>
-              <th style={{ ...S.th, textAlign: 'right' }}>LSVSW</th>
+              <th style={{ ...S.th, textAlign: 'right' }}>{foundPortName || 'LSVSW'}</th>
             </tr></thead>
             <tbody>{lsvcalNew.map((p, i) => (
               <tr key={i} style={i % 2 === 0 ? S.rowEven : S.rowOdd}>
@@ -1139,7 +1140,7 @@ function LsvcalTab({ turbineId }) {
       {/* Chart */}
       <div className="sgt-lsvcal-wrap" style={{ marginTop: '1.25rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
-          <div style={S.chartTitle}>LSVCAL / V300 — YMINCAL vs LSVSW</div>
+          <div style={S.chartTitle}>{foundPortName || 'LSVCAL/V300'} — YMINCAL vs {foundPortName || 'LSVSW'}</div>
           {validNew.length >= 1 && (
             <button
               onClick={() => { setEditMode(m => !m); hoverRef.current = null; dragRef.current = null; if (plotEl) plotEl.style.cursor = '' }}
@@ -1152,15 +1153,15 @@ function LsvcalTab({ turbineId }) {
               }}
             >{editMode ? '✎ Drag mode ON — click off to zoom' : '✎ Drag NEW points'}</button>
           )}
-          {editMode && <span style={{ fontSize: '0.68rem', color: '#CC2222' }}>drag markers up/down to adjust LSVSW</span>}
+          {editMode && <span style={{ fontSize: '0.68rem', color: '#CC2222' }}>drag markers up/down to adjust {foundPortName || 'LSVSW'}</span>}
         </div>
         <Plot
           data={[
             ...(expData ? [{ x: expData.map(p => p.ymincal), y: expData.map(p => p.lsvsw), type: 'scatter', mode: 'lines+markers', line: { color: '#E06B00', width: 1 }, marker: { color: '#E06B00', size: 4, opacity: 0.75 }, name: 'Experimental' }] : []),
-            ...(validOld.length >= 2 ? [{ x: validOld.map(p => p.x), y: validOld.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#5B8BC8', width: 2 }, marker: { color: '#5B8BC8', size: 7, symbol: 'square' }, name: 'LSVCAL old' }] : []),
-            ...(validNew.length >= 2 ? [{ x: validNew.map(p => p.x), y: validNew.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#CC2222', width: 2 }, marker: { color: '#CC2222', size: editMode ? 10 : 6 }, name: 'LSVCAL new' }] : []),
+            ...(validOld.length >= 2 ? [{ x: validOld.map(p => p.x), y: validOld.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#5B8BC8', width: 2 }, marker: { color: '#5B8BC8', size: 7, symbol: 'square' }, name: `${foundPortName || 'LSVCAL'} current` }] : []),
+            ...(validNew.length >= 2 ? [{ x: validNew.map(p => p.x), y: validNew.map(p => p.y), type: 'scatter', mode: 'lines+markers', line: { color: '#CC2222', width: 2 }, marker: { color: '#CC2222', size: editMode ? 10 : 6 }, name: `${foundPortName || 'LSVCAL'} new` }] : []),
           ]}
-          layout={{ ...PL('YMINCAL', 'LSVSW (LSVCAL / V300)'), dragmode: editMode ? false : 'zoom', uirevision: 'lsvcal' }}
+          layout={{ ...PL('YMINCAL', foundPortName || 'LSVSW'), dragmode: editMode ? false : 'zoom', uirevision: 'lsvcal' }}
           config={PC}
           onInitialized={(_, el) => setPlotEl(el)}
           onHover={(data) => {
@@ -1203,30 +1204,35 @@ function YminTab({ turbineId }) {
 
   useEffect(() => {
     if (!turbineId) return
-    const fetchExact = async (search, suffix) => {
-      const { data } = await client.get('/parameters', {
-        params: { turbine_id: turbineId, search, limit: 10 }
-      })
-      const row = (data || []).find(p => p.name.endsWith(suffix))
-      const kks = row?.kks || null, name = row?.name || null
-      return { value: parseFloat(row?.value), srel: (kks && kks !== name) ? kks : null }
-    }
     const loadAll = async () => {
-      const [h, l, p, c] = await Promise.all([
-        fetchExact('MBY10DU050|HAP',   '|HAP.10'),
-        fetchExact('MBY10DU050|HLL',   '|HLL.10'),
-        fetchExact('MBY10DU050|PAP',   '|PAP.10'),
-        fetchExact('MBY10DU050|CALDN', '|CALDN.10'),
-      ])
-      if (Number.isFinite(h.value)) setHapOld(h.value)
-      if (h.srel) setHapSrel(h.srel)
-      if (Number.isFinite(l.value)) setHllOld(l.value)
-      if (l.srel) setHllSrel(l.srel)
-      if (Number.isFinite(p.value)) setPapOld(p.value)
-      if (p.srel) setPapSrel(p.srel)
-      if (c.srel) setCaldnSrel(c.srel)
+      // Fetch all MBY10DU050 block parameters via raw_data Tag-Name search
+      // Works for both JAR (Tag-Name in raw_data) and SREL imports
+      const { data: params } = await client.get('/parameters', {
+        params: { turbine_id: turbineId, tag_search: 'MBY10DU050', limit: 100 }
+      })
+      const findByTag = (portName) => {
+        return (params || []).find(p => {
+          try {
+            const rd = typeof p.raw_data === 'string' ? JSON.parse(p.raw_data) : (p.raw_data || {})
+            const tag = rd['Tag-Name'] || ''
+            return tag.includes('DU050') && tag.endsWith(`|${portName}`)
+          } catch { return false }
+        })
+      }
+      const pf = p => { const n = parseFloat(p?.value); return Number.isFinite(n) ? n : null }
+      const kksOf = p => (p?.kks && p.kks !== p?.name) ? p.kks : null
+
+      const hapP   = findByTag('HAP')
+      const hllP   = findByTag('HLL')
+      const papP   = findByTag('PAP')
+      const caldnP = findByTag('CALDN')
+
+      if (pf(hapP)  !== null) { setHapOld(pf(hapP));  setHapSrel(kksOf(hapP)) }
+      if (pf(hllP)  !== null) { setHllOld(pf(hllP));  setHllSrel(kksOf(hllP)) }
+      if (pf(papP)  !== null) { setPapOld(pf(papP));  setPapSrel(kksOf(papP)) }
+      if (caldnP?.kks) setCaldnSrel(kksOf(caldnP))
     }
-    loadAll()
+    loadAll().catch(() => {})
   }, [turbineId])
 
   const yminAt = (pel, h, l, p) => l + (h - l) * (pel / p)

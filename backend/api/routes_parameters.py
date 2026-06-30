@@ -46,6 +46,7 @@ async def list_parameters(
     group: str | None = Query(None),
     search: str | None = Query(None),
     tag_prefix: str | None = Query(None),
+    tag_search: str | None = Query(None),
     annotated_only: bool = Query(False),
     limit: int = Query(1000, le=_MAX_ROWS),
     offset: int = Query(0, ge=0),
@@ -57,6 +58,9 @@ async def list_parameters(
     if search:
         like = f"%{search}%"
         q = q.where(Parameter.kks.ilike(like) | Parameter.name.ilike(like))
+    if tag_search:
+        # Search raw_data Tag-Name field (e.g. tag_search="MBY10DU050" finds all its ports)
+        q = q.where(Parameter.raw_data.like(f'%"Tag-Name": "%{tag_search}%'))
     if tag_prefix:
         q = q.where(Parameter.raw_data.like(f'%"Tag-Name": "{tag_prefix.upper()}%'))
     if annotated_only:
