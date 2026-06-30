@@ -71,8 +71,8 @@ async def _sync_overrides(curve: Curve, points: list[PointUpsert], db: AsyncSess
     for pt in points:
         i = pt.order
         for axis, port_id, new_val in [
-            ("x", 20 + i * 20, str(pt.x)),
-            ("y", 30 + i * 20, str(pt.y)),
+            ("x", 30 + i * 20, str(pt.x)),
+            ("y", 40 + i * 20, str(pt.y)),
         ]:
             pname = f"{tag}|{port}.{port_id}"
             param = param_by_name.get(pname)
@@ -171,8 +171,8 @@ async def reset_curve_to_original(curve_id: int, db: AsyncSession = Depends(get_
         raise HTTPException(400, detail="No parameter data found for this curve")
 
     sorted_ids = sorted(id_val)
-    x_ids = [i for i in sorted_ids if i % 20 == 0]
-    y_ids = [i for i in sorted_ids if i % 20 == 10]
+    x_ids = [i for i in sorted_ids if i % 20 == 10 and i >= 30]
+    y_ids = [i for i in sorted_ids if i % 20 == 0  and i >= 40]
 
     points = [
         {"x": id_val[xi], "y": id_val[yi], "order": i}
@@ -243,12 +243,12 @@ async def get_curve_axis_info(curve_id: int, db: AsyncSession = Depends(get_db))
             pid = int(rd.get("Port-ID", "0"))
         except Exception:
             continue
-        if pid % 20 == 0:
+        if pid % 20 == 10 and pid >= 30:
             if p.kks:
                 x_keys.append(p.kks)
             if p.unit:
                 x_units.add(p.unit)
-        elif pid % 20 == 10:
+        elif pid % 20 == 0 and pid >= 40:
             if p.kks:
                 y_keys.append(p.kks)
             if p.unit:
@@ -277,12 +277,27 @@ async def get_curve_axis_info(curve_id: int, db: AsyncSession = Depends(get_db))
 
 
 @router.post("/curves/detect-pli")
-async def detect_pli_curves(turbine_id: int, db: AsyncSession = Depends(get_db)):
+async def detect_pli_curves(turbine_id: int, force: bool = False, db: AsyncSession = Depends(get_db)):  # noqa: C901
     """
-    Scan jar parameters for PLI polynomial patterns and create Curve records.
-    Pattern: same (Tag-Name, Port-Name), portIds 20,30,40,50... step 10;
-    portId%20==0 → X axis, portId%20==10 → Y axis.
+    Scan jar parameters for polynomial curve blocks and create Curve records.
+
+    SPPA-T3000 PLI/POLY block structure:
+      Port 10   = config (type indicator)
+      Port 20   = active pair count (integer)
+      Port 30   = X1,  Port 40  = Y1
+      Port 50   = X2,  Port 60  = Y2  ...
+    X ports: pid % 20 == 10 and pid >= 30  (30, 50, 70, ...)
+    Y ports: pid % 20 == 0  and pid >= 40  (40, 60, 80, ...)
+    Block capacity types: PLI10 (30-220), PLI15 (30-320), PLI20 (30-420).
+    Tolerates ±1 mismatch between X and Y count (incomplete last pair in JAR export).
+    If force=True: deletes all existing curves before re-creating.
     """
+    if force:
+        existing_curves = await db.execute(select(Curve).where(Curve.turbine_id == turbine_id))
+        for c in existing_curves.scalars().all():
+            await db.delete(c)
+        await db.flush()
+
     result = await db.execute(
         select(Parameter).where(Parameter.turbine_id == turbine_id, Parameter.source == "jar")
     )
@@ -314,27 +329,61 @@ async def detect_pli_curves(turbine_id: int, db: AsyncSession = Depends(get_db))
     skipped = 0
 
     for (tag, port_name), entries in groups.items():
-        try:
-            sorted_ids = sorted({int(e["port_id"]) for e in entries})
-        except (ValueError, TypeError):
+        # Build port_id → value map (numeric port IDs only)
+        id_val_raw: dict[int, str] = {}
+        for e in entries:
+            try:
+                id_val_raw[int(e["port_id"])] = e["value"]
+            except (ValueError, TypeError):
+                continue
+
+        # Determine count from port 20 (number-of-points parameter)
+        count_port = None
+        if 20 in id_val_raw:
+            try:
+                count_port = int(float(id_val_raw[20]))
+            except (ValueError, TypeError):
+                pass
+
+        # Polynomial data ports: 30=X1, 40=Y1, 50=X2, 60=Y2, ...
+        # Limit to the range defined by count port (excludes trailing zero-filled slots).
+        # PLI10 capacity: data ports 30-220 (20 ports, 10 pairs max)
+        # PLI20 capacity: data ports 30-420 (40 ports, 20 pairs max)
+        if count_port and count_port >= 2:
+            max_pid = 40 + (count_port - 1) * 20
+            poly_pids = sorted(pid for pid in id_val_raw if 30 <= pid <= max_pid)
+        else:
+            # Fallback: consecutive step-10 block starting at 30, below 1000
+            poly_pids = sorted(pid for pid in id_val_raw if 30 <= pid < 1000)
+            trimmed = []
+            for pid in poly_pids:
+                if not trimmed or pid - trimmed[-1] == 10:
+                    trimmed.append(pid)
+                else:
+                    break
+            poly_pids = trimmed
+
+        if len(poly_pids) < 4:
+            continue
+        if not all(b - a == 10 for a, b in zip(poly_pids, poly_pids[1:])):
             continue
 
-        if len(sorted_ids) < 4:
-            continue
-        if sorted_ids[0] != 20:
-            continue
-        if not all(b - a == 10 for a, b in zip(sorted_ids, sorted_ids[1:])):
-            continue
+        x_ids = [pid for pid in poly_pids if pid % 20 == 10]  # 30,50,70…
+        y_ids = [pid for pid in poly_pids if pid % 20 == 0]   # 40,60,80…
 
-        x_ids = [i for i in sorted_ids if i % 20 == 0]   # 20,40,60…
-        y_ids = [i for i in sorted_ids if i % 20 == 10]  # 30,50,70…
+        # Tolerate off-by-one: last pair may be incomplete in the JAR export
+        if abs(len(x_ids) - len(y_ids)) == 1:
+            n_min = min(len(x_ids), len(y_ids))
+            x_ids = x_ids[:n_min]
+            y_ids = y_ids[:n_min]
+
         if len(x_ids) < 2 or len(x_ids) != len(y_ids):
             continue
 
         id_val: dict[int, float] = {}
-        for e in entries:
+        for pid, raw in id_val_raw.items():
             try:
-                id_val[int(e["port_id"])] = float(e["value"])
+                id_val[pid] = float(raw)
             except (ValueError, TypeError):
                 pass
 
@@ -351,13 +400,39 @@ async def detect_pli_curves(turbine_id: int, db: AsyncSession = Depends(get_db))
             skipped += 1
             continue
 
-        designation = entries[0].get("designation", "")
+        # Only keep PLI10 (30-220) and PLI20 (30-420) capacity blocks
+        all_data_pids = [p for p in id_val_raw if 30 <= p < 1000]
+        capacity = len(all_data_pids) // 2
+        if capacity not in (10, 20):
+            continue
+
+        # Reject non-polynomial blocks:
+        #  - first X step must be non-decreasing (catches ZV52-style: 21930→0→0...)
+        #  - all X steps except last must be non-decreasing
+        #    (last slot may be a fill-zero from JAR export, e.g. HSG0: 0,2.8,10,12,130,0)
+        #  - X must have a non-zero range
+        #  - Y must have variation (discrete/protection blocks have flat Y)
+        xs = [p["x"] for p in points]
+        ys = [p["y"] for p in points]
+        steps = [xs[i + 1] - xs[i] for i in range(len(xs) - 1)]
+        if steps[0] < 0:                          # first step must go up or stay
+            continue
+        if not all(s >= 0 for s in steps[:-1]):   # all steps except last must be ≥ 0
+            continue
+        if max(xs) == min(xs):   # X all same → degenerate
+            continue
+        if max(ys) == min(ys):   # Y constant → not an interpolation curve
+            continue
+
+        block_type = f"PLI{capacity}"
+
+        designation = next((e.get("designation", "") for e in entries if e.get("designation")), "")
         n = len(points)
         curve = Curve(
             turbine_id=turbine_id,
             name=curve_name,
             poly_order=n,
-            description=f"PLI{n} – {designation}" if designation else f"PLI{n}",
+            description=f"{block_type}(n={n}) – {designation}" if designation else f"{block_type}(n={n})",
         )
         db.add(curve)
         await db.flush()

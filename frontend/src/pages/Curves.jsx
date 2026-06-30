@@ -228,16 +228,17 @@ function CurvePanel({ turbines, label }) {
 
   // ── render ──────────────────────────────────────────────────────────────
 
-  const detectPli = async () => {
+  const detectPli = async (force = false) => {
     if (!turbineId) return
+    if (force && curves.length > 0 && !window.confirm(`Re-detect will delete all ${curves.length} existing curve(s) and rebuild from parameters. Continue?`)) return
     setDetecting(true)
     try {
-      const r = await client.post('/curves/detect-pli', null, { params: { turbine_id: turbineId } })
+      const r = await client.post('/curves/detect-pli', null, { params: { turbine_id: turbineId, force } })
       const { created, skipped_duplicates } = r.data
       const fresh = await client.get('/curves', { params: { turbine_id: turbineId } })
       setCurves(fresh.data)
       if (fresh.data.length) setCurveId(fresh.data[0].id)
-      alert(`Detected ${created} PLI curve(s)${skipped_duplicates ? `, ${skipped_duplicates} already existed` : ''}.`)
+      alert(`${created} curve(s) created${skipped_duplicates ? `, ${skipped_duplicates} skipped` : ''}.`)
     } catch (e) {
       alert('Detection failed: ' + (e?.response?.data?.detail ?? e.message))
     } finally {
@@ -271,8 +272,13 @@ function CurvePanel({ turbines, label }) {
           {curves.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
         {noCurves && (
-          <button onClick={detectPli} disabled={detecting} style={{ ...BTN, borderColor: '#4a9', color: '#4a9' }}>
+          <button onClick={() => detectPli(false)} disabled={detecting} style={{ ...BTN, borderColor: '#4a9', color: '#4a9' }}>
             {detecting ? 'Detecting…' : 'Detect PLI'}
+          </button>
+        )}
+        {!noCurves && (
+          <button onClick={() => detectPli(true)} disabled={detecting} style={{ ...BTN, borderColor: '#c84', color: '#c84' }}>
+            {detecting ? 'Detecting…' : '↺ Re-detect PLI'}
           </button>
         )}
         {curveMeta?.description && (
